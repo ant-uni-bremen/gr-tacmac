@@ -24,41 +24,37 @@
 #include <tacmac/mac_controller.h>
 
 namespace gr {
-  namespace tacmac {
+namespace tacmac {
 
-    class mac_controller_impl : public mac_controller
-    {
-     private:
-      unsigned d_dst_id;
-      unsigned d_src_id;
-      size_t d_tx_frame_counter;
-      size_t d_rx_frame_counter;
+class mac_controller_impl : public mac_controller
+{
+private:
+    unsigned d_dst_id;
+    unsigned d_src_id;
+    size_t d_tx_frame_counter;
+    size_t d_rx_frame_counter;
 
-      const pmt::pmt_t d_llc_in_port;
-      const pmt::pmt_t d_llc_out_port;
-      const pmt::pmt_t d_phy_in_port;
-      const pmt::pmt_t d_phy_out_port;
+    const pmt::pmt_t d_llc_in_port;
+    const pmt::pmt_t d_llc_out_port;
+    const pmt::pmt_t d_phy_in_port;
+    const pmt::pmt_t d_phy_out_port;
 
 
+public:
+    mac_controller_impl(unsigned destination_id, unsigned source_id);
+    ~mac_controller_impl();
 
-     public:
-      mac_controller_impl(unsigned destination_id, unsigned source_id);
-      ~mac_controller_impl();
+    // Where all the action really happens
+    void handle_llc_msg(pmt::pmt_t pdu);
+    void handle_phy_msg(pmt::pmt_t pdu);
 
-      // Where all the action really happens
-      void handle_llc_msg(pmt::pmt_t pdu);
-      void handle_phy_msg(pmt::pmt_t pdu);
+    // Dummy!
+    int work(int noutput_items,
+             gr_vector_const_void_star& input_items,
+             gr_vector_void_star& output_items);
+};
 
-      // Dummy!
-      int work(
-              int noutput_items,
-              gr_vector_const_void_star &input_items,
-              gr_vector_void_star &output_items
-      );
-    };
-
-  } // namespace tacmac
+} // namespace tacmac
 } // namespace gr
 
 #endif /* INCLUDED_TACMAC_MAC_CONTROLLER_IMPL_H */
-

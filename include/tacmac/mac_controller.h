@@ -21,35 +21,34 @@
 #ifndef INCLUDED_TACMAC_MAC_CONTROLLER_H
 #define INCLUDED_TACMAC_MAC_CONTROLLER_H
 
-#include <tacmac/api.h>
 #include <gnuradio/sync_block.h>
+#include <tacmac/api.h>
 
 namespace gr {
-  namespace tacmac {
+namespace tacmac {
+
+/*!
+ * \brief Accept PDUs, add/parse MAC header
+ * \ingroup tacmac
+ *
+ */
+class TACMAC_API mac_controller : virtual public gr::sync_block
+{
+public:
+    typedef boost::shared_ptr<mac_controller> sptr;
 
     /*!
-     * \brief Accept PDUs, add/parse MAC header
-     * \ingroup tacmac
+     * \brief Return a shared_ptr to a new instance of tacmac::mac_controller.
      *
+     * To avoid accidental use of raw pointers, tacmac::mac_controller's
+     * constructor is in a private implementation
+     * class. tacmac::mac_controller::make is the public interface for
+     * creating new instances.
      */
-    class TACMAC_API mac_controller : virtual public gr::sync_block
-    {
-     public:
-      typedef boost::shared_ptr<mac_controller> sptr;
+    static sptr make(unsigned destination_id, unsigned source_id);
+};
 
-      /*!
-       * \brief Return a shared_ptr to a new instance of tacmac::mac_controller.
-       *
-       * To avoid accidental use of raw pointers, tacmac::mac_controller's
-       * constructor is in a private implementation
-       * class. tacmac::mac_controller::make is the public interface for
-       * creating new instances.
-       */
-      static sptr make(unsigned destination_id, unsigned source_id);
-    };
-
-  } // namespace tacmac
+} // namespace tacmac
 } // namespace gr
 
 #endif /* INCLUDED_TACMAC_MAC_CONTROLLER_H */
-
