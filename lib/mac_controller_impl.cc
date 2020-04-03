@@ -32,6 +32,8 @@
 #include <exception>
 #include <limits>
 #include <string>
+// C++20 feature: #include <format>
+
 
 namespace gr {
 namespace tacmac {
@@ -52,24 +54,18 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id, unsigned sourc
       d_dst_id(destination_id),
       d_src_id(source_id),
       d_tx_frame_counter(0),
-      d_rx_frame_counter(std::numeric_limits<uint16_t>::max()),
-      d_llc_in_port(pmt::mp("LLCin")),
-      d_llc_out_port(pmt::mp("LLCout")),
-      d_phy_in_port(pmt::mp("PHYin")),
-      d_phy_out_port(pmt::mp("PHYout"))
+      d_rx_frame_counter(std::numeric_limits<uint16_t>::max())
 {
     if (256 < d_dst_id) {
-        std::string err_msg("destination_id(");
-        err_msg += std::to_string(d_dst_id);
-        err_msg += ") out-of-range [0, 256)!";
+        std::string err_msg("destination_id(" + std::to_string(d_dst_id) +
+                            ") out-of-range [0, 256)!");
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
 
     if (256 < d_src_id) {
-        std::string err_msg("source_id(");
-        err_msg += std::to_string(d_src_id);
-        err_msg += ") out-of-range [0, 256)";
+        std::string err_msg("source_id(" + std::to_string(d_src_id) +
+                            ") out-of-range [0, 256)");
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
@@ -91,45 +87,91 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id, unsigned sourc
  */
 mac_controller_impl::~mac_controller_impl() {}
 
-void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
-{
-    auto meta = pmt::car(pdu);
-    std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
 
-    meta = pmt::dict_add(meta, pmt::mp("dst_id"), pmt::from_long(d_dst_id));
-    meta = pmt::dict_add(meta, pmt::mp("src_id"), pmt::from_long(d_src_id));
-    meta = pmt::dict_add(meta, pmt::mp("sequence"), pmt::from_long(d_tx_frame_counter));
+std::vector<uint8_t> mac_controller_impl::create_header(const size_t frame_counter,
+                                                        const uint64_t ticks)
+{
     std::vector<uint8_t> header(4 + 8);
     header[0] = (uint8_t)d_dst_id;
     header[1] = (uint8_t)d_src_id;
-    header[2] = (uint8_t)(d_tx_frame_counter >> 8) & 0xFF;
-    header[3] = (uint8_t)d_tx_frame_counter & 0xFF;
+    header[2] = (uint8_t)(frame_counter >> 8) & 0xFF;
+    header[3] = (uint8_t)frame_counter & 0xFF;
+
+    for (int i = 0; i < 8; ++i) {
+        header[i + 4] = (uint8_t)(ticks >> ((7 - i) * 8)) & 0xFF;
+    }
+    return header;
+}
+
+
+void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
+{
+    // const auto llc_start = std::chrono::high_resolution_clock::now();
+
+    const auto frame_counter = d_tx_frame_counter;
     d_tx_frame_counter++;
     d_tx_frame_counter %= std::numeric_limits<uint16_t>::max();
 
     const auto since_epoch = std::chrono::high_resolution_clock::now().time_since_epoch();
     const uint64_t ticks = since_epoch.count();
-    meta = pmt::dict_add(meta, pmt::mp("time"), pmt::from_long(ticks));
 
-    for (int i = 0; i < 8; ++i) {
-        header[i + 4] = (uint8_t)(ticks >> ((7 - i) * 8)) & 0xFF;
-    }
+    auto header = create_header(frame_counter, ticks);
 
+    // const auto header_duration =
+    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
+
+    auto meta = pmt::car(pdu);
+    meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(d_dst_id));
+    meta = pmt::dict_add(meta, PMT_SRC_ID, pmt::from_long(d_src_id));
+    meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(frame_counter));
+    meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(ticks));
+
+    // const auto meta_duration =
+    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
+
+    std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
     payload.insert(payload.begin(), header.begin(), header.end());
 
     uint16_t checksum =
         CRC::Calculate(payload.data(), payload.size(), CRC::CRC_16_XMODEM());
     payload.push_back((checksum >> 8) & 0xFF);
     payload.push_back(checksum & 0xFF);
-    // GR_LOG_INFO(this->d_logger, checksum);
-    auto pl = pmt::init_u8vector(payload.size(), payload);
-    message_port_pub(d_phy_out_port, pmt::cons(meta, pl));
+
+    // const auto payload_duration =
+    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
+
+    auto pmtpayload = pmt::init_u8vector(payload.size(), payload);
+    // const auto pmtvec_duration =
+    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
+
+    message_port_pub(d_phy_out_port, pmt::cons(meta, pmtpayload));
+
+    // const auto llc_duration =
+    //     std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() -
+    //     llc_start);
+
+    // GR_LOG_INFO(this->d_logger, "LLC header duration: " +
+    //                             std::to_string(header_duration.count()) +
+    //                             "ns");
+    // GR_LOG_INFO(this->d_logger, "LLC meta duration: " +
+    //                             std::to_string(meta_duration.count()) +
+    //                             "ns");
+    // GR_LOG_INFO(this->d_logger, "LLC payload duration: " +
+    //                             std::to_string(payload_duration.count()) +
+    //                             "ns");
+    // GR_LOG_INFO(this->d_logger, "LLC pmtvec duration: " +
+    //                             std::to_string(pmtvec_duration.count()) +
+    //                             "ns");
+
+    // GR_LOG_INFO(this->d_logger,
+    //             "LLC duration: " + std::to_string(llc_duration.count()) + "ns");
 }
 
 
 void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 {
-    auto meta = pmt::car(pdu);
+    // const auto phy_start = std::chrono::high_resolution_clock::now();
+
     const std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
 
     const uint16_t rx_checksum = (uint16_t(payload[payload.size() - 2] << 8) |
@@ -137,11 +179,15 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 
     const uint16_t checksum =
         CRC::Calculate(payload.data(), payload.size() - 2, CRC::CRC_16_XMODEM());
-    // GR_LOG_INFO(this->d_logger, checksum);
+
     if (rx_checksum != checksum) {
-        GR_LOG_DEBUG(this->d_logger,
-                     "CRC16-XMODEM failed! calculated=" + std::to_string(checksum) +
-                         ", received=" + std::to_string(rx_checksum));
+        // C++20 solution: std::string msg = std::format("test {}", 42);
+        GR_LOG_DEBUG(
+            this->d_logger,
+            string_format("CRC16-XMODEM failed! calculated/received: %04X != %04X",
+                          checksum,
+                          rx_checksum));
+
         return;
     }
 
@@ -161,33 +207,43 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
                   ", sequence=" + std::to_string(sequence) +
                   "), block(dst=" + std::to_string(d_dst_id) +
                   ", src=" + std::to_string(d_src_id) + ")";
-
+        // status += " expected seq=" + std::to_string(d_rx_frame_counter + 1);
+        // status += " payload.size()=" + std::to_string(payload.size());
         GR_LOG_DEBUG(this->d_logger, status);
+        // GR_LOG_DEBUG(this->d_logger, pmt::car(pdu));
+        // GR_LOG_DEBUG(this->d_logger, pmt::cdr(pdu));
 
         return;
     }
 
     const std::vector<uint8_t> data(payload.begin() + 12, payload.end() - 2);
 
-    meta = pmt::dict_add(meta, pmt::mp("dst_id"), pmt::from_long(dst));
-    meta = pmt::dict_add(meta, pmt::mp("src_id"), pmt::from_long(src));
-    meta = pmt::dict_add(meta, pmt::mp("sequence"), pmt::from_long(sequence));
+    auto meta = pmt::car(pdu);
+    meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(dst));
+    meta = pmt::dict_add(meta, PMT_SRC_ID, pmt::from_long(src));
+    meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(sequence));
     const unsigned lost_packets =
         (sequence - d_rx_frame_counter - 1) % std::numeric_limits<uint16_t>::max();
     d_rx_frame_counter = sequence;
-    meta = pmt::dict_add(meta, pmt::mp("lost_packets"), pmt::from_long(lost_packets));
+    meta = pmt::dict_add(meta, PMT_LOST_PACKETS, pmt::from_long(lost_packets));
 
     uint64_t timestamp = 0;
     for (int i = 0; i < 8; ++i) {
         timestamp |= uint64_t(payload[i + 4]) << ((7 - i) * 8);
     }
-    meta = pmt::dict_add(meta, pmt::mp("time"), pmt::from_long(timestamp));
+    meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(timestamp));
     const auto since_epoch = std::chrono::high_resolution_clock::now().time_since_epoch();
     const uint64_t ticks = since_epoch.count();
-    meta = pmt::dict_add(meta, pmt::mp("latency"), pmt::from_long(ticks - timestamp));
+    meta = pmt::dict_add(meta, PMT_LATENCY, pmt::from_long(ticks - timestamp));
 
     message_port_pub(d_llc_out_port,
                      pmt::cons(meta, pmt::init_u8vector(data.size(), data)));
+
+    // const auto phy_duration =
+    //     std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() -
+    //     phy_start);
+    // GR_LOG_INFO(this->d_logger,
+    //             "PHY duration: " + std::to_string(phy_duration.count()) + "ns");
 }
 
 int mac_controller_impl::work(int noutput_items,
