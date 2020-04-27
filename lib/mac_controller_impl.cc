@@ -32,6 +32,7 @@
 #include <exception>
 #include <limits>
 #include <string>
+// #include <functional> // for std::bind to replace boost::bind
 // C++20 feature: #include <format>
 
 
