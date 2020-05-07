@@ -32,7 +32,6 @@
 #include <exception>
 #include <limits>
 #include <string>
-// #include <functional> // for std::bind to replace boost::bind
 // C++20 feature: #include <format>
 
 
@@ -75,12 +74,10 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id, unsigned sourc
     message_port_register_out(d_phy_out_port);
 
     message_port_register_in(d_llc_in_port);
-    set_msg_handler(d_llc_in_port,
-                    boost::bind(&mac_controller_impl::handle_llc_msg, this, _1));
+    set_msg_handler(d_llc_in_port, [this](pmt::pmt_t msg) { this->handle_llc_msg(msg); });
 
     message_port_register_in(d_phy_in_port);
-    set_msg_handler(d_phy_in_port,
-                    boost::bind(&mac_controller_impl::handle_phy_msg, this, _1));
+    set_msg_handler(d_phy_in_port, [this](pmt::pmt_t msg) { this->handle_phy_msg(msg); });
 }
 
 /*

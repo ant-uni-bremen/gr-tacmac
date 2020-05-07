@@ -35,7 +35,7 @@ namespace tacmac {
 class TACMAC_API mac_controller : virtual public gr::sync_block
 {
 public:
-    typedef boost::shared_ptr<mac_controller> sptr;
+    typedef std::shared_ptr<mac_controller> sptr;
 
     /*!
      * \brief Return a shared_ptr to a new instance of tacmac::mac_controller.
