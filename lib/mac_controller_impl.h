@@ -52,10 +52,13 @@ class mac_controller_impl : public mac_controller
 private:
     unsigned d_dst_id;
     unsigned d_src_id;
+    const unsigned d_mtu_size;
     size_t d_tx_frame_counter;
     size_t d_rx_frame_counter;
 
-    std::vector<uint8_t> create_header(const size_t frame_counter, const uint64_t ticks);
+    std::vector<uint8_t> create_header(const size_t frame_counter,
+                                       const uint64_t ticks,
+                                       const unsigned payload_size);
 
     const pmt::pmt_t d_llc_in_port = pmt::mp("LLCin");
     const pmt::pmt_t d_llc_out_port = pmt::mp("LLCout");
@@ -66,12 +69,13 @@ private:
     const pmt::pmt_t PMT_SRC_ID = pmt::mp("src_id");
     const pmt::pmt_t PMT_SEQUENCE = pmt::mp("sequence");
     const pmt::pmt_t PMT_TIME = pmt::mp("time");
+    const pmt::pmt_t PMT_PAYLOAD_SIZE = pmt::mp("payload_size");
     const pmt::pmt_t PMT_LOST_PACKETS = pmt::mp("lost_packets");
     const pmt::pmt_t PMT_LATENCY = pmt::mp("latency");
 
 
 public:
-    mac_controller_impl(unsigned destination_id, unsigned source_id);
+    mac_controller_impl(unsigned destination_id, unsigned source_id, unsigned mtu_size);
     ~mac_controller_impl();
 
     // Where all the action really happens

@@ -4,7 +4,7 @@ category: '[tacmac]'
 
 templates:
   imports: import tacmac
-  make: tacmac.mac_controller(${destination_id}, ${source_id})
+  make: tacmac.mac_controller(${destination_id}, ${source_id}, ${mtu_size})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -20,6 +20,10 @@ parameters:
   label: Source ID
   dtype: int
   default: 21
+- id: mtu_size
+  label: Max. MTU size
+  dtype: int
+  default: 68
 
 
 asserts:
@@ -27,6 +31,9 @@ asserts:
 - ${ destination_id < 256 }
 - ${ source_id >= 0 }
 - ${ source_id < 256 }
+- ${ mtu_size >= 0 }
+- ${ mtu_size < 256 }
+
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:

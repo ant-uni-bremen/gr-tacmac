@@ -45,7 +45,7 @@ public:
      * class. tacmac::mac_controller::make is the public interface for
      * creating new instances.
      */
-    static sptr make(unsigned destination_id, unsigned source_id);
+    static sptr make(unsigned destination_id, unsigned source_id, unsigned mtu_size);
 };
 
 } // namespace tacmac

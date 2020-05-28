@@ -65,13 +65,14 @@ def get_int_from_pmt_meta(meta, key):
 
 
 def generate_phy_frame(ndpayload, dst, src, sequence, timestamp):
-    header = np.zeros(12, dtype=np.uint8)
+    header = np.zeros(13, dtype=np.uint8)
     header[0] = dst
     header[1] = src
     ndsequence = np.array([sequence, ], dtype=np.uint16).view('>u1')[::-1]
     header[2:4] = ndsequence
+    header[4] = ndpayload.size
     ndtimestamp = np.array([timestamp, ], dtype=np.uint64).view('>u1')[::-1]
-    header[4:12] = ndtimestamp
+    header[5:13] = ndtimestamp
     ndpayload = np.concatenate((header, ndpayload))
     checksum = CRCCCITT().calculate(ndpayload.tobytes())
     # print(checksum)
@@ -95,8 +96,9 @@ class qa_mac_controller(gr_unittest.TestCase):
 
     def test_001_init(self):
         return
-        self.assertRaises(RuntimeError, tacmac.mac_controller, 450, 21)
-        self.assertRaises(RuntimeError, tacmac.mac_controller, 42, 768)
+        self.assertRaises(RuntimeError, tacmac.mac_controller, 450, 21, 112)
+        self.assertRaises(RuntimeError, tacmac.mac_controller, 42, 768, 112)
+        self.assertRaises(RuntimeError, tacmac.mac_controller, 42, 84, 427)
 
     def test_002_llc2phy(self):
         return
@@ -115,7 +117,7 @@ class qa_mac_controller(gr_unittest.TestCase):
         print('This is the orriginal PDU\n----------------')
         print(pdu)
         print('----------------')
-        ctrl = tacmac.mac_controller(dst_id, src_id)
+        ctrl = tacmac.mac_controller(dst_id, src_id, len(payload) - 1)
         dbg = blocks.message_debug()
 
         self.tb.msg_connect(ctrl, "PHYout", dbg, "store")
@@ -175,7 +177,8 @@ class qa_mac_controller(gr_unittest.TestCase):
         print('This is the orriginal PDU\n----------------')
         print(pdu)
         print('----------------')
-        ctrl = tacmac.mac_controller(src_id, dst_id)
+        ctrl = tacmac.mac_controller(
+            src_id, dst_id, pmt.uniform_vector_itemsize(payload))
         dbg = blocks.message_debug()
 
         self.tb.msg_connect(ctrl, "LLCout", dbg, "store")
