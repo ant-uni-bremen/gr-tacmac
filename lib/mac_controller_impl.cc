@@ -136,7 +136,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
         return;
     }
     auto header = create_header(frame_counter, ticks, payload.size());
-    GR_LOG_INFO(this->d_logger, string_format("payload.size=%i", payload.size()));
+    // GR_LOG_INFO(this->d_logger, string_format("payload.size=%i", payload.size()));
 
     // const auto header_duration =
     // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
