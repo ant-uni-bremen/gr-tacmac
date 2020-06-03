@@ -74,7 +74,7 @@ def generate_phy_frame(ndpayload, dst, src, sequence, timestamp):
     ndtimestamp = np.array([timestamp, ], dtype=np.uint64).view('>u1')[::-1]
     header[5:13] = ndtimestamp
     ndpayload = np.concatenate((header, ndpayload))
-    checksum = CRCCCITT().calculate(ndpayload.tobytes())
+    checksum = CRCCCITT(version='FFFF').calculate(ndpayload.tobytes())
     # print(checksum)
     ndchecksum = np.array([checksum, ], dtype=np.uint16)
     ndchecksum = ndchecksum.view('>u1')[::-1]
@@ -156,7 +156,7 @@ class qa_mac_controller(gr_unittest.TestCase):
             # print(checksum)
             checksum = int(checksum.view('>u2'))
             # print(checksum)
-            r = CRCCCITT().calculate(pl[:-2].tobytes())
+            r = CRCCCITT(version='FFFF').calculate(pl[:-2].tobytes())
             # print(r)
             self.assertEqual(r, checksum)
             self.assertSequenceEqual(tuple(pl[12:-2]), tuple(ref))

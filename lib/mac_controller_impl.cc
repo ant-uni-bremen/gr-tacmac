@@ -156,7 +156,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     payload.resize(d_mtu_size + header.size(), 0);
 
     uint16_t checksum =
-        CRC::Calculate(payload.data(), payload.size(), CRC::CRC_16_XMODEM());
+        CRC::Calculate(payload.data(), payload.size(), CRC::CRC_16_CCITTFALSE());
     payload.push_back((checksum >> 8) & 0xFF);
     payload.push_back(checksum & 0xFF);
 
@@ -202,13 +202,13 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
                                   uint16_t(payload[payload.size() - 1]));
 
     const uint16_t checksum =
-        CRC::Calculate(payload.data(), payload.size() - 2, CRC::CRC_16_XMODEM());
+        CRC::Calculate(payload.data(), payload.size() - 2, CRC::CRC_16_CCITTFALSE());
 
     if (rx_checksum != checksum) {
         // C++20 solution: std::string msg = std::format("test {}", 42);
         GR_LOG_DEBUG(
             this->d_logger,
-            string_format("CRC16-XMODEM failed! calculated/received: %04X != %04X",
+            string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
                           checksum,
                           rx_checksum));
 
