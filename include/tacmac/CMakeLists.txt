@@ -23,5 +23,6 @@
 ########################################################################
 install(FILES
     api.h
-    mac_controller.h DESTINATION include/tacmac
+    mac_controller.h
+    periodic_time_tag_cc.h DESTINATION include/tacmac
 )

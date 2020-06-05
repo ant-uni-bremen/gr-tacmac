@@ -19,5 +19,6 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    tacmac_mac_controller.block.yml DESTINATION share/gnuradio/grc/blocks
+    tacmac_mac_controller.block.yml
+    tacmac_periodic_time_tag_cc.block.yml DESTINATION share/gnuradio/grc/blocks
 )
