@@ -21,13 +21,13 @@ class periodic_time_tag_cc_impl : public periodic_time_tag_cc
 {
 private:
     const double d_samp_rate;
-    const u_int32_t d_tag_interval;
+    const uint64_t d_tag_interval;
 
     uint64_t d_full_secs;
     double d_frac_secs;
     uint64_t d_tag_offset;
     uint64_t d_next_tag_offset;
-
+    uint64_t d_slot_counter;
 
 public:
     periodic_time_tag_cc_impl(double samp_rate, uint32_t tag_interval);

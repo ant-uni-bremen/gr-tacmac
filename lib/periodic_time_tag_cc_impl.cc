@@ -36,7 +36,8 @@ periodic_time_tag_cc_impl::periodic_time_tag_cc_impl(double samp_rate,
       d_full_secs(0),
       d_frac_secs(0.0),
       d_tag_offset(0),
-      d_next_tag_offset(tag_interval)
+      d_next_tag_offset(tag_interval),
+      d_slot_counter(0)
 {
     message_port_register_out(MSG_OUT_PORT);
 }
@@ -74,16 +75,11 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
         d_tag_offset = t.offset;
         d_full_secs = pmt::to_uint64(pmt::tuple_ref(t.value, 0));
         d_frac_secs = pmt::to_double(pmt::tuple_ref(t.value, 1));
-        d_next_tag_offset = t.offset + d_tag_interval;
+        d_next_tag_offset = t.offset; // + d_tag_interval;
         GR_LOG_DEBUG(this->d_logger,
                      "Received new tag @offset=" + std::to_string(d_tag_offset) +
                          ", with (" + std::to_string(d_full_secs) + " - " +
                          std::to_string(d_frac_secs) + "s)");
-        pmt::pmt_t info = pmt::make_tuple(pmt::from_uint64(d_full_secs),
-                                          pmt::from_double(d_frac_secs),
-                                          pmt::from_uint64(d_tag_offset),
-                                          pmt::from_double(d_samp_rate));
-        message_port_pub(MSG_OUT_PORT, info);
     }
 
     uint64_t total_items = nitems_read(0) + noutput_items;
@@ -96,7 +92,10 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
         pmt::pmt_t info = pmt::make_tuple(pmt::from_uint64(d_full_secs),
                                           pmt::from_double(d_frac_secs),
                                           pmt::from_uint64(d_next_tag_offset),
-                                          pmt::from_double(d_samp_rate));
+                                          pmt::from_double(d_samp_rate),
+                                          pmt::from_uint64(d_slot_counter));
+        d_slot_counter++;
+
         if (output_items.size() > 0) {
             add_item_tag(0, d_next_tag_offset, TIME_KEY, info);
         }

@@ -61,6 +61,13 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id,
       d_tx_frame_counter(0),
       d_rx_frame_counter(std::numeric_limits<uint16_t>::max())
 {
+    if (d_src_id == d_dst_id) {
+        std::string err_msg("destination_id(" + std::to_string(d_dst_id) +
+                            ") == src_id(" + std::to_string(d_src_id) + ")!");
+        GR_LOG_ERROR(this->d_logger, err_msg);
+        throw std::invalid_argument(err_msg);
+    }
+
     if (256 < d_dst_id) {
         std::string err_msg("destination_id(" + std::to_string(d_dst_id) +
                             ") out-of-range [0, 256)!");
@@ -239,7 +246,8 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     }
 
     if (status_code != 0) {
-        GR_LOG_DEBUG(this->d_logger, host_info + " " + packet_header + " " + status);
+        GR_LOG_DEBUG(this->d_debug_logger,
+                     host_info + " " + packet_header + " " + status);
         return;
     }
 
