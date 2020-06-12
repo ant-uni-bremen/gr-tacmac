@@ -64,15 +64,19 @@ private:
     const pmt::pmt_t d_llc_out_port = pmt::mp("LLCout");
     const pmt::pmt_t d_phy_in_port = pmt::mp("PHYin");
     const pmt::pmt_t d_phy_out_port = pmt::mp("PHYout");
+    const pmt::pmt_t d_timing_out_port = pmt::mp("timing");
 
     const pmt::pmt_t PMT_DST_ID = pmt::mp("dst_id");
     const pmt::pmt_t PMT_SRC_ID = pmt::mp("src_id");
     const pmt::pmt_t PMT_SEQUENCE = pmt::mp("sequence");
     const pmt::pmt_t PMT_TIME = pmt::mp("time");
+    const pmt::pmt_t PMT_RX_TIME = pmt::mp("rx_time");
+    const pmt::pmt_t PMT_RX_MAC_TIME = pmt::mp("rx_mac_time");
     const pmt::pmt_t PMT_PAYLOAD_SIZE = pmt::mp("payload_size");
     const pmt::pmt_t PMT_LOST_PACKETS = pmt::mp("lost_packets");
     const pmt::pmt_t PMT_LATENCY = pmt::mp("latency");
 
+    pmt::pmt_t flatten_dict(const pmt::pmt_t& dict) const;
 
 public:
     mac_controller_impl(unsigned destination_id, unsigned source_id, unsigned mtu_size);

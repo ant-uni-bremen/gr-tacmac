@@ -27,6 +27,7 @@ parameters:
 
 
 asserts:
+- ${ destination_id != source_id }
 - ${ destination_id >= 0 }
 - ${ destination_id < 256 }
 - ${ source_id >= 0 }
@@ -58,7 +59,9 @@ outputs:
 -   domain: message
     id: PHYout
     optional: True
-
+-   domain: message
+    id: timing
+    optional: True
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

@@ -91,6 +91,7 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id,
 
     message_port_register_out(d_llc_out_port);
     message_port_register_out(d_phy_out_port);
+    message_port_register_out(d_timing_out_port);
 
     message_port_register_in(d_llc_in_port);
     set_msg_handler(d_llc_in_port, [this](pmt::pmt_t msg) { this->handle_llc_msg(msg); });
@@ -122,6 +123,23 @@ std::vector<uint8_t> mac_controller_impl::create_header(const size_t frame_count
     return header;
 }
 
+pmt::pmt_t mac_controller_impl::flatten_dict(const pmt::pmt_t& dict) const
+{
+    auto res = pmt::make_dict();
+    // only unwrap 1 layer! This is intentionally non-recursive!
+    for (size_t i = 0; i < pmt::length(dict); i++) {
+        auto k = pmt::car(pmt::nth(i, dict));
+        auto v = pmt::cdr(pmt::nth(i, dict));
+        if (pmt::is_dict(v)) {
+            res = pmt::dict_update(res, v);
+        } else {
+            res = pmt::dict_add(res, k, v);
+        }
+    }
+
+    return res;
+}
+
 
 void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
 {
@@ -148,7 +166,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     // const auto header_duration =
     // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
 
-    auto meta = pmt::car(pdu);
+    auto meta = flatten_dict(pmt::car(pdu));
     meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(d_dst_id));
     meta = pmt::dict_add(meta, PMT_SRC_ID, pmt::from_long(d_src_id));
     meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(frame_counter));
@@ -254,7 +272,7 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     const std::vector<uint8_t> data(payload.begin() + 13,
                                     payload.begin() + 13 + payload_size);
 
-    auto meta = pmt::car(pdu);
+    auto meta = flatten_dict(pmt::car(pdu));
     meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(dst));
     meta = pmt::dict_add(meta, PMT_SRC_ID, pmt::from_long(src));
     meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(sequence));
@@ -269,13 +287,34 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
         timestamp |= uint64_t(payload[i + 5]) << ((7 - i) * 8);
     }
     meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(timestamp));
-    const auto since_epoch = std::chrono::high_resolution_clock::now().time_since_epoch();
-    const uint64_t ticks = since_epoch.count();
+    // const auto since_epoch =
+    // std::chrono::high_resolution_clock::now().time_since_epoch();
+    const uint64_t ticks =
+        std::chrono::high_resolution_clock::now().time_since_epoch().count();
     meta = pmt::dict_add(meta, PMT_LATENCY, pmt::from_long(ticks - timestamp));
 
     message_port_pub(d_llc_out_port,
                      pmt::cons(meta, pmt::init_u8vector(data.size(), data)));
 
+    // uint64_t rx_timestamp =
+    //     pmt::to_long(pmt::dict_ref(meta, PMT_RX_TIME, pmt::from_long(0)));
+    // uint64_t diff = ticks - rx_timestamp;
+    // if (ticks < rx_timestamp) {
+    //     diff = rx_timestamp - ticks;
+    // }
+    // GR_LOG_DEBUG(d_logger,
+    //              "Timestamp: " + std::to_string(timestamp) +
+    //                  " PC timestamp: " + std::to_string(ticks) +
+    //                  ", rx_time: " + std::to_string(rx_timestamp));
+
+    auto timing_msg = pmt::dict_add(pmt::make_dict(), PMT_DST_ID, pmt::from_long(dst));
+    timing_msg = pmt::dict_add(timing_msg, PMT_SRC_ID, pmt::from_long(src));
+    timing_msg = pmt::dict_add(timing_msg, PMT_SEQUENCE, pmt::from_long(sequence));
+    timing_msg = pmt::dict_add(timing_msg, PMT_TIME, pmt::from_long(timestamp));
+    timing_msg = pmt::dict_add(
+        timing_msg, PMT_RX_TIME, pmt::dict_ref(meta, PMT_RX_TIME, pmt::from_long(0)));
+    timing_msg = pmt::dict_add(timing_msg, PMT_RX_MAC_TIME, pmt::from_long(ticks));
+    message_port_pub(d_timing_out_port, timing_msg);
     // double lat = (ticks - timestamp) * 1.0e-6;
     // std::chrono::duration<double> looplat = d_phy_last - d_llc_last;
     // GR_LOG_DEBUG(this->d_logger,
