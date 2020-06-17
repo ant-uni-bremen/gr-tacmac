@@ -108,7 +108,7 @@ mac_controller_impl::~mac_controller_impl() {}
 
 std::vector<uint8_t> mac_controller_impl::create_header(const size_t frame_counter,
                                                         const uint64_t ticks,
-                                                        const unsigned payload_size)
+                                                        const unsigned payload_size) const
 {
     std::vector<uint8_t> header(4 + 1 + 8);
     header[0] = (uint8_t)d_dst_id;
@@ -140,19 +140,46 @@ pmt::pmt_t mac_controller_impl::flatten_dict(const pmt::pmt_t& dict) const
     return res;
 }
 
+uint64_t mac_controller_impl::get_timestamp_ticks_ns_now()
+{
+    return std::chrono::high_resolution_clock::now().time_since_epoch().count();
+}
+
+void mac_controller_impl::print_llc_message_status(const uint64_t ticks)
+{
+    if (ticks > d_last_llc_print_timestamp + d_print_interval_ticks) {
+        const float rate =
+            1.0e9 * d_llc_interval_message_counter / (ticks - d_last_llc_print_timestamp);
+        const float size =
+            1.0 * d_llc_payload_size_counter / d_llc_interval_message_counter;
+        GR_LOG_DEBUG(
+            this->d_logger,
+            string_format(
+                "LLC: %s: packets: total=%i/interval=%i; rate=%.1fP/s; packet_size=%.1fB/%iB",
+                get_host_string().c_str(),
+                d_llc_message_counter,
+                d_llc_interval_message_counter,
+                rate,
+                size, d_mtu_size));
+        d_llc_interval_message_counter = 0;
+        d_llc_payload_size_counter = 0;
+        d_last_llc_print_timestamp = ticks;
+    }
+}
 
 void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
 {
-    // const auto llc_start = std::chrono::high_resolution_clock::now();
+    d_llc_message_counter++;
+    d_llc_interval_message_counter++;
 
     const auto frame_counter = d_tx_frame_counter;
     d_tx_frame_counter++;
     d_tx_frame_counter %= std::numeric_limits<uint16_t>::max();
 
-    const auto since_epoch = std::chrono::high_resolution_clock::now().time_since_epoch();
-    const uint64_t ticks = since_epoch.count();
+    const uint64_t ticks = get_timestamp_ticks_ns_now();
 
     std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
+    d_llc_payload_size_counter += payload.size();
     if (payload.size() > d_mtu_size) {
         GR_LOG_WARN(this->d_logger,
                     string_format("Dropping PDU, reason: PDU.size=%i > MTU.size=%i",
@@ -161,10 +188,6 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
         return;
     }
     auto header = create_header(frame_counter, ticks, payload.size());
-    // GR_LOG_INFO(this->d_logger, string_format("payload.size=%i", payload.size()));
-
-    // const auto header_duration =
-    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
 
     auto meta = flatten_dict(pmt::car(pdu));
     meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(d_dst_id));
@@ -172,10 +195,6 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(frame_counter));
     meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(ticks));
     meta = pmt::dict_add(meta, PMT_PAYLOAD_SIZE, pmt::from_long(payload.size()));
-
-    // const auto meta_duration =
-    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
-
 
     payload.insert(payload.begin(), header.begin(), header.end());
     payload.resize(d_mtu_size + header.size(), 0);
@@ -185,42 +204,43 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     payload.push_back((checksum >> 8) & 0xFF);
     payload.push_back(checksum & 0xFF);
 
-    // const auto payload_duration =
-    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
-
     auto pmtpayload = pmt::init_u8vector(payload.size(), payload);
-    // const auto pmtvec_duration =
-    // std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() - llc_start);
 
     message_port_pub(d_phy_out_port, pmt::cons(meta, pmtpayload));
-
-    // const auto llc_duration =
-    //     std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() -
-    //     llc_start);
-
-    // GR_LOG_INFO(this->d_logger, "LLC header duration: " +
-    //                             std::to_string(header_duration.count()) +
-    //                             "ns");
-    // GR_LOG_INFO(this->d_logger, "LLC meta duration: " +
-    //                             std::to_string(meta_duration.count()) +
-    //                             "ns");
-    // GR_LOG_INFO(this->d_logger, "LLC payload duration: " +
-    //                             std::to_string(payload_duration.count()) +
-    //                             "ns");
-    // GR_LOG_INFO(this->d_logger, "LLC pmtvec duration: " +
-    //                             std::to_string(pmtvec_duration.count()) +
-    //                             "ns");
-
-    // GR_LOG_INFO(this->d_logger,
-    //             "LLC duration: " + std::to_string(llc_duration.count() * 1.0e-3) +
-    //             "us");
+    print_llc_message_status(ticks);
 }
 
 
+void mac_controller_impl::print_phy_message_status(const uint64_t ticks)
+{
+    if (ticks > d_last_phy_print_timestamp + d_print_interval_ticks) {
+        const float rate =
+            1.0e9 * d_phy_interval_message_counter / (ticks - d_last_phy_print_timestamp);
+        const float size =
+            1.0 * d_phy_payload_size_counter / d_phy_interval_message_counter;
+        const float latency =
+            1.0e-6 * d_latency_interval_counter / d_phy_interval_message_counter;
+        GR_LOG_DEBUG(this->d_logger,
+                     string_format("PHY: %s: packets: total=%i/interval=%i/lost=%i; "
+                                   "rate=%.1fP/s; latency=%.3fms; packet_size=%.1fB/%iB",
+                                   get_host_string().c_str(),
+                                   d_phy_message_counter,
+                                   d_phy_interval_message_counter,
+                                   d_lost_packet_interval_counter,
+                                   rate,
+                                   latency,
+                                   size,
+                                   d_mtu_size));
+        d_lost_packet_interval_counter = 0;
+        d_latency_interval_counter = 0;
+        d_phy_interval_message_counter = 0;
+        d_phy_payload_size_counter = 0;
+        d_last_phy_print_timestamp = ticks;
+    }
+}
+
 void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 {
-    // const auto phy_start = std::chrono::high_resolution_clock::now();
-
     const std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
 
     const uint16_t rx_checksum = (uint16_t(payload[payload.size() - 2] << 8) |
@@ -245,9 +265,9 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     const unsigned sequence = (uint16_t(payload[2] << 8) | uint16_t(payload[3]));
     const unsigned payload_size = payload[4];
 
-    std::string host_info = string_format("Host(%i)", d_src_id);
+    std::string host_info = get_host_string();
     std::string packet_header =
-        string_format("PACKET(DST=%i, SRC=%i, SEQ=%i)", dst, src, sequence);
+        get_packet_header_string(dst, src, sequence, payload_size);
 
     std::string status("OK");
 
@@ -268,6 +288,8 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
                      host_info + " " + packet_header + " " + status);
         return;
     }
+    d_phy_message_counter++;
+    d_phy_interval_message_counter++;
 
     const std::vector<uint8_t> data(payload.begin() + 13,
                                     payload.begin() + 13 + payload_size);
@@ -287,25 +309,17 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
         timestamp |= uint64_t(payload[i + 5]) << ((7 - i) * 8);
     }
     meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(timestamp));
-    // const auto since_epoch =
-    // std::chrono::high_resolution_clock::now().time_since_epoch();
-    const uint64_t ticks =
-        std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    meta = pmt::dict_add(meta, PMT_LATENCY, pmt::from_long(ticks - timestamp));
+
+    const uint64_t ticks = get_timestamp_ticks_ns_now();
+    const uint64_t latency_ticks = ticks - timestamp;
+    meta = pmt::dict_add(meta, PMT_LATENCY, pmt::from_long(latency_ticks));
+    d_phy_payload_size_counter += data.size();
+    d_latency_interval_counter += latency_ticks;
+    d_lost_packet_interval_counter += lost_packets;
 
     message_port_pub(d_llc_out_port,
                      pmt::cons(meta, pmt::init_u8vector(data.size(), data)));
 
-    // uint64_t rx_timestamp =
-    //     pmt::to_long(pmt::dict_ref(meta, PMT_RX_TIME, pmt::from_long(0)));
-    // uint64_t diff = ticks - rx_timestamp;
-    // if (ticks < rx_timestamp) {
-    //     diff = rx_timestamp - ticks;
-    // }
-    // GR_LOG_DEBUG(d_logger,
-    //              "Timestamp: " + std::to_string(timestamp) +
-    //                  " PC timestamp: " + std::to_string(ticks) +
-    //                  ", rx_time: " + std::to_string(rx_timestamp));
 
     auto timing_msg = pmt::dict_add(pmt::make_dict(), PMT_DST_ID, pmt::from_long(dst));
     timing_msg = pmt::dict_add(timing_msg, PMT_SRC_ID, pmt::from_long(src));
@@ -315,18 +329,7 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
         timing_msg, PMT_RX_TIME, pmt::dict_ref(meta, PMT_RX_TIME, pmt::from_long(0)));
     timing_msg = pmt::dict_add(timing_msg, PMT_RX_MAC_TIME, pmt::from_long(ticks));
     message_port_pub(d_timing_out_port, timing_msg);
-    // double lat = (ticks - timestamp) * 1.0e-6;
-    // std::chrono::duration<double> looplat = d_phy_last - d_llc_last;
-    // GR_LOG_DEBUG(this->d_logger,
-    //              host_info + " " + packet_header + " " +
-    //                  string_format("latency=%.4fms", lat) +
-    //                  " loop: " + std::to_string(looplat.count()) + "s");
-    // const auto phy_duration =
-    //     std::chrono::nanoseconds(std::chrono::high_resolution_clock::now() -
-    //     phy_start);
-    // GR_LOG_INFO(this->d_logger,
-    //             "PHY duration: " + std::to_string(phy_duration.count() * 1.0e-3) +
-    //             "us");
+    print_phy_message_status(ticks);
 }
 
 int mac_controller_impl::work(int noutput_items,

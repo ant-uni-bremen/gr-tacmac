@@ -50,15 +50,29 @@ std::string string_format(const std::string& format, Args... args)
 class mac_controller_impl : public mac_controller
 {
 private:
-    unsigned d_dst_id;
-    unsigned d_src_id;
+    const unsigned d_dst_id;
+    const unsigned d_src_id;
     const unsigned d_mtu_size;
     size_t d_tx_frame_counter;
     size_t d_rx_frame_counter;
 
+    const uint64_t d_print_interval_ticks = 2000000000ull;
+    uint64_t d_last_llc_print_timestamp = 0;
+    uint64_t d_llc_message_counter = 0;
+    uint64_t d_llc_interval_message_counter = 0;
+    uint64_t d_llc_payload_size_counter = 0;
+
+    uint64_t d_last_phy_print_timestamp = 0;
+    uint64_t d_phy_message_counter = 0;
+    uint64_t d_phy_interval_message_counter = 0;
+    uint64_t d_phy_payload_size_counter = 0;
+    uint64_t d_latency_interval_counter = 0;
+    uint64_t d_lost_packet_interval_counter = 0;
+
+
     std::vector<uint8_t> create_header(const size_t frame_counter,
                                        const uint64_t ticks,
-                                       const unsigned payload_size);
+                                       const unsigned payload_size) const;
 
     const pmt::pmt_t d_llc_in_port = pmt::mp("LLCin");
     const pmt::pmt_t d_llc_out_port = pmt::mp("LLCout");
@@ -77,6 +91,23 @@ private:
     const pmt::pmt_t PMT_LATENCY = pmt::mp("latency");
 
     pmt::pmt_t flatten_dict(const pmt::pmt_t& dict) const;
+    void print_llc_message_status(const uint64_t ticks);
+    void print_phy_message_status(const uint64_t ticks);
+    std::string get_host_string()
+    {
+        return string_format("Host(%i) -> %i", d_src_id, d_dst_id);
+    }
+
+    std::string get_packet_header_string(const unsigned dst,
+                                         const unsigned src,
+                                         const unsigned sequence,
+                                         const unsigned payload_size)
+    {
+        return string_format(
+            "PACKET(DST=%i, SRC=%i, SEQ=%i, SIZE=%i)", dst, src, sequence, payload_size);
+    }
+
+    uint64_t get_timestamp_ticks_ns_now();
 
 public:
     mac_controller_impl(unsigned destination_id, unsigned source_id, unsigned mtu_size);
