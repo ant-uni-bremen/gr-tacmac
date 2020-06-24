@@ -8,7 +8,7 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-import tacmac_swig as tacmac
+import tacmac_python as tacmac
 
 class qa_periodic_time_tag_cc(gr_unittest.TestCase):
 
@@ -20,6 +20,7 @@ class qa_periodic_time_tag_cc(gr_unittest.TestCase):
 
     def test_001_t(self):
         # set up fg
+        tagger = tacmac.periodic_time_tag_cc(30.72e6, 420)
         self.tb.run()
         # check data
 

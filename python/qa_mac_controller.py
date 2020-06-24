@@ -23,7 +23,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
 import numpy as np
-import tacmac_swig as tacmac
+import tacmac_python as tacmac
 import time
 
 from PyCRC.CRCCCITT import CRCCCITT
