@@ -152,15 +152,15 @@ void mac_controller_impl::print_llc_message_status(const uint64_t ticks)
             1.0e9 * d_llc_interval_message_counter / (ticks - d_last_llc_print_timestamp);
         const float size =
             1.0 * d_llc_payload_size_counter / d_llc_interval_message_counter;
-        GR_LOG_DEBUG(
-            this->d_logger,
-            string_format(
-                "LLC: %s: packets: total=%i/interval=%i; rate=%.1fP/s; packet_size=%.1fB/%iB",
-                get_host_string().c_str(),
-                d_llc_message_counter,
-                d_llc_interval_message_counter,
-                rate,
-                size, d_mtu_size));
+        GR_LOG_DEBUG(this->d_logger,
+                     string_format("LLC: %s: packets: total=%i/interval=%i; "
+                                   "rate=%.1fP/s; packet_size=%.1fB/%iB",
+                                   get_host_string().c_str(),
+                                   d_llc_message_counter,
+                                   d_llc_interval_message_counter,
+                                   rate,
+                                   size,
+                                   d_mtu_size));
         d_llc_interval_message_counter = 0;
         d_llc_payload_size_counter = 0;
         d_last_llc_print_timestamp = ticks;
