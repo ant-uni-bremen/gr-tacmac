@@ -536,25 +536,6 @@ blocks:
     coordinate: [1016, 140.0]
     rotation: 180
     state: enabled
-- name: blocks_tag_debug_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: ''
-    num_inputs: '1'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [560, 300.0]
-    rotation: 0
-    state: disabled
 - name: blocks_tag_debug_0_0
   id: blocks_tag_debug
   parameters:
@@ -705,12 +686,15 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    cycle_interval: '0.00025'
     length_tag_name: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: conf.padded_frame_len
     post_padding: conf.post_padding_len
     pre_padding: conf.pre_padding_len
     scale: tx_digital_gain
+    timing_advance: '0.001'
+    use_timed_commands: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -916,60 +900,6 @@ blocks:
     coordinate: [8, 180.0]
     rotation: 0
     state: enabled
-- name: latency_tag_timestamp_debug_0
-  id: latency_tag_timestamp_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    key_name: '"time"'
-    name: formatter
-    num_inputs: '1'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [344, 140.0]
-    rotation: 180
-    state: disabled
-- name: latency_tag_timestamp_debug_0_0
-  id: latency_tag_timestamp_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    key_name: '"time"'
-    name: encoder
-    num_inputs: '1'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [104, 228.0]
-    rotation: 180
-    state: disabled
-- name: latency_tag_timestamp_debug_0_0_0
-  id: latency_tag_timestamp_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    key_name: '"time"'
-    name: mapper
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [344, 396.0]
-    rotation: 180
-    state: disabled
 - name: latency_tag_timestamp_debug_0_0_0_0
   id: latency_tag_timestamp_debug
   parameters:
@@ -2133,9 +2063,7 @@ connections:
 - [blocks_message_strobe_0_0_0, strobe, blocks_random_pdu_0, generate]
 - [blocks_message_strobe_0_1, strobe, blocks_random_pdu_0, generate]
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
-- [blocks_pdu_to_tagged_stream_0, '0', blocks_tag_debug_0, '0']
 - [blocks_pdu_to_tagged_stream_0, '0', hier_polar_encoder_0, '0']
-- [blocks_pdu_to_tagged_stream_0, '0', latency_tag_timestamp_debug_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', polarwrap_tag_to_stream_value_0, '0']
 - [blocks_random_pdu_0, pdus, tacmac_mac_controller_0, LLCin]
 - [blocks_tag_gate_0, '0', blocks_add_xx_0, '1']
@@ -2161,14 +2089,12 @@ connections:
 - [hier_gfdm_receiver_tagged_0, '1', qtgui_const_sink_rx_symbols, '0']
 - [hier_gfdm_receiver_tagged_0, '1', symbolmapping_symbol_demapper_cf_0, '0']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
-- [hier_polar_encoder_0, '0', latency_tag_timestamp_debug_0_0, '0']
 - [hier_polar_encoder_0, '0', symbolmapping_symbol_mapper_bc_0, '0']
 - [polarwrap_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']
 - [polarwrap_tag_to_stream_value_0_0, '0', blocks_nlog10_ff_0, '0']
 - [polarwrap_tag_to_stream_value_0_1, '0', qtgui_time_sink_x_1, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', hier_polar_decoder_0, '0']
 - [symbolmapping_symbol_mapper_bc_0, '0', gfdm_transmitter_cc_0, '0']
-- [symbolmapping_symbol_mapper_bc_0, '0', latency_tag_timestamp_debug_0_0_0, '0']
 - [tacmac_mac_controller_0, PHYout, blocks_pdu_to_tagged_stream_0, pdus]
 - [tacmac_mac_controller_1, LLCout, blocks_message_debug_0, print_pdu]
 - [tacmac_mac_controller_1, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
