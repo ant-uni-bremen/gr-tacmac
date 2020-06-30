@@ -8,5 +8,6 @@
 
 install(FILES
     tacmac_mac_controller.block.yml
-    tacmac_periodic_time_tag_cc.block.yml DESTINATION share/gnuradio/grc/blocks
+    tacmac_periodic_time_tag_cc.block.yml
+    tacmac_tag_to_stream_value.block.yml DESTINATION share/gnuradio/grc/blocks
 )

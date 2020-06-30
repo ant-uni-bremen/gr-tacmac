@@ -23,6 +23,7 @@ namespace py = pybind11;
 // BINDING_FUNCTION_PROTOTYPES(
 void bind_mac_controller(py::module& m);
 void bind_periodic_time_tag_cc(py::module& m);
+void bind_tag_to_stream_value(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 
@@ -53,5 +54,6 @@ PYBIND11_MODULE(tacmac_python, m)
     // BINDING_FUNCTION_CALLS(
     bind_mac_controller(m);
     bind_periodic_time_tag_cc(m);
+    bind_tag_to_stream_value(m);
     // ) END BINDING_FUNCTION_CALLS
 }

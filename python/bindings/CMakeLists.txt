@@ -20,6 +20,7 @@ include(GrPybind)
 list(APPEND tacmac_python_files
     mac_controller_python.cc
     periodic_time_tag_cc_python.cc
+    tag_to_stream_value_python.cc
     python_bindings.cc)
 
 GR_PYBIND_MAKE_OOT(tacmac

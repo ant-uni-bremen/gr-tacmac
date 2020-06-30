@@ -14,6 +14,7 @@ include(GrPlatform) #define LIB_SUFFIX
 list(APPEND tacmac_sources
     mac_controller_impl.cc
     periodic_time_tag_cc_impl.cc
+    tag_to_stream_value_impl.cc
 )
 
 set(tacmac_sources "${tacmac_sources}" PARENT_SCOPE)
