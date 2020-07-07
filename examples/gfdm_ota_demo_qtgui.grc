@@ -213,7 +213,7 @@ blocks:
     start: '0'
     step: '1'
     stop: '75'
-    value: '36.'
+    value: rx_gain
     widget: counter_slider
   states:
     bus_sink: false
@@ -325,7 +325,7 @@ blocks:
     start: '0'
     step: '1'
     stop: '75'
-    value: '65.'
+    value: tx_gain
     widget: counter_slider
   states:
     bus_sink: false
@@ -579,6 +579,25 @@ blocks:
     coordinate: [1120, 836.0]
     rotation: 0
     state: enabled
+- name: blocks_tag_debug_0
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '""'
+    name: ''
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 588.0]
+    rotation: 0
+    state: disabled
 - name: ctrl_tab
   id: qtgui_tab_widget
   parameters:
@@ -1506,6 +1525,23 @@ blocks:
     coordinate: [368, 84]
     rotation: 0
     state: true
+- name: rx_gain
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: RX gain
+    short_id: ''
+    type: eng_float
+    value: '44.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 188.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: parameter
   parameters:
@@ -1682,6 +1718,23 @@ blocks:
     coordinate: [203, 101]
     rotation: 0
     state: true
+- name: tx_gain
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: TX gain
+    short_id: ''
+    type: eng_float
+    value: '55.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 188.0]
+    rotation: 0
+    state: true
 
 connections:
 - [blocks_complex_to_mag_0, '0', qtgui_time_sink_channel_estimate_0, '0']
@@ -1691,7 +1744,9 @@ connections:
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0_0, '0']
+- [hier_gfdm_ota_demo_0, '0', blocks_tag_debug_0, '0']
 - [hier_gfdm_ota_demo_0, '0', qtgui_time_sink_synced_stream, '0']
+- [hier_gfdm_ota_demo_0, '1', blocks_tag_debug_0, '1']
 - [hier_gfdm_ota_demo_0, '1', qtgui_time_sink_synced_stream, '1']
 - [hier_gfdm_ota_demo_0, '2', qtgui_const_sink_rx_symbols, '1']
 - [hier_gfdm_ota_demo_0, '3', blocks_complex_to_mag_0_0, '0']

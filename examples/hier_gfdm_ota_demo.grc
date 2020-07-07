@@ -165,7 +165,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 364.0]
+    coordinate: [1272, 292.0]
     rotation: 0
     state: disabled
 - name: usrp_device_info
@@ -199,7 +199,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 372.0]
+    coordinate: [1424, 300.0]
     rotation: 0
     state: disabled
 - name: usrp_initial_info
@@ -278,7 +278,7 @@ blocks:
     bus_structure: null
     coordinate: [1088, 188.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_message_strobe_0_0_0_0_0
   id: blocks_message_strobe
   parameters:
@@ -348,7 +348,7 @@ blocks:
     bus_structure: null
     coordinate: [568, 244.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_random_pdu_0_0
   id: blocks_random_pdu
   parameters:
@@ -401,8 +401,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1240, 836.0]
-    rotation: 0
+    coordinate: [832, 652.0]
+    rotation: 180
     state: true
 - name: cycle_interval
   id: parameter
@@ -504,7 +504,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 348.0]
+    coordinate: [1120, 340.0]
     rotation: 0
     state: true
 - name: hier_polar_decoder_0
@@ -525,7 +525,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1025, 798]
+    coordinate: [816, 740.0]
     rotation: 0
     state: true
 - name: ic_iter_range
@@ -616,7 +616,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1568, 732.0]
+    coordinate: [1576, 636.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0
@@ -1055,7 +1055,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 480.0]
+    coordinate: [816, 456.0]
     rotation: 0
     state: true
 - name: tacmac_mac_controller_0_0
@@ -1073,7 +1073,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1472, 808.0]
+    coordinate: [1328, 800.0]
     rotation: 0
     state: disabled
 - name: tacmac_mac_controller_0_1
@@ -1487,7 +1487,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 404.0]
+    coordinate: [1384, 396.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -1902,6 +1902,7 @@ connections:
 - [hier_gfdm_phy_transmitter_0, command, blocks_message_debug_0, print]
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [tacmac_mac_controller_0, LLCout, pad_sink_0, in]
+- [tacmac_mac_controller_0, LLCout, tacmac_mac_controller_0, LLCin]
 - [tacmac_mac_controller_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
 - [tacmac_mac_controller_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_mac_controller_0_0, LLCout, pad_sink_0, in]

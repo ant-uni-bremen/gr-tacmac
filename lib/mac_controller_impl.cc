@@ -282,6 +282,19 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
             "dropping... reason: loopback! [src=%i == %i=d_src_id]", src, d_src_id);
         status_code = 2;
     }
+    if (rx_checksum != checksum) {
+        // C++20 solution: std::string msg = std::format("test {}", 42);
+        // GR_LOG_DEBUG(
+        //     this->d_logger,
+        //     string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
+        //                   checksum,
+        //                   rx_checksum));
+        status =
+            string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
+                          checksum,
+                          rx_checksum);
+        status_code = 3;
+    }
 
     if (status_code != 0) {
         GR_LOG_DEBUG(this->d_debug_logger,
