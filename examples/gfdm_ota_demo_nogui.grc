@@ -56,6 +56,30 @@ blocks:
     coordinate: [546, 162]
     rotation: 0
     state: enabled
+- name: tunnel_input_port
+  id: variable
+  parameters:
+    comment: ''
+    value: f'40{dst_id:0>2}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [176, 244.0]
+    rotation: 0
+    state: enabled
+- name: tunnel_output_port
+  id: variable
+  parameters:
+    comment: ''
+    value: f'40{src_id:0>2}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [832, 188.0]
+    rotation: 0
+    state: enabled
 - name: activate_cfo_compensation
   id: parameter
   parameters:
@@ -105,6 +129,46 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [904, 448.0]
+    rotation: 0
+    state: true
+- name: blocks_socket_pdu_input
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: tunnel_input_port
+    tcp_no_delay: 'False'
+    type: UDP_SERVER
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 316.0]
+    rotation: 0
+    state: true
+- name: blocks_socket_pdu_output
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: localhost
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: tunnel_output_port
+    tcp_no_delay: 'False'
+    type: UDP_CLIENT
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [832, 244.0]
     rotation: 0
     state: true
 - name: cycle_interval
@@ -208,6 +272,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1024, 28.0]
+    rotation: 0
+    state: true
+- name: mtu_size
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: MTU size
+    short_id: ''
+    type: intx
+    value: '68'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 276.0]
     rotation: 0
     state: true
 - name: phase_compensate
@@ -467,7 +548,9 @@ blocks:
     state: true
 
 connections:
+- [blocks_socket_pdu_input, pdus, hier_gfdm_ota_demo_0, LLCin]
 - [hier_gfdm_ota_demo_0, '0', blocks_null_sink_0, '0']
+- [hier_gfdm_ota_demo_0, LLCout, blocks_socket_pdu_output, pdus]
 
 metadata:
   file_format: 1

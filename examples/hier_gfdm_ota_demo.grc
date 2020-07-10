@@ -278,7 +278,7 @@ blocks:
     bus_structure: null
     coordinate: [1088, 188.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: blocks_message_strobe_0_0_0_0_0
   id: blocks_message_strobe
   parameters:
@@ -348,7 +348,7 @@ blocks:
     bus_structure: null
     coordinate: [568, 244.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: blocks_random_pdu_0_0
   id: blocks_random_pdu
   parameters:
@@ -607,7 +607,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    label: pdus
+    label: LLCout
     num_streams: '1'
     optional: 'True'
     type: message
@@ -725,6 +725,26 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1216, 1276.0]
+    rotation: 0
+    state: true
+- name: pad_source_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: LLCin
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'True'
+    type: message
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [464, 536.0]
     rotation: 0
     state: true
 - name: phase_compensate
@@ -1901,8 +1921,8 @@ connections:
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
 - [hier_gfdm_phy_transmitter_0, command, blocks_message_debug_0, print]
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
+- [pad_source_0, out, tacmac_mac_controller_0, LLCin]
 - [tacmac_mac_controller_0, LLCout, pad_sink_0, in]
-- [tacmac_mac_controller_0, LLCout, tacmac_mac_controller_0, LLCin]
 - [tacmac_mac_controller_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
 - [tacmac_mac_controller_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_mac_controller_0_0, LLCout, pad_sink_0, in]
