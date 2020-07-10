@@ -283,7 +283,7 @@ blocks:
     label: MTU size
     short_id: ''
     type: intx
-    value: '68'
+    value: '76'
   states:
     bus_sink: false
     bus_source: false
