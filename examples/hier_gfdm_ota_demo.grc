@@ -86,7 +86,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '"master_clock_rate=122.88e6"'
+    value: '"master_clock_rate=122.88e6,clock_source=gpsdo,time_source=gpsdo"'
   states:
     bus_sink: false
     bus_source: false
@@ -278,7 +278,7 @@ blocks:
     bus_structure: null
     coordinate: [1088, 188.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_message_strobe_0_0_0_0_0
   id: blocks_message_strobe
   parameters:
@@ -310,9 +310,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [80, 1204.0]
+    coordinate: [96, 1244.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_message_strobe_0_0_0_0_2
   id: blocks_message_strobe
   parameters:
@@ -329,6 +329,23 @@ blocks:
     bus_structure: null
     coordinate: [1088, 300.0]
     rotation: 180
+    state: disabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1656, 768.0]
+    rotation: 0
     state: disabled
 - name: blocks_random_pdu_0
   id: blocks_random_pdu
@@ -348,7 +365,7 @@ blocks:
     bus_structure: null
     coordinate: [568, 244.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_random_pdu_0_0
   id: blocks_random_pdu
   parameters:
@@ -1132,6 +1149,23 @@ blocks:
     coordinate: [344, 288.0]
     rotation: 0
     state: disabled
+- name: tacmac_periodic_time_tag_cc_0
+  id: tacmac_periodic_time_tag_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    tag_interval: int(samp_rate // 10000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 704.0]
+    rotation: 0
+    state: true
 - name: tfreq
   id: parameter
   parameters:
@@ -1335,8 +1369,8 @@ blocks:
     center_freq7: '0'
     center_freq8: '0'
     center_freq9: '0'
-    clock_rate: '0.0'
-    clock_source0: ''
+    clock_rate: 122.88e6
+    clock_source0: gpsdo
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1493,8 +1527,8 @@ blocks:
     show_lo_controls: 'False'
     stream_args: ''
     stream_chans: '[3,]'
-    sync: pc_clock
-    time_source0: ''
+    sync: sync
+    time_source0: gpsdo
     time_source1: ''
     time_source2: ''
     time_source3: ''
@@ -1611,8 +1645,8 @@ blocks:
     center_freq7: '0'
     center_freq8: '0'
     center_freq9: '0'
-    clock_rate: '0.0'
-    clock_source0: ''
+    clock_rate: 122.88e6
+    clock_source0: gpsdo
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1864,8 +1898,8 @@ blocks:
     show_lo_controls: 'False'
     stream_args: ''
     stream_chans: '[0,1,]'
-    sync: pc_clock
-    time_source0: ''
+    sync: sync
+    time_source0: gpsdo
     time_source1: ''
     time_source2: ''
     time_source3: ''
@@ -1918,8 +1952,8 @@ connections:
 - [hier_gfdm_2rx_lower_phy_receiver_0, '6', pad_sink_0_0_2, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '7', pad_sink_0_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '8', pad_sink_0_0_0_0, '0']
+- [hier_gfdm_phy_transmitter_0, '0', blocks_null_sink_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
-- [hier_gfdm_phy_transmitter_0, command, blocks_message_debug_0, print]
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [pad_source_0, out, tacmac_mac_controller_0, LLCin]
 - [tacmac_mac_controller_0, LLCout, pad_sink_0, in]
@@ -1928,7 +1962,11 @@ connections:
 - [tacmac_mac_controller_0_0, LLCout, pad_sink_0, in]
 - [tacmac_mac_controller_0_1, PHYout, hier_gfdm_phy_transmitter_0, pdus]
 - [tacmac_mac_controller_0_1_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
+- [tacmac_periodic_time_tag_cc_0, time_tag, blocks_message_debug_0, print]
+- [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
+- [uhd_usrp_sink_0, async_msgs, blocks_message_debug_0, print]
 - [uhd_usrp_source_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
+- [uhd_usrp_source_0, '0', tacmac_periodic_time_tag_cc_0, '0']
 - [uhd_usrp_source_0, '1', hier_gfdm_2rx_lower_phy_receiver_0, '1']
 
 metadata:

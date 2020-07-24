@@ -47,6 +47,19 @@ periodic_time_tag_cc_impl::periodic_time_tag_cc_impl(double samp_rate,
  */
 periodic_time_tag_cc_impl::~periodic_time_tag_cc_impl() {}
 
+void periodic_time_tag_cc_impl::log_status_summary()
+{
+    if (d_next_status_summary > d_tag_offset) {
+        return;
+    }
+
+    GR_LOG_DEBUG(
+        d_logger,
+        "STATUS: " + get_formatted_tag_string(d_tag_offset, d_full_secs, d_frac_secs) +
+            ", counter=" + std::to_string(d_slot_counter));
+    d_next_status_summary += uint64_t(2 * d_samp_rate);
+}
+
 int periodic_time_tag_cc_impl::work(int noutput_items,
                                     gr_vector_const_void_star& input_items,
                                     gr_vector_void_star& output_items)
@@ -77,9 +90,9 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
         d_frac_secs = pmt::to_double(pmt::tuple_ref(t.value, 1));
         d_next_tag_offset = t.offset; // + d_tag_interval;
         GR_LOG_DEBUG(this->d_logger,
-                     "Received new tag @offset=" + std::to_string(d_tag_offset) +
-                         ", with (" + std::to_string(d_full_secs) + " - " +
-                         std::to_string(d_frac_secs) + "s)");
+                     "Received new tag @offset=" + get_formatted_tag_string(d_tag_offset,
+                                                                            d_full_secs,
+                                                                            d_frac_secs));
     }
 
     uint64_t total_items = nitems_read(0) + noutput_items;
@@ -105,6 +118,7 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
         d_next_tag_offset += d_tag_interval;
     }
 
+    log_status_summary();
     // Tell runtime system how many output items we produced.
     return noutput_items;
 }

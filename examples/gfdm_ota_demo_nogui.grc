@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 244.0]
+    coordinate: [272, 332.0]
     rotation: 0
     state: enabled
 - name: tunnel_output_port
@@ -77,7 +77,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 188.0]
+    coordinate: [800, 340.0]
     rotation: 0
     state: enabled
 - name: activate_cfo_compensation
@@ -128,7 +128,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 448.0]
+    coordinate: [768, 624.0]
     rotation: 0
     state: true
 - name: blocks_socket_pdu_input
@@ -148,7 +148,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 316.0]
+    coordinate: [296, 532.0]
     rotation: 0
     state: true
 - name: blocks_socket_pdu_output
@@ -168,7 +168,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 244.0]
+    coordinate: [744, 436.0]
     rotation: 0
     state: true
 - name: cycle_interval
@@ -220,14 +220,14 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     phase_compensate: phase_compensate
-    rgain: rgain
+    rgain: rx_gain
     rx_addr: rx_addr
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id
     subcarriers: subcarriers
     tfreq: tfreq
-    tgain: tgain
+    tgain: tx_gain
     timeslots: timeslots
     timing_advance: timing_advance
     tx_addr: tx_addr
@@ -237,7 +237,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 308.0]
+    coordinate: [480, 404.0]
     rotation: 0
     state: true
 - name: ic_iter_range
@@ -266,7 +266,7 @@ blocks:
     label: Information bit length
     short_id: ''
     type: intx
-    value: '728'
+    value: '792'
   states:
     bus_sink: false
     bus_source: false
@@ -283,12 +283,12 @@ blocks:
     label: MTU size
     short_id: ''
     type: intx
-    value: '76'
+    value: '84'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 276.0]
+    coordinate: [504, 300.0]
     rotation: 0
     state: true
 - name: phase_compensate
@@ -308,23 +308,6 @@ blocks:
     coordinate: [1344, 252.0]
     rotation: 0
     state: true
-- name: rgain
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: RX gain
-    short_id: ''
-    type: eng_float
-    value: '38.'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1032, 508.0]
-    rotation: 0
-    state: true
 - name: rx_addr
   id: parameter
   parameters:
@@ -340,6 +323,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [368, 84]
+    rotation: 0
+    state: true
+- name: rx_gain
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: RX gain
+    short_id: ''
+    type: eng_float
+    value: '55.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1032, 508.0]
     rotation: 0
     state: true
 - name: samp_rate
@@ -444,23 +444,6 @@ blocks:
     coordinate: [1032, 332.0]
     rotation: 0
     state: true
-- name: tgain
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: TX gain
-    short_id: ''
-    type: eng_float
-    value: '65.'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1032, 420.0]
-    rotation: 0
-    state: true
 - name: timeslots
   id: parameter
   parameters:
@@ -529,6 +512,23 @@ blocks:
     coordinate: [1032, 596.0]
     rotation: 0
     state: true
+- name: tx_gain
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: TX gain
+    short_id: ''
+    type: eng_float
+    value: '55.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1032, 420.0]
+    rotation: 0
+    state: true
 - name: xcorr_threshold
   id: parameter
   parameters:
@@ -549,7 +549,7 @@ blocks:
 
 connections:
 - [blocks_socket_pdu_input, pdus, hier_gfdm_ota_demo_0, LLCin]
-- [hier_gfdm_ota_demo_0, '0', blocks_null_sink_0, '0']
+- [hier_gfdm_ota_demo_0, '4', blocks_null_sink_0, '0']
 - [hier_gfdm_ota_demo_0, LLCout, blocks_socket_pdu_output, pdus]
 
 metadata:

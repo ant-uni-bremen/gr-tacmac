@@ -356,6 +356,30 @@ blocks:
     coordinate: [1505, 331]
     rotation: 0
     state: enabled
+- name: tunnel_input_port
+  id: variable
+  parameters:
+    comment: ''
+    value: f'40{dst_id:0>2}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 604.0]
+    rotation: 0
+    state: enabled
+- name: tunnel_output_port
+  id: variable
+  parameters:
+    comment: ''
+    value: f'40{src_id:0>2}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 620.0]
+    rotation: 0
+    state: enabled
 - name: tx_digital_gain
   id: variable_qtgui_range
   parameters:
@@ -579,6 +603,46 @@ blocks:
     coordinate: [1120, 836.0]
     rotation: 0
     state: enabled
+- name: blocks_socket_pdu_input
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: tunnel_input_port
+    tcp_no_delay: 'False'
+    type: UDP_SERVER
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [248, 812.0]
+    rotation: 0
+    state: true
+- name: blocks_socket_pdu_output
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: localhost
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: tunnel_output_port
+    tcp_no_delay: 'False'
+    type: UDP_CLIENT
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [696, 716.0]
+    rotation: 0
+    state: true
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
   parameters:
@@ -802,7 +866,7 @@ blocks:
     label: Information bit length
     short_id: ''
     type: intx
-    value: '728'
+    value: '792'
   states:
     bus_sink: false
     bus_source: false
@@ -844,6 +908,23 @@ blocks:
     coordinate: [1808, 60.0]
     rotation: 0
     state: disabled
+- name: mtu_size
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: MTU size
+    short_id: ''
+    type: intx
+    value: '84'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 572.0]
+    rotation: 0
+    state: true
 - name: qtgui_const_sink_rx_symbols
   id: qtgui_const_sink_x
   parameters:
@@ -1246,7 +1327,7 @@ blocks:
     color9: dark green
     comment: ''
     ctrlpanel: 'False'
-    entags: 'True'
+    entags: 'False'
     grid: 'True'
     gui_hint: 'sync_tab@0: 0, 0, 1,1'
     label1: ''
@@ -1272,7 +1353,7 @@ blocks:
     marker9: '-1'
     name: '"synchronization"'
     nconnections: '2'
-    size: int(samp_rate / 500)
+    size: int(samp_rate / 500) * 2
     srate: samp_rate
     stemplot: 'False'
     style1: '1'
@@ -1744,6 +1825,7 @@ connections:
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0_0, '0']
+- [blocks_socket_pdu_input, pdus, hier_gfdm_ota_demo_0, LLCin]
 - [hier_gfdm_ota_demo_0, '0', blocks_tag_debug_0, '0']
 - [hier_gfdm_ota_demo_0, '0', qtgui_time_sink_synced_stream, '0']
 - [hier_gfdm_ota_demo_0, '1', blocks_tag_debug_0, '1']
@@ -1754,6 +1836,7 @@ connections:
 - [hier_gfdm_ota_demo_0, '4', tacmac_tag_to_stream_value_0_0_0, '0']
 - [hier_gfdm_ota_demo_0, '5', blocks_complex_to_mag_0, '0']
 - [hier_gfdm_ota_demo_0, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
+- [hier_gfdm_ota_demo_0, LLCout, blocks_socket_pdu_output, pdus]
 - [tacmac_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']
 - [tacmac_tag_to_stream_value_0_0, '0', blocks_int_to_float_0_0, '0']
 - [tacmac_tag_to_stream_value_0_0_0, '0', blocks_nlog10_ff_0, '0']

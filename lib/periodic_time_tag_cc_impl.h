@@ -29,6 +29,18 @@ private:
     uint64_t d_next_tag_offset;
     uint64_t d_slot_counter;
 
+    uint64_t d_next_status_summary = 0;
+    void log_status_summary();
+
+    std::string get_formatted_tag_string(const uint64_t offset,
+                                         const uint64_t full_secs,
+                                         const double frac_secs) const
+    {
+        return std::string("Tag: offset=" + std::to_string(offset) + ", time=(" +
+                           std::to_string(full_secs) + " - " + std::to_string(frac_secs) +
+                           ")s");
+    }
+
 public:
     periodic_time_tag_cc_impl(double samp_rate, uint32_t tag_interval);
     ~periodic_time_tag_cc_impl();

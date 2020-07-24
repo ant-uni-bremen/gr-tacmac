@@ -187,6 +187,13 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
                                   d_mtu_size));
         return;
     }
+    // GR_LOG_DEBUG(this->d_logger,
+    //              string_format("LLC: %s: packets=%i;  packet_size=%iB/%iB",
+    //                            get_host_string().c_str(),
+    //                            d_llc_message_counter,
+    //                            payload.size(),
+    //                            d_mtu_size));
+
     auto header = create_header(frame_counter, ticks, payload.size());
 
     auto meta = flatten_dict(pmt::car(pdu));
