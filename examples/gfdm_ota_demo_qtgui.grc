@@ -145,6 +145,18 @@ blocks:
     coordinate: [46, 458]
     rotation: 0
     state: disabled
+- name: full_rx_addr
+  id: variable
+  parameters:
+    comment: ''
+    value: rx_addr if len(rx_addr) > 0 else tx_addr
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 304.0]
+    rotation: 0
+    state: enabled
 - name: gfdm_constellation
   id: variable_constellation
   parameters:
@@ -182,6 +194,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1848, 300.0]
+    rotation: 0
+    state: enabled
+- name: info_length
+  id: variable
+  parameters:
+    comment: ''
+    value: 8 * (mtu_size + 15)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 172.0]
     rotation: 0
     state: enabled
 - name: phase_compensate
@@ -365,7 +389,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [160, 764.0]
+    coordinate: [232, 604.0]
     rotation: 0
     state: enabled
 - name: tunnel_output_port
@@ -377,7 +401,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [816, 700.0]
+    coordinate: [760, 620.0]
     rotation: 0
     state: enabled
 - name: tx_digital_gain
@@ -432,23 +456,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [88, 996.0]
-    rotation: 0
-    state: disabled
-- name: usrp_device_info_0
-  id: variable_qtgui_label
-  parameters:
-    comment: ''
-    formatter: 'lambda x: "{}:{}->{}".format(x[''mboard_id''], x[''mboard_serial''],
-      x[''tx_antenna''])'
-    gui_hint: 7,4,1,2
-    label: TX Device Information
-    type: raw
-    value: txdiprobe
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1320, 372.0]
     rotation: 0
     state: disabled
 - name: usrp_initial_info
@@ -583,7 +590,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 1132.0]
+    coordinate: [1064, 1132.0]
     rotation: 0
     state: enabled
 - name: blocks_nlog10_ff_0_0
@@ -601,7 +608,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 1172.0]
+    coordinate: [1072, 1164.0]
     rotation: 0
     state: enabled
 - name: blocks_pdu_to_tagged_stream_0_0
@@ -638,7 +645,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 828.0]
+    coordinate: [248, 812.0]
     rotation: 0
     state: true
 - name: blocks_socket_pdu_output
@@ -658,7 +665,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [816, 764.0]
+    coordinate: [696, 716.0]
     rotation: 0
     state: true
 - name: blocks_tag_debug_0
@@ -781,7 +788,7 @@ blocks:
     minoutbuf: '0'
     phase_compensate: phase_compensate
     rgain: rgain
-    rx_addr: rx_addr
+    rx_addr: full_rx_addr
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id
@@ -800,23 +807,6 @@ blocks:
     coordinate: [360, 932.0]
     rotation: 0
     state: true
-- name: hier_qt_live_statistics_0
-  id: hier_qt_live_statistics
-  parameters:
-    alias: ''
-    comment: ''
-    gui_hint: 'live_stats@0: 0,0,3,7'
-    histogram_val_string: histogram_val
-    latency: latency
-    missed_frames: missed_frames
-    rx_frame: rx_frame
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1808, 124.0]
-    rotation: 0
-    state: disabled
 - name: hier_qt_statistics_0
   id: hier_qt_statistics
   parameters:
@@ -884,46 +874,12 @@ blocks:
     label: Information bit length
     short_id: ''
     type: intx
-    value: '728'
+    value: '792'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [984, 84.0]
-    rotation: 0
-    state: true
-- name: live_stats
-  id: qtgui_tab_widget
-  parameters:
-    alias: ''
-    comment: ''
-    gui_hint: demod_tab@1:0,0,2,2
-    label0: Live Stats
-    label1: Tab 1
-    label10: Tab 10
-    label11: Tab 11
-    label12: Tab 12
-    label13: Tab 13
-    label14: Tab 14
-    label15: Tab 15
-    label16: Tab 16
-    label17: Tab 17
-    label18: Tab 18
-    label19: Tab 19
-    label2: Tab 2
-    label3: Tab 3
-    label4: Tab 4
-    label5: Tab 5
-    label6: Tab 6
-    label7: Tab 7
-    label8: Tab 8
-    label9: Tab 9
-    num_tabs: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1808, 60.0]
     rotation: 0
     state: disabled
 - name: mtu_size
@@ -935,12 +891,12 @@ blocks:
     label: MTU size
     short_id: ''
     type: intx
-    value: '76'
+    value: '84'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 796.0]
+    coordinate: [456, 572.0]
     rotation: 0
     state: true
 - name: qtgui_const_sink_rx_symbols
@@ -1345,7 +1301,7 @@ blocks:
     color9: dark green
     comment: ''
     ctrlpanel: 'False'
-    entags: 'True'
+    entags: 'False'
     grid: 'True'
     gui_hint: 'sync_tab@0: 0, 0, 1,1'
     label1: ''
@@ -1371,7 +1327,7 @@ blocks:
     marker9: '-1'
     name: '"synchronization"'
     nconnections: '2'
-    size: int(samp_rate / 500)
+    size: int(samp_rate / 500) * 2
     srate: samp_rate
     stemplot: 'False'
     style1: '1'
@@ -1525,7 +1481,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'False'
+    autoscale: 'True'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -1597,7 +1553,7 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: SNR [dB]
-    ymax: '70'
+    ymax: 5e-3
     ymin: '0.0'
     yunit: '"packet"'
   states:
@@ -1616,7 +1572,7 @@ blocks:
     label: RX address
     short_id: ''
     type: str
-    value: '"192.168.31.216"'
+    value: '""'
   states:
     bus_sink: false
     bus_source: false
@@ -1780,7 +1736,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 1124.0]
+    coordinate: [888, 1124.0]
     rotation: 0
     state: true
 - name: tacmac_tag_to_stream_value_0_0_0_0
@@ -1799,7 +1755,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 1164.0]
+    coordinate: [896, 1156.0]
     rotation: 0
     state: true
 - name: timeslots
