@@ -44,6 +44,30 @@ blocks:
     coordinate: [437, 177]
     rotation: 0
     state: enabled
+- name: full_rx_addr
+  id: variable
+  parameters:
+    comment: ''
+    value: rx_addr if len(rx_addr) > 0 else tx_addr
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [312, 404.0]
+    rotation: 0
+    state: enabled
+- name: info_length
+  id: variable
+  parameters:
+    comment: ''
+    value: 8 * (mtu_size + 15)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [928, 52.0]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -221,7 +245,7 @@ blocks:
     minoutbuf: '0'
     phase_compensate: phase_compensate
     rgain: rx_gain
-    rx_addr: rx_addr
+    rx_addr: full_rx_addr
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id
@@ -273,7 +297,7 @@ blocks:
     bus_structure: null
     coordinate: [1024, 28.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: mtu_size
   id: parameter
   parameters:
@@ -317,7 +341,7 @@ blocks:
     label: RX address
     short_id: ''
     type: str
-    value: '"192.168.31.216"'
+    value: '""'
   states:
     bus_sink: false
     bus_source: false
