@@ -365,7 +365,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 604.0]
+    coordinate: [160, 764.0]
     rotation: 0
     state: enabled
 - name: tunnel_output_port
@@ -377,7 +377,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 620.0]
+    coordinate: [816, 700.0]
     rotation: 0
     state: enabled
 - name: tx_digital_gain
@@ -583,7 +583,25 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 1148.0]
+    coordinate: [1048, 1132.0]
+    rotation: 0
+    state: enabled
+- name: blocks_nlog10_ff_0_0
+  id: blocks_nlog10_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n: '10'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 1172.0]
     rotation: 0
     state: enabled
 - name: blocks_pdu_to_tagged_stream_0_0
@@ -620,7 +638,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 812.0]
+    coordinate: [176, 828.0]
     rotation: 0
     state: true
 - name: blocks_socket_pdu_output
@@ -640,7 +658,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [696, 716.0]
+    coordinate: [816, 764.0]
     rotation: 0
     state: true
 - name: blocks_tag_debug_0
@@ -866,7 +884,7 @@ blocks:
     label: Information bit length
     short_id: ''
     type: intx
-    value: '792'
+    value: '728'
   states:
     bus_sink: false
     bus_source: false
@@ -917,12 +935,12 @@ blocks:
     label: MTU size
     short_id: ''
     type: intx
-    value: '84'
+    value: '76'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 572.0]
+    coordinate: [400, 796.0]
     rotation: 0
     state: true
 - name: qtgui_const_sink_rx_symbols
@@ -1327,7 +1345,7 @@ blocks:
     color9: dark green
     comment: ''
     ctrlpanel: 'False'
-    entags: 'False'
+    entags: 'True'
     grid: 'True'
     gui_hint: 'sync_tab@0: 0, 0, 1,1'
     label1: ''
@@ -1353,7 +1371,7 @@ blocks:
     marker9: '-1'
     name: '"synchronization"'
     nconnections: '2'
-    size: int(samp_rate / 500) * 2
+    size: int(samp_rate / 500)
     srate: samp_rate
     stemplot: 'False'
     style1: '1'
@@ -1507,7 +1525,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -1546,7 +1564,7 @@ blocks:
     marker8: '-1'
     marker9: '-1'
     name: '"SNR"'
-    nconnections: '1'
+    nconnections: '2'
     size: '1024'
     srate: samp_rate / samp_rate
     stemplot: 'False'
@@ -1579,7 +1597,7 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: SNR [dB]
-    ymax: 5e-3
+    ymax: '70'
     ymin: '0.0'
     yunit: '"packet"'
   states:
@@ -1762,7 +1780,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 1140.0]
+    coordinate: [872, 1124.0]
+    rotation: 0
+    state: true
+- name: tacmac_tag_to_stream_value_0_0_0_0
+  id: tacmac_tag_to_stream_value
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dict_key: snr_lin
+    intype: complex
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 1164.0]
     rotation: 0
     state: true
 - name: timeslots
@@ -1823,6 +1860,7 @@ connections:
 - [blocks_int_to_float_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_int_to_float_0_0, '0', qtgui_histogram_sink_x_0, '0']
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
+- [blocks_nlog10_ff_0_0, '0', qtgui_time_sink_x_0_0_0, '1']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0_0, '0']
 - [blocks_socket_pdu_input, pdus, hier_gfdm_ota_demo_0, LLCin]
@@ -1831,6 +1869,7 @@ connections:
 - [hier_gfdm_ota_demo_0, '1', blocks_tag_debug_0, '1']
 - [hier_gfdm_ota_demo_0, '1', qtgui_time_sink_synced_stream, '1']
 - [hier_gfdm_ota_demo_0, '2', qtgui_const_sink_rx_symbols, '1']
+- [hier_gfdm_ota_demo_0, '2', tacmac_tag_to_stream_value_0_0_0_0, '0']
 - [hier_gfdm_ota_demo_0, '3', blocks_complex_to_mag_0_0, '0']
 - [hier_gfdm_ota_demo_0, '4', qtgui_const_sink_rx_symbols, '0']
 - [hier_gfdm_ota_demo_0, '4', tacmac_tag_to_stream_value_0_0_0, '0']
@@ -1840,6 +1879,7 @@ connections:
 - [tacmac_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']
 - [tacmac_tag_to_stream_value_0_0, '0', blocks_int_to_float_0_0, '0']
 - [tacmac_tag_to_stream_value_0_0_0, '0', blocks_nlog10_ff_0, '0']
+- [tacmac_tag_to_stream_value_0_0_0_0, '0', blocks_nlog10_ff_0_0, '0']
 
 metadata:
   file_format: 1
