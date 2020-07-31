@@ -25,5 +25,7 @@ install(FILES
     api.h
     mac_controller.h
     periodic_time_tag_cc.h
-    tag_to_stream_value.h DESTINATION include/tacmac
+    tag_to_stream_value.h
+    status_collector.h
+    tags_to_msg_dict.h DESTINATION include/tacmac
 )
