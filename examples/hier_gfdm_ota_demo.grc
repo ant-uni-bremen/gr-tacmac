@@ -409,7 +409,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 788.0]
+    coordinate: [407, 932]
     rotation: 0
     state: true
 - name: hier_gfdm_phy_transmitter_0
