@@ -22,4 +22,5 @@ except ImportError:
     from .tacmac_python import *
 
 # import any pure python here
+from .udp_interface import udp_interface
 #

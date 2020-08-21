@@ -275,40 +275,6 @@ blocks:
     coordinate: [1392, 936.0]
     rotation: 0
     state: disabled
-- name: blocks_message_strobe_0_0_0_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.PMT_T
-    period: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1088, 188.0]
-    rotation: 180
-    state: disabled
-- name: blocks_message_strobe_0_0_0_0_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.PMT_T
-    period: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1088, 252.0]
-    rotation: 180
-    state: disabled
 - name: blocks_message_strobe_0_0_0_0_1
   id: blocks_message_strobe
   parameters:
@@ -324,23 +290,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [96, 1244.0]
-    rotation: 180
-    state: disabled
-- name: blocks_message_strobe_0_0_0_0_2
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.PMT_T
-    period: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1088, 300.0]
     rotation: 180
     state: disabled
 - name: blocks_null_sink_0
@@ -359,63 +308,6 @@ blocks:
     bus_structure: null
     coordinate: [1656, 768.0]
     rotation: 0
-    state: disabled
-- name: blocks_random_pdu_0
-  id: blocks_random_pdu
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    length_modulo: '1'
-    mask: '0xFF'
-    maxoutbuf: '0'
-    maxsize: code_conf.info_byte_size - 15
-    minoutbuf: '0'
-    minsize: code_conf.info_byte_size - 15 - 8
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [568, 244.0]
-    rotation: 180
-    state: disabled
-- name: blocks_random_pdu_0_0
-  id: blocks_random_pdu
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    length_modulo: '1'
-    mask: '0xFF'
-    maxoutbuf: '0'
-    maxsize: code_conf.info_byte_size - 15
-    minoutbuf: '0'
-    minsize: code_conf.info_byte_size - 15 - 8
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [600, 300.0]
-    rotation: 180
-    state: disabled
-- name: blocks_random_pdu_0_0_0
-  id: blocks_random_pdu
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    length_modulo: '1'
-    mask: '0xFF'
-    maxoutbuf: '0'
-    maxsize: code_conf.info_byte_size - 15
-    minoutbuf: '0'
-    minsize: code_conf.info_byte_size - 15 - 8
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [616, 364.0]
-    rotation: 180
     state: disabled
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
@@ -648,6 +540,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [984, 84.0]
+    rotation: 0
+    state: true
+- name: nports
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Num ports
+    short_id: ''
+    type: intx
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 180.0]
     rotation: 0
     state: true
 - name: pad_sink_0
@@ -1126,7 +1035,7 @@ blocks:
     bus_structure: null
     coordinate: [816, 456.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_mac_controller_0_0
   id: tacmac_mac_controller
   parameters:
@@ -1145,13 +1054,13 @@ blocks:
     coordinate: [1328, 800.0]
     rotation: 0
     state: disabled
-- name: tacmac_mac_controller_0_1
+- name: tacmac_mac_controller_0_2
   id: tacmac_mac_controller
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    destination_id: dst_id + 1
+    destination_id: dst_id - 2
     maxoutbuf: '0'
     minoutbuf: '0'
     mtu_size: code_conf.info_byte_size - 15
@@ -1160,25 +1069,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 384.0]
-    rotation: 0
-    state: disabled
-- name: tacmac_mac_controller_0_1_0
-  id: tacmac_mac_controller
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    destination_id: dst_id + 2
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    mtu_size: code_conf.info_byte_size - 15
-    source_id: src_id
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [344, 288.0]
+    coordinate: [1120, 936.0]
     rotation: 0
     state: disabled
 - name: tacmac_periodic_time_tag_cc_0
@@ -1213,7 +1104,7 @@ blocks:
     bus_structure: null
     coordinate: [1360, 748.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_tags_to_msg_dict_0
   id: tacmac_tags_to_msg_dict
   parameters:
@@ -1229,6 +1120,25 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1048, 848.0]
+    rotation: 0
+    state: true
+- name: tacmac_udp_interface_0
+  id: tacmac_udp_interface
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dst_id: dst_id
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu_size: code_conf.info_byte_size - 15
+    nports: nports
+    src_id: src_id
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [752, 292.0]
     rotation: 0
     state: true
 - name: tfreq
@@ -1999,15 +1909,11 @@ blocks:
     state: true
 
 connections:
-- [blocks_message_strobe_0_0_0_0, strobe, blocks_random_pdu_0, generate]
-- [blocks_message_strobe_0_0_0_0_0, strobe, blocks_random_pdu_0_0, generate]
 - [blocks_message_strobe_0_0_0_0_1, strobe, uhd_usrp_source_0, command]
-- [blocks_message_strobe_0_0_0_0_2, strobe, blocks_random_pdu_0_0_0, generate]
-- [blocks_random_pdu_0, pdus, tacmac_mac_controller_0, LLCin]
-- [blocks_random_pdu_0_0, pdus, tacmac_mac_controller_0_1, LLCin]
-- [blocks_random_pdu_0_0_0, pdus, tacmac_mac_controller_0_1_0, LLCin]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0, PHYin]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0_0, PHYin]
+- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0_2, PHYin]
+- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_udp_interface_0, rx]
 - [hier_gfdm_2rx_lower_phy_receiver_0, '0', pad_sink_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '1', pad_sink_0_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '2', pad_sink_0_0_1, '0']
@@ -2023,18 +1929,19 @@ connections:
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [pad_source_0, out, tacmac_mac_controller_0, LLCin]
+- [tacmac_mac_controller_0, LLCout, blocks_message_debug_1, print_pdu]
 - [tacmac_mac_controller_0, LLCout, pad_sink_0, in]
 - [tacmac_mac_controller_0, LLCout, tacmac_status_collector_0, in]
 - [tacmac_mac_controller_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
 - [tacmac_mac_controller_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_mac_controller_0_0, LLCout, pad_sink_0, in]
-- [tacmac_mac_controller_0_1, PHYout, hier_gfdm_phy_transmitter_0, pdus]
-- [tacmac_mac_controller_0_1_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
+- [tacmac_mac_controller_0_2, LLCout, blocks_message_debug_1, print_pdu]
 - [tacmac_periodic_time_tag_cc_0, time_tag, blocks_message_debug_0, print]
 - [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_periodic_time_tag_cc_0, time_tag, tacmac_status_collector_0, in]
-- [tacmac_tags_to_msg_dict_0, out, blocks_message_debug_1, print]
 - [tacmac_tags_to_msg_dict_0, out, tacmac_status_collector_0, in]
+- [tacmac_udp_interface_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
+- [tacmac_udp_interface_0, tx, hier_gfdm_phy_transmitter_0, pdus]
 - [uhd_usrp_sink_0, async_msgs, blocks_message_debug_0, print]
 - [uhd_usrp_sink_0, async_msgs, tacmac_status_collector_0, in]
 - [uhd_usrp_source_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
