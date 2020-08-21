@@ -19,7 +19,7 @@ class qa_udp_interface(gr_unittest.TestCase):
         self.tb = None
 
     def test_instance(self):
-        instance = udp_interface(0, 44, 3, 84)
+        instance = udp_interface(0, 64, 3, 84)
 
     def test_001_config(self):
         nports = 3

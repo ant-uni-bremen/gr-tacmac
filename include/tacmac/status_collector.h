@@ -39,4 +39,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_TACMAC_STATUS_COLLECTOR_H */
-

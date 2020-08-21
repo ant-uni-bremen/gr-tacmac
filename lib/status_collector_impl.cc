@@ -100,7 +100,8 @@ void status_collector_impl::handle_uhd_tx_async(const pmt::pmt_t& msg)
         GR_LOG_DEBUG(
             d_logger,
             string_format(
-                "UHD_ASYNC: RXtime=%s\tTXtime=%s\tevent_time=%s\tchannel=%i\tevent_codes=%s",
+                "UHD_ASYNC: "
+                "RXtime=%s\tTXtime=%s\tevent_time=%s\tchannel=%i\tevent_codes=%s",
                 get_formatted_time_spec(d_full_secs, d_frac_secs).c_str(),
                 get_formatted_time_spec(d_tx_full_secs, d_tx_frac_secs).c_str(),
                 get_formatted_time_spec(d_async_full_secs, d_async_frac_secs).c_str(),

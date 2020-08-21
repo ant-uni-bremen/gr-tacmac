@@ -256,16 +256,16 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     const uint16_t checksum =
         CRC::Calculate(payload.data(), payload.size() - 2, CRC::CRC_16_CCITTFALSE());
 
-    if (rx_checksum != checksum) {
-        // C++20 solution: std::string msg = std::format("test {}", 42);
-        GR_LOG_DEBUG(
-            this->d_logger,
-            string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
-                          checksum,
-                          rx_checksum));
+    // if (rx_checksum != checksum) {
+    //     // C++20 solution: std::string msg = std::format("test {}", 42);
+    //     GR_LOG_DEBUG(
+    //         this->d_logger,
+    //         string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
+    //                       checksum,
+    //                       rx_checksum));
 
-        return;
-    }
+    //     return;
+    // }
 
     const unsigned dst = payload[0];
     const unsigned src = payload[1];
@@ -282,12 +282,23 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     if (dst != d_src_id) {
         status = string_format(
             "dropping... reason: Not for us! [dst=%i != %i=d_src_id]", dst, d_src_id);
+        // GR_LOG_DEBUG(this->d_logger,
+        //              host_info + " " + packet_header + " " + status);
         status_code = 1;
     }
     if (src == d_src_id) {
         status = string_format(
             "dropping... reason: loopback! [src=%i == %i=d_src_id]", src, d_src_id);
+        // GR_LOG_DEBUG(this->d_logger,
+        //              host_info + " " + packet_header + " " + status);
         status_code = 2;
+    }
+    if (src != d_dst_id) {
+        status = string_format(
+            "dropping... reason: wrong endpoint! [src=%i == %i=d_dst_id]", src, d_dst_id);
+        // GR_LOG_DEBUG(this->d_logger,
+        //              host_info + " " + packet_header + " " + status);
+        status_code = 3;
     }
     if (rx_checksum != checksum) {
         // C++20 solution: std::string msg = std::format("test {}", 42);
@@ -300,7 +311,7 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
             string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
                           checksum,
                           rx_checksum);
-        status_code = 3;
+        status_code = 4;
     }
 
     if (status_code != 0) {

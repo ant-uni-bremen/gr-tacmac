@@ -21,8 +21,8 @@
 #ifndef INCLUDED_TACMAC_MAC_CONTROLLER_IMPL_H
 #define INCLUDED_TACMAC_MAC_CONTROLLER_IMPL_H
 
-#include <tacmac/mac_controller.h>
 #include "tacmac_utilities.h"
+#include <tacmac/mac_controller.h>
 
 namespace gr {
 namespace tacmac {
@@ -45,7 +45,8 @@ namespace tacmac {
 //     }
 //     std::unique_ptr<char[]> buf(new char[size]);
 //     snprintf(buf.get(), size, format.c_str(), args...);
-//     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+//     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0'
+//     inside
 // }
 
 class mac_controller_impl : public mac_controller

@@ -23,7 +23,10 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
 import numpy as np
-import tacmac_python as tacmac
+try:
+    import tacmac_python as tacmac
+except ModuleNotFoundError:
+    import tacmac
 import time
 
 from PyCRC.CRCCCITT import CRCCCITT
@@ -95,13 +98,11 @@ class qa_mac_controller(gr_unittest.TestCase):
         self.tb = None
 
     def test_001_init(self):
-        return
-        self.assertRaises(RuntimeError, tacmac.mac_controller, 450, 21, 112)
-        self.assertRaises(RuntimeError, tacmac.mac_controller, 42, 768, 112)
-        self.assertRaises(RuntimeError, tacmac.mac_controller, 42, 84, 427)
+        self.assertRaises(ValueError, tacmac.mac_controller, 450, 21, 112)
+        self.assertRaises(ValueError, tacmac.mac_controller, 42, 768, 112)
+        self.assertRaises(ValueError, tacmac.mac_controller, 42, 84, 427)
 
     def test_002_llc2phy(self):
-        return
         num_pdus = 340
         dst_id = 42
         src_id = 21
@@ -114,10 +115,10 @@ class qa_mac_controller(gr_unittest.TestCase):
         meta = pmt.make_dict()
         pdu = pmt.cons(meta, payload)
 
-        print('This is the orriginal PDU\n----------------')
+        print('This is the original PDU\n----------------')
         print(pdu)
         print('----------------')
-        ctrl = tacmac.mac_controller(dst_id, src_id, len(payload) - 1)
+        ctrl = tacmac.mac_controller(dst_id, src_id, len(message))
         dbg = blocks.message_debug()
 
         self.tb.msg_connect(ctrl, "PHYout", dbg, "store")
@@ -140,7 +141,7 @@ class qa_mac_controller(gr_unittest.TestCase):
             bits = pmt.cdr(result_msg)
             pl = pmt_u8vector_to_ndarray(bits)
 
-            header = pl[0:12]
+            header = pl[0:14]
             self.assertEqual(header[0], dst_id)
             self.assertEqual(header[1], src_id)
             self.assertEqual(get_int_from_pmt_meta(meta, 'dst_id'), dst_id)
@@ -149,7 +150,7 @@ class qa_mac_controller(gr_unittest.TestCase):
             self.assertEqual(get_int_from_pmt_meta(meta, 'sequence'),
                              parsed_sequence)
             mtime = get_int_from_pmt_meta(meta, 'time')
-            tbytes = header[4:12]
+            tbytes = header[5:13]
             htime = int(tbytes.view('>u8')[0])
             self.assertEqual(mtime, htime)
             checksum = pl[-2:]
@@ -159,7 +160,7 @@ class qa_mac_controller(gr_unittest.TestCase):
             r = CRCCCITT(version='FFFF').calculate(pl[:-2].tobytes())
             # print(r)
             self.assertEqual(r, checksum)
-            self.assertSequenceEqual(tuple(pl[12:-2]), tuple(ref))
+            self.assertSequenceEqual(tuple(pl[13:-2]), tuple(ref))
 
     def test_003_phy2llc(self):
         num_pdus = 700

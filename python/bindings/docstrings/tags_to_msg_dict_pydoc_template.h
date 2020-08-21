@@ -7,7 +7,7 @@
  *
  */
 #include "pydoc_macros.h"
-#define D(...) DOC(gr,tacmac, __VA_ARGS__ )
+#define D(...) DOC(gr, tacmac, __VA_ARGS__)
 /*
   This file contains placeholders for docstrings for the Python bindings.
   Do not edit! These were automatically extracted during the binding process
@@ -15,13 +15,10 @@
  */
 
 
- 
- static const char *__doc_gr_tacmac_tags_to_msg_dict = R"doc()doc";
+static const char* __doc_gr_tacmac_tags_to_msg_dict = R"doc()doc";
 
 
- static const char *__doc_gr_tacmac_tags_to_msg_dict_tags_to_msg_dict = R"doc()doc";
+static const char* __doc_gr_tacmac_tags_to_msg_dict_tags_to_msg_dict = R"doc()doc";
 
 
- static const char *__doc_gr_tacmac_tags_to_msg_dict_make = R"doc()doc";
-
-  
+static const char* __doc_gr_tacmac_tags_to_msg_dict_make = R"doc()doc";

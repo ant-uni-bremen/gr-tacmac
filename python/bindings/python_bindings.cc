@@ -25,7 +25,7 @@ void bind_mac_controller(py::module& m);
 void bind_periodic_time_tag_cc(py::module& m);
 void bind_tag_to_stream_value(py::module& m);
 void bind_status_collector(py::module& m);
-    void bind_tags_to_msg_dict(py::module& m);
+void bind_tags_to_msg_dict(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 

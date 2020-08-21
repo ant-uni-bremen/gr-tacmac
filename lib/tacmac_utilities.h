@@ -21,10 +21,10 @@
 #ifndef INCLUDED_TACMAC_UTILITIES_H
 #define INCLUDED_TACMAC_UTILITIES_H
 
-#include <string>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include <string>
 
 namespace gr {
 namespace tacmac {

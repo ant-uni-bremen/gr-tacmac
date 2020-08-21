@@ -30,29 +30,18 @@ namespace py = pybind11;
 void bind_tags_to_msg_dict(py::module& m)
 {
 
-    using tags_to_msg_dict    = gr::tacmac::tags_to_msg_dict;
+    using tags_to_msg_dict = gr::tacmac::tags_to_msg_dict;
 
 
-    py::class_<tags_to_msg_dict, gr::sync_block, gr::block, gr::basic_block,
-        std::shared_ptr<tags_to_msg_dict>>(m, "tags_to_msg_dict", D(tags_to_msg_dict))
+    py::class_<tags_to_msg_dict,
+               gr::sync_block,
+               gr::block,
+               gr::basic_block,
+               std::shared_ptr<tags_to_msg_dict>>(
+        m, "tags_to_msg_dict", D(tags_to_msg_dict))
 
-        .def(py::init(&tags_to_msg_dict::make),
-           D(tags_to_msg_dict,make)
-        )
-        
-
+        .def(py::init(&tags_to_msg_dict::make), D(tags_to_msg_dict, make))
 
 
         ;
-
-
-
-
 }
-
-
-
-
-
-
-
