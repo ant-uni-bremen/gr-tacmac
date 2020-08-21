@@ -23,7 +23,7 @@ class qa_udp_interface(gr_unittest.TestCase):
 
     def test_001_config(self):
         nports = 3
-        instance = udp_interface(0, 40, nports, 84)
+        instance = udp_interface(0, 56, nports, 84)
         self.assertEqual(len(instance._input_udp_blocks), nports)
         self.assertEqual(len(instance._output_udp_blocks), nports)
         self.assertEqual(len(instance._mac_controllers), nports)
