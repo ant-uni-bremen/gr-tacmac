@@ -106,6 +106,30 @@ blocks:
     coordinate: [46, 458]
     rotation: 0
     state: disabled
+- name: frame_gap
+  id: variable
+  parameters:
+    comment: ''
+    value: '2048'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 308.0]
+    rotation: 0
+    state: disabled
+- name: frame_gap
+  id: variable
+  parameters:
+    comment: ''
+    value: np.zeros(int(1. * samp_rate / 1000.) - conf.frame_len)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 288.0]
+    rotation: 0
+    state: disabled
 - name: gfdm_constellation
   id: variable_constellation
   parameters:
@@ -124,22 +148,6 @@ blocks:
     coordinate: [792, 12.0]
     rotation: 0
     state: enabled
-- name: rxdiprobe
-  id: variable_function_probe
-  parameters:
-    block_id: uhd_usrp_source_0
-    comment: ''
-    function_args: '0'
-    function_name: get_usrp_info
-    poll_rate: '0.1'
-    value: usrp_initial_info
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [64, 836.0]
-    rotation: 0
-    state: disabled
 - name: samp_rate
   id: variable
   parameters:
@@ -152,56 +160,6 @@ blocks:
     coordinate: [546, 162]
     rotation: 0
     state: enabled
-- name: txdiprobe
-  id: variable_function_probe
-  parameters:
-    block_id: uhd_usrp_sink_0
-    comment: ''
-    function_args: '0'
-    function_name: get_usrp_info
-    poll_rate: '.1'
-    value: usrp_initial_info
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1272, 292.0]
-    rotation: 0
-    state: disabled
-- name: usrp_device_info
-  id: variable_qtgui_label
-  parameters:
-    comment: ''
-    formatter: 'lambda x: "{}:{}->{}".format(x[''mboard_id''], x[''mboard_serial''],
-      x[''rx_antenna''])'
-    gui_hint: 6,4,1,2
-    label: RX Device Information
-    type: raw
-    value: rxdiprobe
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [64, 756.0]
-    rotation: 0
-    state: disabled
-- name: usrp_device_info_0
-  id: variable_qtgui_label
-  parameters:
-    comment: ''
-    formatter: 'lambda x: "{}:{}->{}".format(x[''mboard_id''], x[''mboard_serial''],
-      x[''tx_antenna''])'
-    gui_hint: 7,4,1,2
-    label: TX Device Information
-    type: raw
-    value: txdiprobe
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1424, 300.0]
-    rotation: 0
-    state: disabled
 - name: usrp_initial_info
   id: variable
   parameters:
@@ -259,56 +217,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1360, 624.0]
+    coordinate: [1592, 752.0]
     rotation: 0
-    state: disabled
-- name: blocks_message_debug_1
-  id: blocks_message_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1392, 936.0]
-    rotation: 0
-    state: disabled
-- name: blocks_message_strobe_0_0_0_0_1
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.dict_add(pmt.make_dict(), pmt.intern('pc_clock_resync'), pmt.PMT_T)
-    period: '5000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [96, 1244.0]
-    rotation: 180
-    state: disabled
-- name: blocks_null_sink_0
-  id: blocks_null_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_sink: '[[0,],]'
-    comment: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1656, 768.0]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
   parameters:
@@ -325,9 +236,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 828.0]
+    coordinate: [1344, 828.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -345,6 +256,27 @@ blocks:
     coordinate: [832, 652.0]
     rotation: 180
     state: true
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'True'
+    comment: ''
+    epsilon: '1.0'
+    freq_offset: '0.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_voltage: '0.01'
+    seed: '0'
+    taps: '[1.,]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 788.0]
+    rotation: 0
+    state: disabled
 - name: cycle_interval
   id: parameter
   parameters:
@@ -379,6 +311,25 @@ blocks:
     coordinate: [552, 4.0]
     rotation: 0
     state: true
+- name: frame_gap_vector_insert
+  id: blocks_vector_insert_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    period: 2048+ len(frame_gap)
+    type: complex
+    vector: frame_gap
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 460.0]
+    rotation: 0
+    state: disabled
 - name: hier_gfdm_2rx_lower_phy_receiver_0
   id: hier_gfdm_2rx_lower_phy_receiver
   parameters:
@@ -445,7 +396,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 340.0]
+    coordinate: [1056, 364.0]
     rotation: 0
     state: true
 - name: hier_polar_decoder_0
@@ -498,7 +449,7 @@ blocks:
     bus_structure: null
     coordinate: [12, 247]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: import_numpy_0
   id: import
   parameters:
@@ -574,7 +525,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1576, 636.0]
+    coordinate: [1648, 676.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0
@@ -667,6 +618,24 @@ blocks:
     coordinate: [1368, 1084.0]
     rotation: 0
     state: true
+- name: pad_sink_0_0_1_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: tx
+    num_streams: '1'
+    optional: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1360, 996.0]
+    rotation: 0
+    state: true
 - name: pad_sink_0_0_2
   id: pad_sink
   parameters:
@@ -685,24 +654,40 @@ blocks:
     coordinate: [1216, 1276.0]
     rotation: 0
     state: true
-- name: pad_source_0
-  id: pad_source
+- name: pad_sink_0_1
+  id: pad_sink
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    label: LLCin
-    maxoutbuf: '0'
-    minoutbuf: '0'
+    label: corr0
     num_streams: '1'
     optional: 'True'
-    type: message
+    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 536.0]
+    coordinate: [760, 1244.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0_1_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: corr1
+    num_streams: '1'
+    optional: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 1292.0]
     rotation: 0
     state: true
 - name: phase_compensate
@@ -1018,60 +1003,6 @@ blocks:
     coordinate: [298, 5]
     rotation: 0
     state: true
-- name: tacmac_mac_controller_0
-  id: tacmac_mac_controller
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    destination_id: dst_id
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    mtu_size: code_conf.info_byte_size - 15
-    source_id: src_id
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [816, 456.0]
-    rotation: 0
-    state: disabled
-- name: tacmac_mac_controller_0_0
-  id: tacmac_mac_controller
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    destination_id: src_id
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    mtu_size: code_conf.info_byte_size - 15
-    source_id: dst_id
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1328, 800.0]
-    rotation: 0
-    state: disabled
-- name: tacmac_mac_controller_0_2
-  id: tacmac_mac_controller
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    destination_id: dst_id - 2
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    mtu_size: code_conf.info_byte_size - 15
-    source_id: src_id
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1120, 936.0]
-    rotation: 0
-    state: disabled
 - name: tacmac_periodic_time_tag_cc_0
   id: tacmac_periodic_time_tag_cc
   parameters:
@@ -1088,7 +1019,7 @@ blocks:
     bus_structure: null
     coordinate: [512, 704.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: tacmac_status_collector_0
   id: tacmac_status_collector
   parameters:
@@ -1138,7 +1069,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 292.0]
+    coordinate: [800, 500.0]
     rotation: 0
     state: true
 - name: tfreq
@@ -1909,13 +1840,15 @@ blocks:
     state: true
 
 connections:
-- [blocks_message_strobe_0_0_0_0_1, strobe, uhd_usrp_source_0, command]
-- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0, PHYin]
-- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0_0, PHYin]
-- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_0_2, PHYin]
+- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_0, print_pdu]
+- [blocks_tagged_stream_to_pdu_0, pdus, pad_sink_0, in]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_udp_interface_0, rx]
+- [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
+- [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '1']
+- [frame_gap_vector_insert, '0', channels_channel_model_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '0', pad_sink_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '1', pad_sink_0_0_0, '0']
+- [hier_gfdm_2rx_lower_phy_receiver_0, '10', pad_sink_0_1_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '2', pad_sink_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '3', hier_polar_decoder_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '4', qtgui_time_sink_synced_stream_0, '0']
@@ -1923,24 +1856,18 @@ connections:
 - [hier_gfdm_2rx_lower_phy_receiver_0, '6', pad_sink_0_0_2, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '7', pad_sink_0_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '8', pad_sink_0_0_0_0, '0']
-- [hier_gfdm_phy_transmitter_0, '0', blocks_null_sink_0, '0']
+- [hier_gfdm_2rx_lower_phy_receiver_0, '9', pad_sink_0_1, '0']
 - [hier_gfdm_phy_transmitter_0, '0', blocks_tag_debug_0, '0']
+- [hier_gfdm_phy_transmitter_0, '0', frame_gap_vector_insert, '0']
+- [hier_gfdm_phy_transmitter_0, '0', pad_sink_0_0_1_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', tacmac_tags_to_msg_dict_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
-- [pad_source_0, out, tacmac_mac_controller_0, LLCin]
-- [tacmac_mac_controller_0, LLCout, blocks_message_debug_1, print_pdu]
-- [tacmac_mac_controller_0, LLCout, pad_sink_0, in]
-- [tacmac_mac_controller_0, LLCout, tacmac_status_collector_0, in]
-- [tacmac_mac_controller_0, PHYout, hier_gfdm_phy_transmitter_0, pdus]
-- [tacmac_mac_controller_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
-- [tacmac_mac_controller_0_0, LLCout, pad_sink_0, in]
-- [tacmac_mac_controller_0_2, LLCout, blocks_message_debug_1, print_pdu]
-- [tacmac_periodic_time_tag_cc_0, time_tag, blocks_message_debug_0, print]
 - [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_periodic_time_tag_cc_0, time_tag, tacmac_status_collector_0, in]
 - [tacmac_tags_to_msg_dict_0, out, tacmac_status_collector_0, in]
 - [tacmac_udp_interface_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
+- [tacmac_udp_interface_0, tx, blocks_message_debug_0, print_pdu]
 - [tacmac_udp_interface_0, tx, hier_gfdm_phy_transmitter_0, pdus]
 - [uhd_usrp_sink_0, async_msgs, blocks_message_debug_0, print]
 - [uhd_usrp_sink_0, async_msgs, tacmac_status_collector_0, in]

@@ -516,6 +516,42 @@ blocks:
     coordinate: [1384, 812.0]
     rotation: 0
     state: true
+- name: pad_sink_0_1
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: corr0
+    num_streams: '1'
+    optional: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 468.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0_1_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: corr1
+    num_streams: '1'
+    optional: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 692.0]
+    rotation: 0
+    state: true
 - name: pad_source_0
   id: pad_source
   parameters:
@@ -791,7 +827,9 @@ connections:
 - [hier_gfdm_receiver_tagged_0_0, '1', pad_sink_0_0_0_2, '0']
 - [hier_gfdm_receiver_tagged_0_0, '1', symbolmapping_symbol_demapper_cf_0_0, '0']
 - [hier_multicarrier_sync_0, '0', xfdm_sync_sync_tag_align_cc_0, '0']
+- [hier_multicarrier_sync_0, '1', pad_sink_0_1, '0']
 - [hier_multicarrier_sync_0_0, '0', xfdm_sync_sync_tag_align_cc_0, '1']
+- [hier_multicarrier_sync_0_0, '1', pad_sink_0_1_0, '0']
 - [pad_source_0, '0', hier_multicarrier_sync_0, '0']
 - [pad_source_0_0, '0', hier_multicarrier_sync_0_0, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', blocks_add_xx_0, '0']

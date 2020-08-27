@@ -517,6 +517,54 @@ blocks:
     coordinate: [976, 1264.0]
     rotation: 0
     state: enabled
+- name: blocks_complex_to_mag_squared_0
+  id: blocks_complex_to_mag_squared
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [648, 1296.0]
+    rotation: 0
+    state: true
+- name: blocks_complex_to_mag_squared_0_0
+  id: blocks_complex_to_mag_squared
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 1392.0]
+    rotation: 0
+    state: true
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 1360.0]
+    rotation: 0
+    state: true
 - name: blocks_int_to_float_0
   id: blocks_int_to_float
   parameters:
@@ -622,7 +670,7 @@ blocks:
     bus_structure: null
     coordinate: [824, 588.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: ctrl_tab
   id: qtgui_tab_widget
   parameters:
@@ -1280,7 +1328,7 @@ blocks:
     marker8: '-1'
     marker9: '-1'
     name: '"synchronization"'
-    nconnections: '2'
+    nconnections: '3'
     size: int(samp_rate / 500) * 2
     srate: samp_rate
     stemplot: 'False'
@@ -1321,6 +1369,103 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1152, 940.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_synced_stream_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 'sync_tab@0: 2, 0, 1,1'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"tx"'
+    nconnections: '1'
+    size: int(samp_rate / 500) * 2
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: 30e-6
+    tr_level: '0.05'
+    tr_mode: qtgui.TRIG_MODE_AUTO
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '"frame_start"'
+    type: complex
+    update_time: '0.4'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '.1'
+    ymin: -.1
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 608.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1767,6 +1912,9 @@ blocks:
 connections:
 - [blocks_complex_to_mag_0, '0', qtgui_time_sink_channel_estimate_0, '0']
 - [blocks_complex_to_mag_0_0, '0', qtgui_time_sink_channel_estimate_0, '1']
+- [blocks_complex_to_mag_squared_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_complex_to_mag_squared_0_0, '0', blocks_float_to_complex_0, '1']
+- [blocks_float_to_complex_0, '0', qtgui_time_sink_synced_stream, '2']
 - [blocks_int_to_float_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_int_to_float_0_0, '0', qtgui_histogram_sink_x_0, '0']
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
@@ -1782,7 +1930,10 @@ connections:
 - [hier_gfdm_ota_demo_0, '3', blocks_complex_to_mag_0_0, '0']
 - [hier_gfdm_ota_demo_0, '4', qtgui_const_sink_rx_symbols, '0']
 - [hier_gfdm_ota_demo_0, '4', tacmac_tag_to_stream_value_0_0_0, '0']
-- [hier_gfdm_ota_demo_0, '5', blocks_complex_to_mag_0, '0']
+- [hier_gfdm_ota_demo_0, '5', qtgui_time_sink_synced_stream_0, '0']
+- [hier_gfdm_ota_demo_0, '6', blocks_complex_to_mag_0, '0']
+- [hier_gfdm_ota_demo_0, '7', blocks_complex_to_mag_squared_0, '0']
+- [hier_gfdm_ota_demo_0, '8', blocks_complex_to_mag_squared_0_0, '0']
 - [hier_gfdm_ota_demo_0, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
 - [tacmac_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']
 - [tacmac_tag_to_stream_value_0_0, '0', blocks_int_to_float_0_0, '0']
