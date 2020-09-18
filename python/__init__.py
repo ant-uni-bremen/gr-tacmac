@@ -23,4 +23,5 @@ except ImportError:
 
 # import any pure python here
 from .udp_interface import udp_interface
+from .elasticsearch_connector import elasticsearch_connector
 #

@@ -207,6 +207,42 @@ blocks:
     coordinate: [402, 5]
     rotation: 0
     state: true
+- name: blocks_file_sink_0
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: /home/johannes/Documents/gfdm_transmit_jose_001.cdat
+    type: complex
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1416, 900.0]
+    rotation: 0
+    state: disabled
+- name: blocks_file_sink_0_0
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: /home/johannes/Documents/gfdm_recording_jose_001.cdat
+    type: complex
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 1372.0]
+    rotation: 0
+    state: disabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -219,7 +255,7 @@ blocks:
     bus_structure: null
     coordinate: [1592, 752.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
   parameters:
@@ -238,7 +274,7 @@ blocks:
     bus_structure: null
     coordinate: [1344, 828.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -1003,6 +1039,21 @@ blocks:
     coordinate: [298, 5]
     rotation: 0
     state: true
+- name: tacmac_elasticsearch_connector_0
+  id: tacmac_elasticsearch_connector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    hostname: localhost
+    port: '9200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1008, 940.0]
+    rotation: 0
+    state: disabled
 - name: tacmac_periodic_time_tag_cc_0
   id: tacmac_periodic_time_tag_cc
   parameters:
@@ -1033,9 +1084,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1360, 748.0]
+    coordinate: [1360, 764.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_tags_to_msg_dict_0
   id: tacmac_tags_to_msg_dict
   parameters:
@@ -1840,8 +1891,8 @@ blocks:
     state: true
 
 connections:
-- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_0, print_pdu]
 - [blocks_tagged_stream_to_pdu_0, pdus, pad_sink_0, in]
+- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_status_collector_0, in]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_udp_interface_0, rx]
 - [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
 - [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '1']
@@ -1857,6 +1908,7 @@ connections:
 - [hier_gfdm_2rx_lower_phy_receiver_0, '7', pad_sink_0_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '8', pad_sink_0_0_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '9', pad_sink_0_1, '0']
+- [hier_gfdm_phy_transmitter_0, '0', blocks_file_sink_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', blocks_tag_debug_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', frame_gap_vector_insert, '0']
 - [hier_gfdm_phy_transmitter_0, '0', pad_sink_0_0_1_0, '0']
@@ -1864,13 +1916,13 @@ connections:
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
-- [tacmac_periodic_time_tag_cc_0, time_tag, tacmac_status_collector_0, in]
+- [tacmac_status_collector_0, out, blocks_message_debug_0, print]
+- [tacmac_status_collector_0, out, tacmac_elasticsearch_connector_0, in]
 - [tacmac_tags_to_msg_dict_0, out, tacmac_status_collector_0, in]
 - [tacmac_udp_interface_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
-- [tacmac_udp_interface_0, tx, blocks_message_debug_0, print_pdu]
 - [tacmac_udp_interface_0, tx, hier_gfdm_phy_transmitter_0, pdus]
-- [uhd_usrp_sink_0, async_msgs, blocks_message_debug_0, print]
 - [uhd_usrp_sink_0, async_msgs, tacmac_status_collector_0, in]
+- [uhd_usrp_source_0, '0', blocks_file_sink_0_0, '0']
 - [uhd_usrp_source_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
 - [uhd_usrp_source_0, '0', tacmac_periodic_time_tag_cc_0, '0']
 - [uhd_usrp_source_0, '1', hier_gfdm_2rx_lower_phy_receiver_0, '1']

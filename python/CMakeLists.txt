@@ -22,7 +22,8 @@ add_subdirectory(bindings)
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    udp_interface.py DESTINATION ${GR_PYTHON_DIR}/tacmac
+    udp_interface.py
+    elasticsearch_connector.py DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
 ########################################################################
@@ -38,3 +39,4 @@ GR_ADD_TEST(qa_tag_to_stream_value ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_D
 GR_ADD_TEST(qa_status_collector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_status_collector.py)
 GR_ADD_TEST(qa_tags_to_msg_dict ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tags_to_msg_dict.py)
 GR_ADD_TEST(qa_udp_interface ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_udp_interface.py)
+GR_ADD_TEST(qa_elasticsearch_connector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_elasticsearch_connector.py)

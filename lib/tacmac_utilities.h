@@ -25,6 +25,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <pmt/pmt.h>
 
 namespace gr {
 namespace tacmac {
@@ -65,6 +66,23 @@ inline uint64_t ticks2fullsecs(const uint64_t ticks) { return ticks / 1000000000
 inline double ticks2fracsecs(const uint64_t ticks)
 {
     return double(ticks % 1000000000ull) / 1000000000.0d;
+}
+
+inline pmt::pmt_t flatten_dict(const pmt::pmt_t& dict)
+{
+    auto res = pmt::make_dict();
+    // only unwrap 1 layer! This is intentionally non-recursive!
+    for (size_t i = 0; i < pmt::length(dict); i++) {
+        auto k = pmt::car(pmt::nth(i, dict));
+        auto v = pmt::cdr(pmt::nth(i, dict));
+        if (pmt::is_dict(v)) {
+            res = pmt::dict_update(res, v);
+        } else {
+            res = pmt::dict_add(res, k, v);
+        }
+    }
+
+    return res;
 }
 
 } // namespace tacmac

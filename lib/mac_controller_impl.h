@@ -92,7 +92,6 @@ private:
     const pmt::pmt_t PMT_LOST_PACKETS = pmt::mp("lost_packets");
     const pmt::pmt_t PMT_LATENCY = pmt::mp("latency");
 
-    pmt::pmt_t flatten_dict(const pmt::pmt_t& dict) const;
     void print_llc_message_status(const uint64_t ticks);
     void print_phy_message_status(const uint64_t ticks);
     std::string get_host_string()

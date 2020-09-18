@@ -35,6 +35,8 @@ private:
     double d_tx_frac_secs = 0.0;
 
     const pmt::pmt_t UHD_ASYNC_MSG_KEY = pmt::string_to_symbol("uhd_async_msg");
+    const pmt::pmt_t UHD_TX_MSG_KEY = pmt::string_to_symbol("uhd_tx_msg");
+    const pmt::pmt_t RX_MSG_KEY = pmt::string_to_symbol("rx_msg");
 
     std::string get_formatted_time_spec(const uint64_t full_secs, const double frac_secs)
     {
@@ -42,9 +44,9 @@ private:
                            std::to_string(frac_secs) + ")");
     }
 
-    void handle_pdu_meta(const pmt::pmt_t& meta);
-    void handle_uhd_tx(const pmt::pmt_t& msg);
-    void handle_uhd_tx_async(const pmt::pmt_t& msg);
+    pmt::pmt_t handle_pdu_meta(const pmt::pmt_t& meta);
+    pmt::pmt_t handle_uhd_tx(const pmt::pmt_t& msg);
+    pmt::pmt_t handle_uhd_tx_async(const pmt::pmt_t& msg);
 
 public:
     status_collector_impl();
