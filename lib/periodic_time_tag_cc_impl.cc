@@ -76,11 +76,9 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
     for (auto t : tags) {
         double tag_rate = pmt::to_double(t.value);
         if (std::fabs(tag_rate - d_samp_rate) > 1.0e-1) {
-            std::string err_msg("Runtime rate change not supported! configured=" + 
-                                std::to_string(d_samp_rate / 1.0e6) + 
-                                "MSps, received=" +
-                                std::to_string(tag_rate / 1.0e6) + 
-                                "MSps");
+            std::string err_msg("Runtime rate change not supported! configured=" +
+                                std::to_string(d_samp_rate / 1.0e6) + "MSps, received=" +
+                                std::to_string(tag_rate / 1.0e6) + "MSps");
             GR_LOG_ERROR(this->d_logger, err_msg);
             throw std::runtime_error(err_msg);
         }
