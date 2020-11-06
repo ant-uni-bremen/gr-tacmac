@@ -124,7 +124,6 @@ std::vector<uint8_t> mac_controller_impl::create_header(const size_t frame_count
 }
 
 
-
 uint64_t mac_controller_impl::get_timestamp_ticks_ns_now()
 {
     return std::chrono::high_resolution_clock::now().time_since_epoch().count();

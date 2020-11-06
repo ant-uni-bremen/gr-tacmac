@@ -21,11 +21,11 @@
 #ifndef INCLUDED_TACMAC_UTILITIES_H
 #define INCLUDED_TACMAC_UTILITIES_H
 
+#include <pmt/pmt.h>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <pmt/pmt.h>
 
 namespace gr {
 namespace tacmac {

@@ -11,11 +11,11 @@ templates:
 #     * id (makes the value accessible as keyname, e.g. in the make entry)
 #     * label (label shown in the GUI)
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
-parameters:
-- id: parametername_replace_me
-  label: FIX ME
-  dtype: string
-  value: You need to fill in your grc/tacmac_status_collector.block.yaml
+#parameters:
+#- id: parametername_replace_me
+#  label: FIX ME
+#  dtype: string
+#  value: You need to fill in your grc/tacmac_status_collector.block.yaml
 
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
