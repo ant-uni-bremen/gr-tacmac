@@ -82,7 +82,7 @@ blocks:
   parameters:
     comment: All modulation configuration values are available here
     value: get_gfdm_configuration(timeslots, subcarriers, active_subcarriers, overlap,
-      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2)
+      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 2])
   states:
     bus_sink: false
     bus_source: false
@@ -117,6 +117,7 @@ blocks:
     comment: ''
     const_points: '[-0.707-0.707j, -0.707+0.707j, 0.707+0.707j, 0.707-0.707j]'
     dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
     precision: '8'
     rot_sym: '4'
     soft_dec_lut: None
@@ -351,6 +352,24 @@ blocks:
     coordinate: [904, 624.0]
     rotation: 180
     state: disabled
+- name: blocks_add_xx_1
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [151, 707]
+    rotation: 180
+    state: true
 - name: blocks_complex_to_mag_0
   id: blocks_complex_to_mag
   parameters:
@@ -390,6 +409,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    en_uvec: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -483,6 +503,24 @@ blocks:
     coordinate: [1184, 1128.0]
     rotation: 0
     state: disabled
+- name: blocks_nlog10_ff_0_0
+  id: blocks_nlog10_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n: '10'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1234, 1051]
+    rotation: 0
+    state: enabled
 - name: blocks_pdu_to_tagged_stream_0
   id: blocks_pdu_to_tagged_stream
   parameters:
@@ -612,6 +650,27 @@ blocks:
     coordinate: [240, 596.0]
     rotation: 180
     state: enabled
+- name: channels_channel_model_0_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'True'
+    comment: ''
+    epsilon: '1.0'
+    freq_offset: fq_off
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_voltage: noise_voltage
+    seed: '0'
+    taps: (chan_taps / np.sqrt(np.linalg.norm(chan_taps))) * 0.7j
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [636, 638]
+    rotation: 180
+    state: enabled
 - name: ctrl_tab
   id: qtgui_tab_widget
   parameters:
@@ -690,6 +749,7 @@ blocks:
     length_tag_name: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: conf.padded_frame_len
+    nports: len(conf.cyclic_shifts)
     post_padding: conf.post_padding_len
     pre_padding: conf.pre_padding_len
     scale: tx_digital_gain
@@ -711,12 +771,13 @@ blocks:
     comment: ''
     cp_len: conf.cp_len
     cs_len: conf.cs_len
+    cyclic_shifts: conf.cyclic_shifts
     frequency_taps: conf.tx_filter_taps
     maxoutbuf: '0'
     minoutbuf: conf.frame_len
     overlap: conf.overlap
     per_timeslot: 'True'
-    preamble: conf.full_preamble
+    preambles: conf.full_preambles
     ramp_len: conf.ramp_len
     subcarrier_map: conf.subcarrier_map
     subcarriers: conf.subcarriers
@@ -1023,63 +1084,6 @@ blocks:
     coordinate: [552, 12.0]
     rotation: 0
     state: true
-- name: polarwrap_tag_to_stream_value_0
-  id: polarwrap_tag_to_stream_value
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    dict_key: latency
-    intype: byte
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: int
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1592, 724.0]
-    rotation: 0
-    state: enabled
-- name: polarwrap_tag_to_stream_value_0_0
-  id: polarwrap_tag_to_stream_value
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    dict_key: snr_lin
-    intype: complex
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [968, 1004.0]
-    rotation: 0
-    state: disabled
-- name: polarwrap_tag_to_stream_value_0_1
-  id: polarwrap_tag_to_stream_value
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    dict_key: cnr
-    intype: complex
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1352, 1172.0]
-    rotation: 0
-    state: disabled
 - name: qtgui_const_sink_rx_symbols
   id: qtgui_const_sink_x
   parameters:
@@ -1224,6 +1228,7 @@ blocks:
     minoutbuf: '0'
     name: '""'
     nconnections: '1'
+    norm_window: 'False'
     showports: 'False'
     tr_chan: '0'
     tr_level: '0.0'
@@ -1242,7 +1247,7 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    wintype: firdes.WIN_BLACKMAN_hARRIS
+    wintype: window.WIN_BLACKMAN_hARRIS
     ymax: '10'
     ymin: '-140'
   states:
@@ -1364,7 +1369,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'False'
+    autoscale: 'True'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -1737,7 +1742,7 @@ blocks:
     coordinate: [1360, 1036.0]
     rotation: 0
     state: disabled
-- name: qtgui_time_sink_x_1
+- name: qtgui_time_sink_x_0_0_0_0
   id: qtgui_time_sink_x
   parameters:
     affinity: ''
@@ -1768,7 +1773,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'True'
-    gui_hint: 'sync_tab@0: 2, 0, 1,1'
+    gui_hint: 'demod_tab@0: 1, 2, 1, 2'
     label1: ''
     label10: ''
     label2: ''
@@ -1790,10 +1795,10 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"LLRs"'
+    name: '"SNR"'
     nconnections: '1'
-    size: active_subcarriers
-    srate: '1'
+    size: '1024'
+    srate: samp_rate / samp_rate
     stemplot: 'False'
     style1: '1'
     style10: '1'
@@ -1823,7 +1828,7 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    ylabel: LLR
+    ylabel: SNR [dB]
     ymax: 5e-3
     ymin: '0.0'
     yunit: '"packet"'
@@ -1831,9 +1836,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1696, 1140.0]
+    coordinate: [1578, 1135]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_waterfall_sink_x_0
   id: qtgui_waterfall_sink_x
   parameters:
@@ -1887,7 +1892,7 @@ blocks:
     showports: 'False'
     type: complex
     update_time: '0.10'
-    wintype: firdes.WIN_BLACKMAN_hARRIS
+    wintype: window.WIN_BLACKMAN_hARRIS
   states:
     bus_sink: false
     bus_source: false
@@ -1999,6 +2004,21 @@ blocks:
     coordinate: [1656, 252.0]
     rotation: 0
     state: enabled
+- name: tacmac_elasticsearch_connector_0
+  id: tacmac_elasticsearch_connector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    hostname: localhost
+    port: '9200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1179, 978]
+    rotation: 0
+    state: enabled
 - name: tacmac_mac_controller_0
   id: tacmac_mac_controller
   parameters:
@@ -2035,6 +2055,59 @@ blocks:
     coordinate: [1392, 836.0]
     rotation: 0
     state: enabled
+- name: tacmac_status_collector_0
+  id: tacmac_status_collector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1165, 939]
+    rotation: 0
+    state: enabled
+- name: tacmac_tag_to_stream_value_0_0
+  id: tacmac_tag_to_stream_value
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dict_key: latency
+    intype: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: int
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1618, 790]
+    rotation: 0
+    state: true
+- name: tacmac_tag_to_stream_value_0_0_0
+  id: tacmac_tag_to_stream_value
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dict_key: snr_lin
+    intype: complex
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1058, 1043]
+    rotation: 0
+    state: true
 - name: timeslots
   id: parameter
   parameters:
@@ -2056,6 +2129,7 @@ blocks:
 connections:
 - [analog_fastnoise_source_x_0, '0', blocks_add_xx_0, '0']
 - [blocks_add_xx_0, '0', hier_gfdm_fastsync_0, '0']
+- [blocks_add_xx_1, '0', hier_gfdm_fastsync_0, '0']
 - [blocks_complex_to_mag_0, '0', qtgui_time_sink_channel_estimate_0, '0']
 - [blocks_int_to_float_0, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_message_strobe_0, strobe, blocks_random_pdu_0, generate]
@@ -2063,18 +2137,23 @@ connections:
 - [blocks_message_strobe_0_0_0, strobe, blocks_random_pdu_0, generate]
 - [blocks_message_strobe_0_1, strobe, blocks_random_pdu_0, generate]
 - [blocks_nlog10_ff_0, '0', qtgui_time_sink_x_0_0_0, '0']
+- [blocks_nlog10_ff_0_0, '0', qtgui_time_sink_x_0_0_0_0, '0']
 - [blocks_pdu_to_tagged_stream_0, '0', hier_polar_encoder_0, '0']
-- [blocks_pdu_to_tagged_stream_0_0, '0', polarwrap_tag_to_stream_value_0, '0']
+- [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0_0, '0']
 - [blocks_random_pdu_0, pdus, tacmac_mac_controller_0, LLCin]
 - [blocks_tag_gate_0, '0', blocks_add_xx_0, '1']
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_1, PHYin]
-- [channels_channel_model_0, '0', hier_gfdm_fastsync_0, '0']
+- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_status_collector_0, in]
+- [channels_channel_model_0, '0', blocks_add_xx_1, '0']
+- [channels_channel_model_0_0, '0', blocks_add_xx_1, '1']
 - [gfdm_short_burst_shaper_0, '0', blocks_tag_gate_0, '0']
 - [gfdm_short_burst_shaper_0, '0', channels_channel_model_0, '0']
 - [gfdm_short_burst_shaper_0, '0', latency_tag_timestamp_debug_0_0_0_0_0, '0']
 - [gfdm_short_burst_shaper_0, '0', qtgui_time_sink_synced_stream_0, '0']
+- [gfdm_short_burst_shaper_0, '1', channels_channel_model_0_0, '0']
 - [gfdm_transmitter_cc_0, '0', gfdm_short_burst_shaper_0, '0']
 - [gfdm_transmitter_cc_0, '0', latency_tag_timestamp_debug_0_0_0_0, '0']
+- [gfdm_transmitter_cc_0, '1', gfdm_short_burst_shaper_0, '1']
 - [hier_gfdm_fastsync_0, '0', hier_gfdm_receiver_tagged_0, '0']
 - [hier_gfdm_fastsync_0, '0', latency_tag_timestamp_debug_0_0_0_0_0_0, '0']
 - [hier_gfdm_fastsync_0, '1', qtgui_freq_sink_x_0, '0']
@@ -2083,21 +2162,20 @@ connections:
 - [hier_gfdm_fastsync_0, '2', qtgui_time_sink_synced_stream, '1']
 - [hier_gfdm_receiver_tagged_0, '0', blocks_complex_to_mag_0, '0']
 - [hier_gfdm_receiver_tagged_0, '0', blocks_tag_debug_0_0, '0']
-- [hier_gfdm_receiver_tagged_0, '0', polarwrap_tag_to_stream_value_0_0, '0']
+- [hier_gfdm_receiver_tagged_0, '0', tacmac_tag_to_stream_value_0_0_0, '0']
 - [hier_gfdm_receiver_tagged_0, '1', latency_tag_timestamp_debug_0_0_0_0_0_0_1, '0']
-- [hier_gfdm_receiver_tagged_0, '1', polarwrap_tag_to_stream_value_0_1, '0']
 - [hier_gfdm_receiver_tagged_0, '1', qtgui_const_sink_rx_symbols, '0']
 - [hier_gfdm_receiver_tagged_0, '1', symbolmapping_symbol_demapper_cf_0, '0']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [hier_polar_encoder_0, '0', symbolmapping_symbol_mapper_bc_0, '0']
-- [polarwrap_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']
-- [polarwrap_tag_to_stream_value_0_0, '0', blocks_nlog10_ff_0, '0']
-- [polarwrap_tag_to_stream_value_0_1, '0', qtgui_time_sink_x_1, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', hier_polar_decoder_0, '0']
 - [symbolmapping_symbol_mapper_bc_0, '0', gfdm_transmitter_cc_0, '0']
 - [tacmac_mac_controller_0, PHYout, blocks_pdu_to_tagged_stream_0, pdus]
 - [tacmac_mac_controller_1, LLCout, blocks_message_debug_0, print_pdu]
 - [tacmac_mac_controller_1, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
+- [tacmac_status_collector_0, out, tacmac_elasticsearch_connector_0, in]
+- [tacmac_tag_to_stream_value_0_0, '0', blocks_int_to_float_0, '0']
+- [tacmac_tag_to_stream_value_0_0_0, '0', blocks_nlog10_ff_0_0, '0']
 
 metadata:
   file_format: 1
