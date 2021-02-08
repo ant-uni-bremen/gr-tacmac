@@ -72,7 +72,10 @@ class elasticsearch_connector(gr.sync_block):
 
     def send_to_buffer(self, body):
         self._db_buffer.add([body, ])
-        # self._db_buffer.flush()
+        if self._db_buffer.oldest_elapsed_time > 10.0:
+            # Just flush if we buffered for more than 10.0s.
+            # This is a fixed threshold for now.
+            self._db_buffer.flush()
 
     def handle_msg(self, msg):
         # meta = pmt.symbol_to_string(pmt.car(msg))
