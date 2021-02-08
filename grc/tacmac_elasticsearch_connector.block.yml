@@ -1,10 +1,10 @@
 id: tacmac_elasticsearch_connector
 label: elasticsearch Connector
-category: '[tacmac]'
+category: "[tacmac]"
 
 templates:
   imports: import tacmac
-  make: tacmac.elasticsearch_connector(${hostname}, ${port})
+  make: tacmac.elasticsearch_connector(${hostname}, ${port}, ${device_id}, ${data_type}, ${index_prefix}, ${buffer_size})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -12,15 +12,30 @@ templates:
 #     * label (label shown in the GUI)
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 parameters:
-- id: hostname
-  label: DB Hostname
-  dtype: string
-  default: localhost
-- id: port
-  label: DB Port
-  dtype: int
-  default: 9200
-
+  - id: hostname
+    label: DB Hostname
+    dtype: string
+    default: localhost
+  - id: port
+    label: DB Port
+    dtype: int
+    default: 9200
+  - id: device_id
+    label: Device ID
+    dtype: int
+    default: 4711
+  - id: data_type
+    label: DB data type
+    dtype: string
+    default: "5gdata"
+  - id: index_prefix
+    label: DB index prefix
+    dtype: string
+    default: "measurements-"
+  - id: buffer_size
+    label: DB buffer size
+    dtype: int
+    default: 5000
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
 #      * label (an identifier for the GUI)
@@ -29,9 +44,9 @@ parameters:
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
 inputs:
-- label: in
-  domain: message
-  optional: True
+  - label: in
+    domain: message
+    optional: True
 
 #outputs:
 #- label: ...

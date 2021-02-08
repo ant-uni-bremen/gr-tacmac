@@ -2009,8 +2009,12 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    buffer_size: '300'
     comment: ''
+    data_type: 5gdata
+    device_id: '4711'
     hostname: localhost
+    index_prefix: measurements-
     port: '9200'
   states:
     bus_sink: false
