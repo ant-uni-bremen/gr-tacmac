@@ -62,7 +62,8 @@ blocks:
   parameters:
     comment: All modulation configuration values are available here
     value: get_gfdm_configuration(timeslots, subcarriers, active_subcarriers, overlap=2,
-      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2)
+      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 2,
+      ])
   states:
     bus_sink: false
     bus_source: false
@@ -136,6 +137,7 @@ blocks:
     comment: ''
     const_points: '[-0.707-0.707j, -0.707+0.707j, 0.707+0.707j, 0.707-0.707j]'
     dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
     precision: '8'
     rot_sym: '4'
     soft_dec_lut: None
@@ -249,6 +251,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    en_uvec: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -409,9 +412,11 @@ blocks:
     cp_len: conf.cp_len
     cs_len: conf.cs_len
     cycle_interval: cycle_interval
+    cyclic_shift: conf.cyclic_shifts
     frame_size: code_conf.frame_size
     frequency_domain_taps: conf.tx_filter_taps
     frozen_bit_positions: code_conf.frozen_bit_positions
+    full_preambles: conf.full_preambles
     gfdm_constellation: gfdm_constellation
     interleaver_indices: code_conf.interleaver_indices
     maxoutbuf: '0'
@@ -419,7 +424,6 @@ blocks:
     overlap: conf.overlap
     post_padding: conf.post_padding_len
     pre_padding: conf.pre_padding_len
-    preamble: conf.full_preamble
     ramp_len: conf.ramp_len
     subcarrier_map: conf.subcarrier_map
     subcarriers: conf.subcarriers
@@ -1044,14 +1048,18 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    buffer_size: '5000'
     comment: ''
+    data_type: 5gdata
+    device_id: '4711'
     hostname: localhost
+    index_prefix: measurements-
     port: '9200'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 940.0]
+    coordinate: [1055, 909]
     rotation: 0
     state: disabled
 - name: tacmac_periodic_time_tag_cc_0
@@ -1079,7 +1087,6 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    parametername_replace_me: ''
   states:
     bus_sink: false
     bus_source: false
@@ -1101,7 +1108,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 848.0]
+    coordinate: [1075, 856]
     rotation: 0
     state: true
 - name: tacmac_udp_interface_0
@@ -1230,8 +1237,8 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    ant0: TX/RX
-    ant1: ''
+    ant0: '"TX/RX"'
+    ant1: '"TX/RX"'
     ant10: ''
     ant11: ''
     ant12: ''
@@ -1295,7 +1302,7 @@ blocks:
     bw8: '0'
     bw9: '0'
     center_freq0: tfreq
-    center_freq1: '0'
+    center_freq1: tfreq
     center_freq10: '0'
     center_freq11: '0'
     center_freq12: '0'
@@ -1339,7 +1346,7 @@ blocks:
     dev_addr: '"addr={}".format(tx_addr)'
     dev_args: device_args
     gain0: tgain
-    gain1: '0'
+    gain1: tgain
     gain10: '0'
     gain11: '0'
     gain12: '0'
@@ -1370,6 +1377,38 @@ blocks:
     gain7: '0'
     gain8: '0'
     gain9: '0'
+    gain_type0: default
+    gain_type1: default
+    gain_type10: default
+    gain_type11: default
+    gain_type12: default
+    gain_type13: default
+    gain_type14: default
+    gain_type15: default
+    gain_type16: default
+    gain_type17: default
+    gain_type18: default
+    gain_type19: default
+    gain_type2: default
+    gain_type20: default
+    gain_type21: default
+    gain_type22: default
+    gain_type23: default
+    gain_type24: default
+    gain_type25: default
+    gain_type26: default
+    gain_type27: default
+    gain_type28: default
+    gain_type29: default
+    gain_type3: default
+    gain_type30: default
+    gain_type31: default
+    gain_type4: default
+    gain_type5: default
+    gain_type6: default
+    gain_type7: default
+    gain_type8: default
+    gain_type9: default
     len_tag_name: '"packet_len"'
     lo_export0: 'False'
     lo_export1: 'False'
@@ -1437,39 +1476,7 @@ blocks:
     lo_source9: internal
     maxoutbuf: '4096'
     minoutbuf: '4096'
-    nchan: '1'
-    norm_gain0: 'False'
-    norm_gain1: 'False'
-    norm_gain10: 'False'
-    norm_gain11: 'False'
-    norm_gain12: 'False'
-    norm_gain13: 'False'
-    norm_gain14: 'False'
-    norm_gain15: 'False'
-    norm_gain16: 'False'
-    norm_gain17: 'False'
-    norm_gain18: 'False'
-    norm_gain19: 'False'
-    norm_gain2: 'False'
-    norm_gain20: 'False'
-    norm_gain21: 'False'
-    norm_gain22: 'False'
-    norm_gain23: 'False'
-    norm_gain24: 'False'
-    norm_gain25: 'False'
-    norm_gain26: 'False'
-    norm_gain27: 'False'
-    norm_gain28: 'False'
-    norm_gain29: 'False'
-    norm_gain3: 'False'
-    norm_gain30: 'False'
-    norm_gain31: 'False'
-    norm_gain4: 'False'
-    norm_gain5: 'False'
-    norm_gain6: 'False'
-    norm_gain7: 'False'
-    norm_gain8: 'False'
-    norm_gain9: 'False'
+    nchan: '2'
     num_mboards: '1'
     otw: ''
     samp_rate: samp_rate
@@ -1483,7 +1490,7 @@ blocks:
     sd_spec7: ''
     show_lo_controls: 'False'
     stream_args: ''
-    stream_chans: '[3,]'
+    stream_chans: '[2, 3,]'
     sync: sync
     time_source0: gpsdo
     time_source1: ''
@@ -1678,6 +1685,38 @@ blocks:
     gain7: '0'
     gain8: '0'
     gain9: '0'
+    gain_type0: default
+    gain_type1: default
+    gain_type10: default
+    gain_type11: default
+    gain_type12: default
+    gain_type13: default
+    gain_type14: default
+    gain_type15: default
+    gain_type16: default
+    gain_type17: default
+    gain_type18: default
+    gain_type19: default
+    gain_type2: default
+    gain_type20: default
+    gain_type21: default
+    gain_type22: default
+    gain_type23: default
+    gain_type24: default
+    gain_type25: default
+    gain_type26: default
+    gain_type27: default
+    gain_type28: default
+    gain_type29: default
+    gain_type3: default
+    gain_type30: default
+    gain_type31: default
+    gain_type4: default
+    gain_type5: default
+    gain_type6: default
+    gain_type7: default
+    gain_type8: default
+    gain_type9: default
     iq_imbal_enb0: '""'
     iq_imbal_enb1: '""'
     iq_imbal_enb10: '""'
@@ -1777,38 +1816,6 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
-    norm_gain0: 'False'
-    norm_gain1: 'False'
-    norm_gain10: 'False'
-    norm_gain11: 'False'
-    norm_gain12: 'False'
-    norm_gain13: 'False'
-    norm_gain14: 'False'
-    norm_gain15: 'False'
-    norm_gain16: 'False'
-    norm_gain17: 'False'
-    norm_gain18: 'False'
-    norm_gain19: 'False'
-    norm_gain2: 'False'
-    norm_gain20: 'False'
-    norm_gain21: 'False'
-    norm_gain22: 'False'
-    norm_gain23: 'False'
-    norm_gain24: 'False'
-    norm_gain25: 'False'
-    norm_gain26: 'False'
-    norm_gain27: 'False'
-    norm_gain28: 'False'
-    norm_gain29: 'False'
-    norm_gain3: 'False'
-    norm_gain30: 'False'
-    norm_gain31: 'False'
-    norm_gain4: 'False'
-    norm_gain5: 'False'
-    norm_gain6: 'False'
-    norm_gain7: 'False'
-    norm_gain8: 'False'
-    norm_gain9: 'False'
     num_mboards: '1'
     otw: ''
     rx_agc0: Default
@@ -1914,6 +1921,7 @@ connections:
 - [hier_gfdm_phy_transmitter_0, '0', pad_sink_0_0_1_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', tacmac_tags_to_msg_dict_0, '0']
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
+- [hier_gfdm_phy_transmitter_0, '1', uhd_usrp_sink_0, '1']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_status_collector_0, out, blocks_message_debug_0, print]

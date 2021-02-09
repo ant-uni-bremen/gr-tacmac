@@ -117,6 +117,23 @@ blocks:
     coordinate: [680, 260.0]
     rotation: 0
     state: true
+- name: cyclic_shift
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Cyclic shift
+    short_id: ''
+    type: ''
+    value: '[0, 2, ]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 16]
+    rotation: 0
+    state: enabled
 - name: frame_size
   id: parameter
   parameters:
@@ -168,6 +185,23 @@ blocks:
     coordinate: [400, 28.0]
     rotation: 0
     state: true
+- name: full_preambles
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Full preambles
+    short_id: ''
+    type: ''
+    value: '[list(range(146)), list(range(146)), ]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1463, 148]
+    rotation: 0
+    state: enabled
 - name: gfdm_constellation
   id: parameter
   parameters:
@@ -198,6 +232,7 @@ blocks:
     length_tag_name: tag_key
     maxoutbuf: '0'
     minoutbuf: ''
+    nports: len(cyclic_shift)
     post_padding: post_padding
     pre_padding: pre_padding
     scale: tx_digital_gain
@@ -219,12 +254,13 @@ blocks:
     comment: ''
     cp_len: cp_len
     cs_len: cs_len
+    cyclic_shifts: cyclic_shift
     frequency_taps: frequency_domain_taps
     maxoutbuf: '0'
     minoutbuf: '0'
     overlap: overlap
     per_timeslot: 'True'
-    preamble: preamble
+    preambles: full_preambles
     ramp_len: ramp_len
     subcarrier_map: subcarrier_map
     subcarriers: subcarriers
@@ -310,7 +346,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    label: out
+    label: out0
     num_streams: '1'
     optional: 'False'
     type: complex
@@ -319,7 +355,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 548.0]
+    coordinate: [1520, 499]
     rotation: 0
     state: true
 - name: pad_sink_0_0
@@ -338,6 +374,24 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1520, 596.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0_1
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: out1
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1522, 549]
     rotation: 0
     state: true
 - name: pad_source_0
@@ -412,23 +466,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [888, 260.0]
-    rotation: 0
-    state: true
-- name: preamble
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: Full preamble
-    short_id: ''
-    type: ''
-    value: list(range(146))
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1456, 148.0]
     rotation: 0
     state: true
 - name: ramp_len
@@ -589,8 +626,10 @@ blocks:
 connections:
 - [blocks_pdu_to_tagged_stream_0, '0', hier_polar_encoder_0, '0']
 - [gfdm_short_burst_shaper_0, '0', pad_sink_0, '0']
+- [gfdm_short_burst_shaper_0, '1', pad_sink_0_1, '0']
 - [gfdm_short_burst_shaper_0, command, pad_sink_0_0, in]
 - [gfdm_transmitter_cc_0, '0', gfdm_short_burst_shaper_0, '0']
+- [gfdm_transmitter_cc_0, '1', gfdm_short_burst_shaper_0, '1']
 - [hier_polar_encoder_0, '0', symbolmapping_symbol_mapper_bc_0, '0']
 - [pad_source_0, out, blocks_pdu_to_tagged_stream_0, pdus]
 - [pad_source_0_0, out, gfdm_short_burst_shaper_0, time_tag]
