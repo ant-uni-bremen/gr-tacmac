@@ -1589,7 +1589,7 @@ blocks:
     center_freq17: '0'
     center_freq18: '0'
     center_freq19: '0'
-    center_freq2: tfreq
+    center_freq2: ''
     center_freq20: '0'
     center_freq21: '0'
     center_freq22: '0'
@@ -1665,7 +1665,7 @@ blocks:
     gain17: '0'
     gain18: '0'
     gain19: '0'
-    gain2: rgain -10
+    gain2: ''
     gain20: '0'
     gain21: '0'
     gain22: '0'
