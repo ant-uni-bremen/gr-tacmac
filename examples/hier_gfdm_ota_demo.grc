@@ -62,7 +62,7 @@ blocks:
   parameters:
     comment: All modulation configuration values are available here
     value: get_gfdm_configuration(timeslots, subcarriers, active_subcarriers, overlap=2,
-      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 2,
+      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 4,
       ])
   states:
     bus_sink: false
@@ -87,7 +87,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '"master_clock_rate=122.88e6,clock_source=gpsdo,time_source=gpsdo"'
+    value: '"master_clock_rate=122.88e6,clock_source=external,time_source=external"'
   states:
     bus_sink: false
     bus_source: false
@@ -131,6 +131,32 @@ blocks:
     coordinate: [408, 288.0]
     rotation: 0
     state: disabled
+- name: full_rx_device_addr
+  id: variable
+  parameters:
+    comment: ''
+    value: ''',''.join([f''addr{i}={a}'' for i, a in enumerate(rx_addr.replace('','',
+      '' '').split())])'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [83, 868]
+    rotation: 0
+    state: enabled
+- name: full_tx_device_addr
+  id: variable
+  parameters:
+    comment: ''
+    value: ''',''.join([f''addr{i}={a}'' for i, a in enumerate(tx_addr.replace('','',
+      '' '').split())])'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 334]
+    rotation: 0
+    state: enabled
 - name: gfdm_constellation
   id: variable_constellation
   parameters:
@@ -256,7 +282,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1592, 752.0]
+    coordinate: [1626, 770]
     rotation: 0
     state: disabled
 - name: blocks_tag_debug_0
@@ -972,7 +998,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 84]
+    coordinate: [356, 98]
     rotation: 0
     state: true
 - name: scorr_threshold_high
@@ -1052,7 +1078,7 @@ blocks:
     comment: ''
     data_type: 5gdata
     device_id: '4711'
-    hostname: localhost
+    hostname: sanjose
     index_prefix: measurements-
     port: '9200'
   states:
@@ -1061,7 +1087,7 @@ blocks:
     bus_structure: null
     coordinate: [1055, 909]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_periodic_time_tag_cc_0
   id: tacmac_periodic_time_tag_cc
   parameters:
@@ -1111,6 +1137,57 @@ blocks:
     coordinate: [1075, 856]
     rotation: 0
     state: true
+- name: tacmac_tags_to_msg_dict_0_0
+  id: tacmac_tags_to_msg_dict
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    intype: float
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [816, 945]
+    rotation: 0
+    state: disabled
+- name: tacmac_tags_to_msg_dict_0_0_0
+  id: tacmac_tags_to_msg_dict
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    intype: float
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [813, 1048]
+    rotation: 0
+    state: disabled
+- name: tacmac_tags_to_msg_dict_0_0_1
+  id: tacmac_tags_to_msg_dict
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    intype: float
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [814, 1000]
+    rotation: 0
+    state: disabled
 - name: tacmac_udp_interface_0
   id: tacmac_udp_interface
   parameters:
@@ -1334,7 +1411,7 @@ blocks:
     center_freq8: '0'
     center_freq9: '0'
     clock_rate: 122.88e6
-    clock_source0: gpsdo
+    clock_source0: external
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1343,7 +1420,7 @@ blocks:
     clock_source6: ''
     clock_source7: ''
     comment: ''
-    dev_addr: '"addr={}".format(tx_addr)'
+    dev_addr: full_tx_device_addr
     dev_args: device_args
     gain0: tgain
     gain1: tgain
@@ -1492,7 +1569,7 @@ blocks:
     stream_args: ''
     stream_chans: '[2, 3,]'
     sync: sync
-    time_source0: gpsdo
+    time_source0: external
     time_source1: ''
     time_source2: ''
     time_source3: ''
@@ -1610,7 +1687,7 @@ blocks:
     center_freq8: '0'
     center_freq9: '0'
     clock_rate: 122.88e6
-    clock_source0: gpsdo
+    clock_source0: external
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1651,7 +1728,7 @@ blocks:
     dc_offs_enb7: '""'
     dc_offs_enb8: '""'
     dc_offs_enb9: '""'
-    dev_addr: '"addr={}".format(rx_addr)'
+    dev_addr: full_rx_device_addr
     dev_args: device_args
     gain0: rgain
     gain1: rgain
@@ -1863,7 +1940,7 @@ blocks:
     stream_args: ''
     stream_chans: '[0,1,]'
     sync: sync
-    time_source0: gpsdo
+    time_source0: external
     time_source1: ''
     time_source2: ''
     time_source3: ''
@@ -1899,7 +1976,6 @@ blocks:
 
 connections:
 - [blocks_tagged_stream_to_pdu_0, pdus, pad_sink_0, in]
-- [blocks_tagged_stream_to_pdu_0, pdus, tacmac_status_collector_0, in]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_udp_interface_0, rx]
 - [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
 - [channels_channel_model_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '1']
@@ -1909,8 +1985,11 @@ connections:
 - [hier_gfdm_2rx_lower_phy_receiver_0, '10', pad_sink_0_1_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '2', pad_sink_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '3', hier_polar_decoder_0, '0']
+- [hier_gfdm_2rx_lower_phy_receiver_0, '3', tacmac_tags_to_msg_dict_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '4', qtgui_time_sink_synced_stream_0, '0']
+- [hier_gfdm_2rx_lower_phy_receiver_0, '4', tacmac_tags_to_msg_dict_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '5', qtgui_time_sink_synced_stream_0, '1']
+- [hier_gfdm_2rx_lower_phy_receiver_0, '5', tacmac_tags_to_msg_dict_0_0_0, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '6', pad_sink_0_0_2, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '7', pad_sink_0_0_0_1, '0']
 - [hier_gfdm_2rx_lower_phy_receiver_0, '8', pad_sink_0_0_0_0, '0']
@@ -1927,9 +2006,12 @@ connections:
 - [tacmac_status_collector_0, out, blocks_message_debug_0, print]
 - [tacmac_status_collector_0, out, tacmac_elasticsearch_connector_0, in]
 - [tacmac_tags_to_msg_dict_0, out, tacmac_status_collector_0, in]
+- [tacmac_tags_to_msg_dict_0_0, out, blocks_message_debug_0, print]
+- [tacmac_tags_to_msg_dict_0_0_0, out, blocks_message_debug_0, print]
+- [tacmac_tags_to_msg_dict_0_0_1, out, blocks_message_debug_0, print]
+- [tacmac_udp_interface_0, status, tacmac_status_collector_0, in]
 - [tacmac_udp_interface_0, timing, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_udp_interface_0, tx, hier_gfdm_phy_transmitter_0, pdus]
-- [uhd_usrp_sink_0, async_msgs, tacmac_status_collector_0, in]
 - [uhd_usrp_source_0, '0', blocks_file_sink_0_0, '0']
 - [uhd_usrp_source_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
 - [uhd_usrp_source_0, '0', tacmac_periodic_time_tag_cc_0, '0']

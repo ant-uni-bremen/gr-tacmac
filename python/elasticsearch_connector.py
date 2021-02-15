@@ -78,14 +78,19 @@ class elasticsearch_connector(gr.sync_block):
             self._db_buffer.flush()
 
     def handle_msg(self, msg):
-        # meta = pmt.symbol_to_string(pmt.car(msg))
+        meta = pmt.symbol_to_string(pmt.car(msg))
+        direction = 'unknown'
+        if 'rx' in meta:
+            direction = 'rx'
+        elif 'tx' in meta:
+            direction = 'tx'
         values = pmt.cdr(msg)
 
         if not pmt.is_dict(values):
             self.send_to_buffer({"foo": pmt.to_python(values)})
             return
 
-        body = {}
+        body = {'direction': direction}
         for i in range(pmt.length(values)):
             k = str(pmt.to_python(pmt.car(pmt.nth(i, values))))
             v = pmt.cdr(pmt.nth(i, values))

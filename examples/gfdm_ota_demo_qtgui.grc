@@ -113,18 +113,6 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '"master_clock_rate=125e6,send_frame_size=1024,send_buff_size=16384"'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [22, 482]
-    rotation: 0
-    state: disabled
-- name: device_args
-  id: variable
-  parameters:
-    comment: ''
     value: '"master_clock_rate=122.88e6"'
   states:
     bus_sink: false
@@ -133,18 +121,6 @@ blocks:
     coordinate: [22, 394]
     rotation: 0
     state: enabled
-- name: device_args
-  id: variable
-  parameters:
-    comment: ''
-    value: '""'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [46, 458]
-    rotation: 0
-    state: disabled
 - name: full_rx_addr
   id: variable
   parameters:
@@ -163,6 +139,7 @@ blocks:
     comment: ''
     const_points: '[-0.707-0.707j, -0.707+0.707j, 0.707+0.707j, 0.707-0.707j]'
     dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
     precision: '8'
     rot_sym: '4'
     soft_dec_lut: None
@@ -358,7 +335,7 @@ blocks:
     coordinate: [1520, 572.0]
     rotation: 0
     state: enabled
-- name: timing_advance
+- name: timing_advance_gui
   id: variable_qtgui_range
   parameters:
     comment: ''
@@ -370,8 +347,7 @@ blocks:
     start: '0'
     step: '1.e-5'
     stop: '.05'
-    value: .2e-3 + (src_id % 4) * (1.e-5 + (1/3 * 1.e-5) + (conf.frame_len + conf.pre_padding_len
-      + conf.post_padding_len) / samp_rate)
+    value: timing_advance
     widget: counter_slider
   states:
     bus_sink: false
@@ -781,7 +757,7 @@ blocks:
     tfreq: tfreq
     tgain: tgain
     timeslots: timeslots
-    timing_advance: timing_advance
+    timing_advance: timing_advance_gui
     tx_addr: tx_addr
     tx_digital_gain: tx_digital_gain
     xcorr_threshold: xcorr_threshold
@@ -811,19 +787,6 @@ blocks:
     coordinate: [1672, 60.0]
     rotation: 0
     state: disabled
-- name: import_numpy
-  id: import
-  parameters:
-    alias: ''
-    comment: ''
-    imports: import numpy as np
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [12, 247]
-    rotation: 0
-    state: disabled
 - name: import_numpy_0
   id: import
   parameters:
@@ -850,23 +813,6 @@ blocks:
     coordinate: [9, 198]
     rotation: 0
     state: enabled
-- name: info_length
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: Information bit length
-    short_id: ''
-    type: intx
-    value: '792'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [984, 84.0]
-    rotation: 0
-    state: disabled
 - name: mtu_size
   id: parameter
   parameters:
@@ -1874,6 +1820,23 @@ blocks:
     coordinate: [202, 5]
     rotation: 0
     state: true
+- name: timing_advance
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Timing advance
+    short_id: ''
+    type: eng_float
+    value: '2.e-4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1274, 174]
+    rotation: 0
+    state: enabled
 - name: tx_addr
   id: parameter
   parameters:
@@ -1890,7 +1853,7 @@ blocks:
     bus_structure: null
     coordinate: [203, 101]
     rotation: 0
-    state: true
+    state: enabled
 - name: tx_gain
   id: parameter
   parameters:
