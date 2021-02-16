@@ -13,6 +13,7 @@ import elasticsearch
 from elasticbatch import ElasticBuffer
 from gnuradio import gr
 import pmt
+import socket
 
 
 class elasticsearch_connector(gr.sync_block):
@@ -37,6 +38,7 @@ class elasticsearch_connector(gr.sync_block):
         self.message_port_register_in(pmt.mp("in"))
         self.set_msg_handler(pmt.mp("in"), self.handle_msg)
 
+        self._hostname = socket.gethostname()
         # set up database connection
         dbname = f'{hostname}:{port}'
         client_kwargs = {'hosts': dbname}
@@ -60,6 +62,9 @@ class elasticsearch_connector(gr.sync_block):
         def device_id_func(doc):
             return self._db_device_id
 
+        def hostname_func(doc):
+            return self._hostname
+
         def timestamp_func(doc):
             return int(1e3 * datetime.datetime.now().timestamp())
 
@@ -68,6 +73,7 @@ class elasticsearch_connector(gr.sync_block):
                                         type=data_type_func,
                                         deviceId=device_id_func,
                                         timestamp=timestamp_func,
+                                        hostname=hostname_func,
                                         size=buffer_size)
 
     def send_to_buffer(self, body):

@@ -148,6 +148,40 @@ blocks:
     coordinate: [1032, 156.0]
     rotation: 0
     state: true
+- name: db_device_id
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: DB device ID
+    short_id: ''
+    type: intx
+    value: '4711'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [765, 316]
+    rotation: 0
+    state: true
+- name: db_hostname
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: DB hostname
+    short_id: ''
+    type: str
+    value: '"172.24.142.204"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [762, 216]
+    rotation: 0
+    state: true
 - name: dst_id
   id: parameter
   parameters:
@@ -174,6 +208,8 @@ blocks:
     alias: ''
     comment: ''
     cycle_interval: cycle_interval
+    db_device_id: db_device_id
+    db_hostname: db_hostname
     dst_id: dst_id
     ic_iter_range: ic_iter_range
     info_length: info_length

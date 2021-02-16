@@ -681,6 +681,40 @@ blocks:
     coordinate: [1640, 348.0]
     rotation: 0
     state: enabled
+- name: db_device_id
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: DB device ID
+    short_id: ''
+    type: intx
+    value: '4711'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [644, 332]
+    rotation: 0
+    state: true
+- name: db_hostname
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: DB hostname
+    short_id: ''
+    type: str
+    value: '"172.24.142.204"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [641, 232]
+    rotation: 0
+    state: true
 - name: demod_tab
   id: qtgui_tab_widget
   parameters:
@@ -741,6 +775,8 @@ blocks:
     alias: ''
     comment: ''
     cycle_interval: cycle_interval
+    db_device_id: db_device_id
+    db_hostname: db_hostname
     dst_id: dst_id
     ic_iter_range: ic_iter_range
     info_length: info_length
