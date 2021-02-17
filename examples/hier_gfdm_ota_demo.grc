@@ -62,7 +62,7 @@ blocks:
   parameters:
     comment: All modulation configuration values are available here
     value: get_gfdm_configuration(timeslots, subcarriers, active_subcarriers, overlap=2,
-      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 4,
+      cp_len=16, cs_len=8, filtertype='rrc', filteralpha=0.2, cyclic_shifts=[0, 2,
       ])
   states:
     bus_sink: false

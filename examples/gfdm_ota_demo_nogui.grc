@@ -44,6 +44,18 @@ blocks:
     coordinate: [437, 177]
     rotation: 0
     state: enabled
+- name: full_device_id
+  id: variable
+  parameters:
+    comment: ''
+    value: db_device_id if db_device_id > 0 else 4200 + src_id
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [767, 411]
+    rotation: 0
+    state: enabled
 - name: full_rx_addr
   id: variable
   parameters:
@@ -157,7 +169,7 @@ blocks:
     label: DB device ID
     short_id: ''
     type: intx
-    value: '4711'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -208,7 +220,7 @@ blocks:
     alias: ''
     comment: ''
     cycle_interval: cycle_interval
-    db_device_id: db_device_id
+    db_device_id: full_device_id
     db_hostname: db_hostname
     dst_id: dst_id
     ic_iter_range: ic_iter_range
