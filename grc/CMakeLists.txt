@@ -13,5 +13,6 @@ install(FILES
     tacmac_status_collector.block.yml
     tacmac_tags_to_msg_dict.block.yml
     tacmac_udp_interface.block.yml
-    tacmac_elasticsearch_connector.block.yml DESTINATION share/gnuradio/grc/blocks
+    tacmac_elasticsearch_connector.block.yml
+    tacmac_phy_transmitter.block.yml DESTINATION share/gnuradio/grc/blocks
 )

@@ -1,0 +1,132 @@
+id: tacmac_phy_transmitter
+label: PHY transmitter
+category: "[tacmac]"
+
+templates:
+  imports: import tacmac
+  make: |-
+    tacmac.phy_transmitter(${timeslots}, ${subcarriers}, ${active_subcarriers},
+      ${overlap}, ${subcarrier_map}, ${cp_len}, ${cs_len}, ${ramp_len},
+      ${frequency_domain_taps}, ${constellation_order}, ${window_taps},
+      ${frame_size}, ${frozen_bit_positions}, ${interleaver_indices},
+      ${pre_padding}, ${post_padding}, ${full_preambles},
+      ${cycle_interval}, ${timing_advance}, ${tx_digital_gain}, ${cyclic_shift},
+      ${packet_length_key}
+    )
+  callbacks:
+    - set_cycle_interval(${cycle_interval})
+    - set_timing_advance(${timing_advance})
+    - set_tx_digital_gain(${tx_digital_gain})
+
+#  Make one 'parameters' list entry for every parameter you want settable from the GUI.
+#     Keys include:
+#     * id (makes the value accessible as keyname, e.g. in the make entry)
+#     * label (label shown in the GUI)
+#     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+parameters:
+  - id: timeslots
+    label: Timeslots
+    dtype: int
+    default: 15
+  - id: subcarriers
+    label: Subcarriers
+    dtype: int
+    default: 64
+  - id: active_subcarriers
+    label: Active subcarriers
+    dtype: int
+    default: 60
+  - id: overlap
+    label: Overlap
+    dtype: int
+    default: 2
+  - id: subcarrier_map
+    label: Subcarrier map
+    dtype: int_vector
+    default: list(range(60))
+  - id: cp_len
+    label: CP length
+    dtype: int
+    default: 16
+  - id: cs_len
+    label: CS length
+    dtype: int
+    default: 8
+  - id: ramp_len
+    label: Ramp length
+    dtype: int
+    default: 8
+  - id: frequency_domain_taps
+    label: Freq. domain taps
+    dtype: complex_vector
+    default: '[1.0 + 0.0j, ] * 30'
+  - id: constellation_order
+    label: Constellation order
+    dtype: int
+    default: 2
+  - id: window_taps
+    label: Window taps
+    dtype: complex_vector
+    default: '[1.0 + 0.0j, ] * 16'
+  - id: frame_size
+    label: Frame size
+    dtype: int
+    default: 1024
+  - id: frozen_bit_positions
+    label: Frozen bit positions
+    dtype: int_vector
+    default: list(range(512))
+  - id: interleaver_indices
+    label: Interleaver indices
+    dtype: int_vector
+    default: list(range(1024))
+  - id: pre_padding
+    label: Pre padding
+    dtype: int
+    default: 256
+  - id: post_padding
+    label: Post padding
+    dtype: int
+    default: 128
+  - id: full_preambles
+    label: Preambles
+    dtype: raw
+  - id: cycle_interval
+    label: Cycle interval
+    dtype: float
+    default: 320.e-6
+  - id: timing_advance
+    label: Timing advance
+    dtype: float
+    default: 280.e-6
+  - id: tx_digital_gain
+    label: TX digital gain
+    dtype: float
+    default: 2.7
+  - id: cyclic_shift
+    label: Cyclic shift
+    dtype: int_vector
+    default: [0, 2, ]
+  - id: packet_length_key
+    label: Length Tag Key
+    dtype: string
+    default: '"packet_len"'
+
+inputs:
+  - domain: message
+    id: pdus
+  - domain: message
+    id: time_tag
+    optional: true
+
+outputs:
+  - domain: stream
+    dtype: complex
+    multiplicity: ${ len(cyclic_shift) }
+  - domain: message
+    id: command
+    optional: true
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1
