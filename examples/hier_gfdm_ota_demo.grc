@@ -461,7 +461,7 @@ blocks:
     bus_structure: null
     coordinate: [407, 932]
     rotation: 0
-    state: true
+    state: disabled
 - name: hier_gfdm_phy_transmitter_0
   id: hier_gfdm_phy_transmitter
   parameters:
@@ -1122,6 +1122,40 @@ blocks:
     coordinate: [1055, 909]
     rotation: 0
     state: enabled
+- name: tacmac_lower_phy_receiver_0
+  id: tacmac_lower_phy_receiver
+  parameters:
+    activate_cfo_compensation: activate_cfo_compensation
+    activate_phase_compensation: phase_compensate
+    active_subcarriers: conf.active_subcarriers
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: gfdm_constellation
+    cp_len: conf.cp_len
+    cs_len: conf.cs_len
+    frequency_domain_taps: conf.rx_filter_taps
+    ic_iterations: ic_iter_range
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nport: len(conf.cyclic_shifts)
+    overlap: conf.overlap
+    packet_length_key: '"frame_start"'
+    preamble: conf.core_preamble
+    ramp_len: conf.ramp_len
+    scorr_threshold_high: scorr_threshold_high
+    scorr_threshold_low: scorr_threshold_low
+    subcarrier_map: conf.subcarrier_map
+    subcarriers: conf.subcarriers
+    timeslots: conf.timeslots
+    xcorr_threshold: xcorr_threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [396, 1111]
+    rotation: 0
+    state: true
 - name: tacmac_periodic_time_tag_cc_0
   id: tacmac_periodic_time_tag_cc
   parameters:
@@ -2073,6 +2107,15 @@ connections:
 - [hier_gfdm_phy_transmitter_0, '0', uhd_usrp_sink_0, '0']
 - [hier_gfdm_phy_transmitter_0, '1', uhd_usrp_sink_0, '1']
 - [hier_polar_decoder_0, '0', blocks_tagged_stream_to_pdu_0, '0']
+- [tacmac_lower_phy_receiver_0, '0', hier_polar_decoder_0, '0']
+- [tacmac_lower_phy_receiver_0, '10', pad_sink_0_0_0_0, '0']
+- [tacmac_lower_phy_receiver_0, '3', pad_sink_0_1, '0']
+- [tacmac_lower_phy_receiver_0, '4', pad_sink_0_1_0, '0']
+- [tacmac_lower_phy_receiver_0, '5', pad_sink_0_0, '0']
+- [tacmac_lower_phy_receiver_0, '6', pad_sink_0_0_0, '0']
+- [tacmac_lower_phy_receiver_0, '7', pad_sink_0_0_2, '0']
+- [tacmac_lower_phy_receiver_0, '8', pad_sink_0_0_0_1, '0']
+- [tacmac_lower_phy_receiver_0, '9', pad_sink_0_0_1, '0']
 - [tacmac_periodic_time_tag_cc_0, time_tag, hier_gfdm_phy_transmitter_0, time_tag]
 - [tacmac_periodic_time_tag_cc_0, time_tag, tacmac_phy_transmitter_0, time_tag]
 - [tacmac_phy_transmitter_0, '0', pad_sink_0_0_1_0, '0']
@@ -2092,8 +2135,10 @@ connections:
 - [tacmac_udp_interface_0, tx, tacmac_phy_transmitter_0, pdus]
 - [uhd_usrp_source_0, '0', blocks_file_sink_0_0, '0']
 - [uhd_usrp_source_0, '0', hier_gfdm_2rx_lower_phy_receiver_0, '0']
+- [uhd_usrp_source_0, '0', tacmac_lower_phy_receiver_0, '0']
 - [uhd_usrp_source_0, '0', tacmac_periodic_time_tag_cc_0, '0']
 - [uhd_usrp_source_0, '1', hier_gfdm_2rx_lower_phy_receiver_0, '1']
+- [uhd_usrp_source_0, '1', tacmac_lower_phy_receiver_0, '1']
 
 metadata:
   file_format: 1

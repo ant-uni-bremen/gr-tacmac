@@ -1,0 +1,147 @@
+id: tacmac_lower_phy_receiver
+label: Lower PHY receiver
+category: '[tacmac]'
+
+templates:
+  imports: import tacmac
+  make: |-
+    tacmac.lower_phy_receiver(${nport}, ${timeslots}, ${subcarriers}, ${active_subcarriers},
+      ${overlap}, ${subcarrier_map}, ${cp_len}, ${cs_len}, ${ramp_len},
+      ${frequency_domain_taps}, ${constellation},
+      ${ic_iterations}, ${activate_phase_compensation}, ${preamble},
+      ${scorr_threshold_high}, ${scorr_threshold_low}, ${xcorr_threshold},
+      ${activate_cfo_compensation}, ${packet_length_key}
+    )
+  callbacks:
+    - set_activate_cfo_compensation(${activate_cfo_compensation})
+    - set_ic_iterations(${ic_iterations})
+    - set_activate_phase_compensation(${activate_phase_compensation})
+    - set_scorr_threshold_high(${scorr_threshold_high})
+    - set_scorr_threshold_low(${scorr_threshold_low})
+    - set_xcorr_threshold(${xcorr_threshold})
+#  Make one 'parameters' list entry for every parameter you want settable from the GUI.
+#     Keys include:
+#     * id (makes the value accessible as keyname, e.g. in the make entry)
+#     * label (label shown in the GUI)
+#     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+parameters:
+  - id: nport
+    label: RX ports
+    dtype: int
+    default: 2
+  - id: timeslots
+    label: Timeslots
+    dtype: int
+    default: 15
+  - id: subcarriers
+    label: Subcarriers
+    dtype: int
+    default: 64
+  - id: active_subcarriers
+    label: Active subcarriers
+    dtype: int
+    default: 60
+  - id: overlap
+    label: Overlap
+    dtype: int
+    default: 2
+  - id: subcarrier_map
+    label: Subcarrier map
+    dtype: int_vector
+    default: list(range(60))
+  - id: cp_len
+    label: CP length
+    dtype: int
+    default: 16
+  - id: cs_len
+    label: CS length
+    dtype: int
+    default: 8
+  - id: ramp_len
+    label: Ramp length
+    dtype: int
+    default: 8
+  - id: frequency_domain_taps
+    label: Freq. domain taps
+    dtype: complex_vector
+    default: '[1.0 + 0.0j, ] * 30'
+  - id: constellation
+    label: Constellation object
+    dtype: raw
+  - id: ic_iterations
+    label: IC iterations
+    dtype: int
+    default: 1
+  - id: activate_phase_compensation
+    label: Activate phase compensation
+    dtype: bool
+    default: True
+  - id: preamble
+    label: Core preamble
+    dtype: complex_vector
+    default: '[1.0 + 0.0j, ] * 128'
+  - id: scorr_threshold_high
+    label: SCorr threshold high
+    dtype: float
+    default: 0.98
+  - id: scorr_threshold_low
+    label: SCorr threshold low
+    dtype: float
+    default: 0.93
+  - id: xcorr_threshold
+    label: XCorr threshold
+    dtype: float
+    default: 30.0
+  - id: activate_cfo_compensation
+    label: Activate CFO compensation
+    dtype: bool
+    default: True
+  - id: packet_length_key
+    label: Length Tag Key
+    dtype: string
+    default: '"packet_len"'
+
+#  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
+#  Keys include:
+#      * label (an identifier for the GUI)
+#      * domain (optional - stream or message. Default is stream)
+#      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+#      * vlen (optional - data stream vector length. Default is 1)
+#      * optional (optional - set to 1 for optional inputs. Default is 0)
+inputs:
+  - domain: stream
+    dtype: complex
+    multiplicity: ${ nport }
+
+outputs:
+  - domain: stream
+    dtype: float
+  - label: LLR
+    domain: stream
+    dtype: float
+    multiplicity: ${ nport }
+    optional: true
+  - label: corr
+    domain: stream
+    dtype: complex
+    multiplicity: ${ nport }
+    optional: true
+  - label: synced
+    domain: stream
+    dtype: complex
+    multiplicity: ${ nport }
+    optional: true
+  - label: estimate
+    domain: stream
+    dtype: complex
+    multiplicity: ${ nport }
+    optional: true
+  - label: symbol
+    domain: stream
+    dtype: complex
+    multiplicity: ${ nport }
+    optional: true
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1

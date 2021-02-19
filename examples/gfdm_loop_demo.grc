@@ -369,7 +369,7 @@ blocks:
     bus_structure: null
     coordinate: [151, 707]
     rotation: 180
-    state: true
+    state: disabled
 - name: blocks_complex_to_mag_0
   id: blocks_complex_to_mag
   parameters:
@@ -535,9 +535,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 236.0]
+    coordinate: [536, 236]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_pdu_to_tagged_stream_0_0
   id: blocks_pdu_to_tagged_stream
   parameters:
@@ -761,7 +761,7 @@ blocks:
     bus_structure: null
     coordinate: [968, 460.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: gfdm_transmitter_cc_0
   id: gfdm_transmitter_cc
   parameters:
@@ -788,9 +788,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [568, 388.0]
+    coordinate: [569, 388]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: hier_gfdm_fastsync_0
   id: hier_gfdm_fastsync
   parameters:
@@ -812,9 +812,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [208, 852.0]
+    coordinate: [205, 808]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: hier_gfdm_receiver_tagged_0
   id: hier_gfdm_receiver_tagged
   parameters:
@@ -845,7 +845,7 @@ blocks:
     bus_structure: null
     coordinate: [488, 732.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: hier_polar_decoder_0
   id: hier_polar_decoder
   parameters:
@@ -883,9 +883,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 212.0]
+    coordinate: [313, 212]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: hier_qt_live_statistics_0
   id: hier_qt_live_statistics
   parameters:
@@ -1448,7 +1448,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 1036.0]
+    coordinate: [534, 1037]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_synced_stream_0
@@ -1951,7 +1951,7 @@ blocks:
     bus_structure: null
     coordinate: [736, 892.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: symbolmapping_symbol_mapper_bc_0
   id: symbolmapping_symbol_mapper_bc
   parameters:
@@ -1969,7 +1969,7 @@ blocks:
     bus_structure: null
     coordinate: [336, 468.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: sync_tab
   id: qtgui_tab_widget
   parameters:
@@ -2023,6 +2023,40 @@ blocks:
     coordinate: [1179, 978]
     rotation: 0
     state: enabled
+- name: tacmac_lower_phy_receiver_0
+  id: tacmac_lower_phy_receiver
+  parameters:
+    activate_cfo_compensation: activate_cfo_compensation
+    activate_phase_compensation: phase_compensate
+    active_subcarriers: conf.active_subcarriers
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: gfdm_constellation
+    cp_len: conf.cp_len
+    cs_len: conf.cs_len
+    frequency_domain_taps: conf.rx_filter_taps
+    ic_iterations: ic_iter_range
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nport: len(conf.cyclic_shifts)
+    overlap: conf.overlap
+    packet_length_key: '"frame_start"'
+    preamble: conf.core_preamble
+    ramp_len: conf.ramp_len
+    scorr_threshold_high: scorr_threshold_high
+    scorr_threshold_low: scorr_threshold_low
+    subcarrier_map: conf.subcarrier_map
+    subcarriers: conf.subcarriers
+    timeslots: conf.timeslots
+    xcorr_threshold: xcorr_threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [165, 1014]
+    rotation: 0
+    state: true
 - name: tacmac_mac_controller_0
   id: tacmac_mac_controller
   parameters:
@@ -2059,6 +2093,43 @@ blocks:
     coordinate: [1392, 836.0]
     rotation: 0
     state: enabled
+- name: tacmac_phy_transmitter_0
+  id: tacmac_phy_transmitter
+  parameters:
+    active_subcarriers: conf.active_subcarriers
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation_order: gfdm_constellation.base().bits_per_symbol()
+    cp_len: conf.cp_len
+    cs_len: conf.cs_len
+    cycle_interval: 1e-4
+    cyclic_shift: conf.cyclic_shifts
+    frame_size: code_conf.frame_size
+    frequency_domain_taps: conf.tx_filter_taps
+    frozen_bit_positions: code_conf.frozen_bit_positions
+    full_preambles: conf.full_preambles
+    interleaver_indices: code_conf.interleaver_indices
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    overlap: conf.overlap
+    packet_length_key: '"packet_len"'
+    post_padding: conf.post_padding_len
+    pre_padding: conf.pre_padding_len
+    ramp_len: conf.ramp_len
+    subcarrier_map: conf.subcarrier_map
+    subcarriers: conf.subcarriers
+    timeslots: conf.timeslots
+    timing_advance: 250e-6
+    tx_digital_gain: tx_digital_gain
+    window_taps: conf.window_taps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [832, 202]
+    rotation: 0
+    state: true
 - name: tacmac_status_collector_0
   id: tacmac_status_collector
   parameters:
@@ -2149,7 +2220,9 @@ connections:
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_mac_controller_1, PHYin]
 - [blocks_tagged_stream_to_pdu_0, pdus, tacmac_status_collector_0, in]
 - [channels_channel_model_0, '0', blocks_add_xx_1, '0']
+- [channels_channel_model_0, '0', tacmac_lower_phy_receiver_0, '0']
 - [channels_channel_model_0_0, '0', blocks_add_xx_1, '1']
+- [channels_channel_model_0_0, '0', tacmac_lower_phy_receiver_0, '1']
 - [gfdm_short_burst_shaper_0, '0', blocks_tag_gate_0, '0']
 - [gfdm_short_burst_shaper_0, '0', channels_channel_model_0, '0']
 - [gfdm_short_burst_shaper_0, '0', latency_tag_timestamp_debug_0_0_0_0_0, '0']
@@ -2174,9 +2247,18 @@ connections:
 - [hier_polar_encoder_0, '0', symbolmapping_symbol_mapper_bc_0, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', hier_polar_decoder_0, '0']
 - [symbolmapping_symbol_mapper_bc_0, '0', gfdm_transmitter_cc_0, '0']
+- [tacmac_lower_phy_receiver_0, '0', hier_polar_decoder_0, '0']
+- [tacmac_lower_phy_receiver_0, '3', qtgui_time_sink_synced_stream, '1']
+- [tacmac_lower_phy_receiver_0, '5', qtgui_time_sink_synced_stream, '0']
+- [tacmac_lower_phy_receiver_0, '7', blocks_complex_to_mag_0, '0']
+- [tacmac_lower_phy_receiver_0, '7', tacmac_tag_to_stream_value_0_0_0, '0']
+- [tacmac_lower_phy_receiver_0, '9', qtgui_const_sink_rx_symbols, '0']
 - [tacmac_mac_controller_0, PHYout, blocks_pdu_to_tagged_stream_0, pdus]
+- [tacmac_mac_controller_0, PHYout, tacmac_phy_transmitter_0, pdus]
 - [tacmac_mac_controller_1, LLCout, blocks_message_debug_0, print_pdu]
 - [tacmac_mac_controller_1, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
+- [tacmac_phy_transmitter_0, '0', channels_channel_model_0, '0']
+- [tacmac_phy_transmitter_0, '1', channels_channel_model_0_0, '0']
 - [tacmac_status_collector_0, out, tacmac_elasticsearch_connector_0, in]
 - [tacmac_tag_to_stream_value_0_0, '0', blocks_int_to_float_0, '0']
 - [tacmac_tag_to_stream_value_0_0_0, '0', blocks_nlog10_ff_0_0, '0']

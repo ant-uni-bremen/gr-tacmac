@@ -8,7 +8,6 @@
 
 from gnuradio import blocks
 from gnuradio import gr
-from gnuradio import digital
 from gnuradio import fec
 import polarwrap
 import symbolmapping
