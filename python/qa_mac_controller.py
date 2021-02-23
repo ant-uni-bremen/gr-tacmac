@@ -23,6 +23,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
 import numpy as np
+
 try:
     import tacmac_python as tacmac
 except ModuleNotFoundError:
@@ -37,8 +38,7 @@ def get_pdu_payload(payload):
 
 
 def ndarray_to_pmt_u8vector(d):
-    return pmt.init_u8vector(len(d),
-                             np.array(d).astype(dtype=np.uint8).tolist())
+    return pmt.init_u8vector(len(d), np.array(d).astype(dtype=np.uint8).tolist())
 
 
 def pmt_u8vector_to_ndarray(msg):
@@ -46,7 +46,7 @@ def pmt_u8vector_to_ndarray(msg):
 
 
 def get_hex_char_string(char_vec):
-    return ' '.join('{:02x}'.format(i) for i in char_vec)
+    return " ".join("{:02x}".format(i) for i in char_vec)
 
 
 def string_to_int_list(s):
@@ -57,8 +57,16 @@ def string_to_int_list(s):
 
 def hex_string_to_int_list(s):
     s = s.replace(" ", "")
-    l = map(''.join, zip(*[iter(s)]*2))
-    h = [''.join(['0x', i, ]) for i in l]
+    l = map("".join, zip(*[iter(s)] * 2))
+    h = [
+        "".join(
+            [
+                "0x",
+                i,
+            ]
+        )
+        for i in l
+    ]
     il = [int(i, 16) for i in h]
     return il
 
@@ -71,16 +79,25 @@ def generate_phy_frame(ndpayload, dst, src, sequence, timestamp):
     header = np.zeros(13, dtype=np.uint8)
     header[0] = dst
     header[1] = src
-    ndsequence = np.array([sequence, ], dtype=np.uint16).view('>u1')[::-1]
+    ndsequence = np.array([sequence,], dtype=np.uint16).view(
+        ">u1"
+    )[::-1]
     header[2:4] = ndsequence
     header[4] = ndpayload.size
-    ndtimestamp = np.array([timestamp, ], dtype=np.uint64).view('>u1')[::-1]
+    ndtimestamp = np.array([timestamp,], dtype=np.uint64).view(
+        ">u1"
+    )[::-1]
     header[5:13] = ndtimestamp
     ndpayload = np.concatenate((header, ndpayload))
-    checksum = CRCCCITT(version='FFFF').calculate(ndpayload.tobytes())
+    checksum = CRCCCITT(version="FFFF").calculate(ndpayload.tobytes())
     # print(checksum)
-    ndchecksum = np.array([checksum, ], dtype=np.uint16)
-    ndchecksum = ndchecksum.view('>u1')[::-1]
+    ndchecksum = np.array(
+        [
+            checksum,
+        ],
+        dtype=np.uint16,
+    )
+    ndchecksum = ndchecksum.view(">u1")[::-1]
     # print(ndchecksum)
     # print(' '.join(hex(i) for i in ndchecksum))
     ndpayload = np.concatenate((ndpayload, ndchecksum))
@@ -90,7 +107,6 @@ def generate_phy_frame(ndpayload, dst, src, sequence, timestamp):
 
 
 class qa_mac_controller(gr_unittest.TestCase):
-
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -98,6 +114,7 @@ class qa_mac_controller(gr_unittest.TestCase):
         self.tb = None
 
     def test_001_init(self):
+        self.assertRaises(ValueError, tacmac.mac_controller, 42, 42, 112)
         self.assertRaises(ValueError, tacmac.mac_controller, 450, 21, 112)
         self.assertRaises(ValueError, tacmac.mac_controller, 42, 768, 112)
         self.assertRaises(ValueError, tacmac.mac_controller, 42, 84, 427)
@@ -115,9 +132,9 @@ class qa_mac_controller(gr_unittest.TestCase):
         meta = pmt.make_dict()
         pdu = pmt.cons(meta, payload)
 
-        print('This is the original PDU\n----------------')
+        print("This is the original PDU\n----------------")
         print(pdu)
-        print('----------------')
+        print("----------------")
         ctrl = tacmac.mac_controller(dst_id, src_id, len(message))
         dbg = blocks.message_debug()
 
@@ -144,20 +161,19 @@ class qa_mac_controller(gr_unittest.TestCase):
             header = pl[0:14]
             self.assertEqual(header[0], dst_id)
             self.assertEqual(header[1], src_id)
-            self.assertEqual(get_int_from_pmt_meta(meta, 'dst_id'), dst_id)
-            self.assertEqual(get_int_from_pmt_meta(meta, 'src_id'), src_id)
-            parsed_sequence = int(header.view('>u2')[1])
-            self.assertEqual(get_int_from_pmt_meta(meta, 'sequence'),
-                             parsed_sequence)
-            mtime = get_int_from_pmt_meta(meta, 'time')
+            self.assertEqual(get_int_from_pmt_meta(meta, "dst_id"), dst_id)
+            self.assertEqual(get_int_from_pmt_meta(meta, "src_id"), src_id)
+            parsed_sequence = int(header.view(">u2")[1])
+            self.assertEqual(get_int_from_pmt_meta(meta, "sequence"), parsed_sequence)
+            mtime = get_int_from_pmt_meta(meta, "time")
             tbytes = header[5:13]
-            htime = int(tbytes.view('>u8')[0])
+            htime = int(tbytes.view(">u8")[0])
             self.assertEqual(mtime, htime)
             checksum = pl[-2:]
             # print(checksum)
-            checksum = int(checksum.view('>u2'))
+            checksum = int(checksum.view(">u2"))
             # print(checksum)
-            r = CRCCCITT(version='FFFF').calculate(pl[:-2].tobytes())
+            r = CRCCCITT(version="FFFF").calculate(pl[:-2].tobytes())
             # print(r)
             self.assertEqual(r, checksum)
             self.assertSequenceEqual(tuple(pl[13:-2]), tuple(ref))
@@ -175,11 +191,12 @@ class qa_mac_controller(gr_unittest.TestCase):
         meta = pmt.make_dict()
         pdu = pmt.cons(meta, payload)
 
-        print('This is the orriginal PDU\n----------------')
+        print("This is the orriginal PDU\n----------------")
         print(pdu)
-        print('----------------')
+        print("----------------")
         ctrl = tacmac.mac_controller(
-            src_id, dst_id, pmt.uniform_vector_itemsize(payload))
+            src_id, dst_id, pmt.uniform_vector_itemsize(payload)
+        )
         dbg = blocks.message_debug()
 
         self.tb.msg_connect(ctrl, "LLCout", dbg, "store")
@@ -191,8 +208,7 @@ class qa_mac_controller(gr_unittest.TestCase):
         for i in range(num_pdus):
             timestamp = np.uint64(time.time() * 1e9)
             timestamps[i] = timestamp
-            phypayload = generate_phy_frame(ndpayload, dst_id,
-                                            src_id, i, timestamp)
+            phypayload = generate_phy_frame(ndpayload, dst_id, src_id, i, timestamp)
             payload = ndarray_to_pmt_u8vector(phypayload)
             meta = pmt.make_dict()
             pdu = pmt.cons(meta, payload)
@@ -212,18 +228,15 @@ class qa_mac_controller(gr_unittest.TestCase):
             data = pmt_u8vector_to_ndarray(bits)
             self.assertSequenceEqual(tuple(ndpayload), tuple(data))
 
-            self.assertEqual(get_int_from_pmt_meta(meta, 'dst_id'),
-                             dst_id)
-            self.assertEqual(get_int_from_pmt_meta(meta, 'src_id'),
-                             src_id)
-            self.assertEqual(get_int_from_pmt_meta(meta, 'sequence'),
-                             i % int(2 ** 16))
-            self.assertEqual(get_int_from_pmt_meta(meta, 'lost_packets'), 0)
+            self.assertEqual(get_int_from_pmt_meta(meta, "dst_id"), dst_id)
+            self.assertEqual(get_int_from_pmt_meta(meta, "src_id"), src_id)
+            self.assertEqual(get_int_from_pmt_meta(meta, "sequence"), i % int(2 ** 16))
+            self.assertEqual(get_int_from_pmt_meta(meta, "lost_packets"), 0)
 
-            mtime = get_int_from_pmt_meta(meta, 'time')
+            mtime = get_int_from_pmt_meta(meta, "time")
             self.assertEqual(mtime, timestamps[i])
-            self.assertGreater(get_int_from_pmt_meta(meta, 'latency'), 0)
+            self.assertGreater(get_int_from_pmt_meta(meta, "latency"), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_mac_controller)

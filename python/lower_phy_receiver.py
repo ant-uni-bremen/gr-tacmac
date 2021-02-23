@@ -99,23 +99,13 @@ class lower_phy_receiver(gr.hier_block2):
         ##################################################
         # Synchronization
         ##################################################
-        self.xfdm_sync_sc_delay_corrs = [
-            xfdm_sync.sc_delay_corr(scorr_delay, normalize_scorr) for _ in range(nport)
-        ]
-        self.xfdm_sync_sc_taggers = [
-            xfdm_sync.sc_tagger(
-                scorr_threshold_low,
-                scorr_threshold_high,
-                scorr_delay,
-                packet_length_key,
-            )
-            for _ in range(nport)
-        ]
-
-        self.xfdm_sync_xcorr_taggers = [
-            xfdm_sync.xcorr_tagger(
-                xcorr_threshold,
+        self.xfdm_sync_synchronizers = [
+            xfdm_sync.sync_cc(
                 preamble,
+                scorr_threshold_high,
+                scorr_threshold_low,
+                normalize_scorr,
+                xcorr_threshold,
                 xcorr_compensate_frequency_offset,
                 packet_length_key,
             )
@@ -131,75 +121,38 @@ class lower_phy_receiver(gr.hier_block2):
             # Careful! First XCorr output then Synced output!
             self.connect(
                 (self, port),
-                (self.xfdm_sync_sc_delay_corrs[port], 0),
-                (self.xfdm_sync_sc_taggers[port], 0),
-                (self.xfdm_sync_xcorr_taggers[port], 0),
+                (self.xfdm_sync_synchronizers[port], 0),
                 (self.xfdm_sync_sync_tag_align_cc, port),
                 (self, 1 + 2 * nport + port),
             )
             # The last connection is for optional for XCorr output!
             self.connect(
-                (self.xfdm_sync_sc_delay_corrs[port], 1),
-                (self.xfdm_sync_sc_taggers[port], 1),
-                (self.xfdm_sync_xcorr_taggers[port], 1),
+                (self.xfdm_sync_synchronizers[port], 1),
                 (self, 1 + 1 * nport + port),
             )
 
         ##################################################
         # GFDM demodulation
         ##################################################
-        self.gfdm_extract_bursts = [
-            gfdm.extract_burst_cc(
-                frame_len, cp_len, packet_length_key, activate_cfo_compensation
-            )
-            for _ in range(nport)
-        ]
-
-        self.gfdm_remove_prefix_datas = [
-            gfdm.remove_prefix_cc(
-                frame_len, block_len, full_preamble_len + cp_len, packet_length_key
-            )
-            for _ in range(nport)
-        ]
-
-        self.gfdm_remove_prefix_preambles = [
-            gfdm.remove_prefix_cc(frame_len, preamble_len, cp_len, packet_length_key)
-            for _ in range(nport)
-        ]
-
-        self.gfdm_channel_estimators = [
-            gfdm.channel_estimator_cc(
+        self.gfdm_receivers = [
+            gfdm.receiver_cc(
                 timeslots,
                 subcarriers,
                 active_subcarriers,
-                sc_map_is_dc_free,
-                channel_estimator_id,
-                preamble,
-            )
-            for _ in range(nport)
-        ]
-
-        self.gfdm_advanced_receivers = [
-            gfdm.advanced_receiver_sb_cc(
-                timeslots,
-                subcarriers,
                 overlap,
-                ic_iterations,
+                subcarrier_map,
+                cp_len,
+                cs_len,
+                ramp_len,
                 frequency_domain_taps,
+                True,
+                preamble,
+                1,
                 gfdm_constellation,
-                subcarrier_map,
+                ic_iterations,
                 activate_phase_compensation,
-            )
-            for _ in range(nport)
-        ]
-
-        self.gfdm_resource_demappers = [
-            gfdm.resource_demapper_cc(
-                timeslots,
-                subcarriers,
-                active_subcarriers,
-                subcarrier_map,
-                gfdm_resources_per_timeslot,
+                activate_cfo_compensation,
+                packet_length_key,
             )
             for _ in range(nport)
         ]
@@ -207,23 +160,12 @@ class lower_phy_receiver(gr.hier_block2):
         for port in range(nport):
             self.connect(
                 (self.xfdm_sync_sync_tag_align_cc, port),
-                (self.gfdm_extract_bursts[port], 0),
-                (self.gfdm_remove_prefix_datas[port], 0),
-                (self.gfdm_advanced_receivers[port], 0),
-                (self.gfdm_resource_demappers[port], 0),
-            )
-            self.connect(
-                (self.gfdm_extract_bursts[port], 0),
-                (self.gfdm_remove_prefix_preambles[port], 0),
-                (self.gfdm_channel_estimators[port], 0),
-                (self.gfdm_advanced_receivers[port], 1),
+                (self.gfdm_receivers[port], 0),
+                (self, 1 + 4 * nport + port)
             )
 
             self.connect(
-                (self.gfdm_channel_estimators[port], 0), (self, 1 + 3 * nport + port)
-            )
-            self.connect(
-                (self.gfdm_resource_demappers[port], 0), (self, 1 + 4 * nport + port)
+                (self.gfdm_receivers[port], 1), (self, 1 + 3 * nport + port)
             )
 
         ##################################################
@@ -241,7 +183,7 @@ class lower_phy_receiver(gr.hier_block2):
 
         for port in range(nport):
             self.connect(
-                (self.gfdm_resource_demappers[port], 0),
+                (self.gfdm_receivers[port], 0),
                 (self.symbolmapping_symbol_demappers[port], 0),
                 (self.blocks_add_xx, port),
             )
@@ -265,7 +207,7 @@ class lower_phy_receiver(gr.hier_block2):
 
     def set_activate_cfo_compensation(self, activate_cfo_compensation):
         self.activate_cfo_compensation = activate_cfo_compensation
-        for extractor in self.gfdm_extract_bursts:
+        for extractor in self.gfdm_receivers:
             extractor.activate_cfo_compensation(activate_cfo_compensation)
 
     def get_ic_iterations(self):
@@ -273,7 +215,7 @@ class lower_phy_receiver(gr.hier_block2):
 
     def set_ic_iterations(self, ic_iterations):
         self.ic_iterations = ic_iterations
-        for demodulator in self.gfdm_advanced_receivers:
+        for demodulator in self.gfdm_receivers:
             demodulator.set_ic_iterations(ic_iterations)
 
     def get_activate_phase_compensation(self):
@@ -281,7 +223,7 @@ class lower_phy_receiver(gr.hier_block2):
 
     def set_activate_phase_compensation(self, activate_phase_compensation):
         self.activate_phase_compensation = activate_phase_compensation
-        for demodulator in self.gfdm_advanced_receivers:
+        for demodulator in self.gfdm_receivers:
             demodulator.set_phase_compensation(activate_phase_compensation)
 
     def get_scorr_threshold_high(self):
@@ -289,21 +231,21 @@ class lower_phy_receiver(gr.hier_block2):
 
     def set_scorr_threshold_high(self, scorr_threshold_high):
         self.scorr_threshold_high = scorr_threshold_high
-        for t in self.xfdm_sync_sc_taggers:
-            t.set_threshold_high(scorr_threshold_high)
+        for t in self.xfdm_sync_synchronizers:
+            t.set_scorr_threshold_high(scorr_threshold_high)
 
     def get_scorr_threshold_low(self):
         return self.scorr_threshold_low
 
     def set_scorr_threshold_low(self, scorr_threshold_low):
         self.scorr_threshold_low = scorr_threshold_low
-        for t in self.xfdm_sync_sc_taggers:
-            t.set_threshold_low(scorr_threshold_low)
+        for t in self.xfdm_sync_synchronizers:
+            t.set_scorr_threshold_low(scorr_threshold_low)
 
     def get_xcorr_threshold(self):
         return self.xcorr_threshold
 
     def set_xcorr_threshold(self, xcorr_threshold):
         self.xcorr_threshold = xcorr_threshold
-        for x in self.xfdm_sync_xcorr_taggers:
-            x.set_threshold(xcorr_threshold)
+        for x in self.xfdm_sync_synchronizers:
+            x.set_xcorr_threshold(xcorr_threshold)

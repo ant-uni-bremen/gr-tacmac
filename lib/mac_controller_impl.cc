@@ -33,6 +33,8 @@
 #include <limits>
 #include <string>
 // C++20 feature: #include <format>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 
 namespace gr {
@@ -62,29 +64,26 @@ mac_controller_impl::mac_controller_impl(unsigned destination_id,
       d_rx_frame_counter(std::numeric_limits<uint16_t>::max())
 {
     if (d_src_id == d_dst_id) {
-        std::string err_msg("destination_id(" + std::to_string(d_dst_id) +
-                            ") == src_id(" + std::to_string(d_src_id) + ")!");
+        auto err_msg =
+            fmt::format("destination_id({}) == src_id({})!", d_dst_id, d_src_id);
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
 
     if (256 < d_dst_id) {
-        std::string err_msg("destination_id(" + std::to_string(d_dst_id) +
-                            ") out-of-range [0, 256)!");
+        auto err_msg = fmt::format("destination_id({}) out-of-range [0, 256)!", d_dst_id);
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
 
     if (256 < d_src_id) {
-        std::string err_msg("source_id(" + std::to_string(d_src_id) +
-                            ") out-of-range [0, 256)");
+        auto err_msg = fmt::format("source_id({}) out-of-range [0, 256)", d_src_id);
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
 
     if (mtu_size > 256) {
-        std::string err_msg("mtu_size(" + std::to_string(mtu_size) +
-                            ") out-of-range [0, 256)");
+        auto err_msg = fmt::format("mtu_size({}) out-of-range [0, 256)", mtu_size);
         GR_LOG_ERROR(this->d_logger, err_msg);
         throw std::invalid_argument(err_msg);
     }
@@ -136,15 +135,16 @@ void mac_controller_impl::print_llc_message_status(const uint64_t ticks)
             1.0e9 * d_llc_interval_message_counter / (ticks - d_last_llc_print_timestamp);
         const float size =
             1.0 * d_llc_payload_size_counter / d_llc_interval_message_counter;
-        GR_LOG_DEBUG(this->d_logger,
-                     string_format("LLC: %s: packets: total=%i/interval=%i; "
-                                   "rate=%.1fP/s; packet_size=%.1fB/%iB",
-                                   get_host_string().c_str(),
-                                   d_llc_message_counter,
-                                   d_llc_interval_message_counter,
-                                   rate,
-                                   size,
-                                   d_mtu_size));
+        GR_LOG_DEBUG(
+            this->d_logger,
+            fmt::format("LLC: {}: packets: total={}/interval={}\trate={:.1f}P/s; "
+                        "packet_size={:.1f}B/{}B",
+                        get_host_string(),
+                        d_llc_message_counter,
+                        d_llc_interval_message_counter,
+                        rate,
+                        size,
+                        d_mtu_size));
         d_llc_interval_message_counter = 0;
         d_llc_payload_size_counter = 0;
         d_last_llc_print_timestamp = ticks;
@@ -166,9 +166,9 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     d_llc_payload_size_counter += payload.size();
     if (payload.size() > d_mtu_size) {
         GR_LOG_WARN(this->d_logger,
-                    string_format("Dropping PDU, reason: PDU.size=%i > MTU.size=%i",
-                                  payload.size(),
-                                  d_mtu_size));
+                    fmt::format("Dropping PDU, reason: PDU.size={} > MTU.size={}",
+                                payload.size(),
+                                d_mtu_size));
         return;
     }
     // GR_LOG_DEBUG(this->d_logger,
@@ -211,17 +211,18 @@ void mac_controller_impl::print_phy_message_status(const uint64_t ticks)
             1.0 * d_phy_payload_size_counter / d_phy_interval_message_counter;
         const float latency =
             1.0e-6 * d_latency_interval_counter / d_phy_interval_message_counter;
-        GR_LOG_DEBUG(this->d_logger,
-                     string_format("PHY: %s: packets: total=%i/interval=%i/lost=%i; "
-                                   "rate=%.1fP/s; latency=%.3fms; packet_size=%.1fB/%iB",
-                                   get_host_string().c_str(),
-                                   d_phy_message_counter,
-                                   d_phy_interval_message_counter,
-                                   d_lost_packet_interval_counter,
-                                   rate,
-                                   latency,
-                                   size,
-                                   d_mtu_size));
+        GR_LOG_DEBUG(
+            this->d_logger,
+            fmt::format("PHY: {}: packets: total={}/interval={}/lost={}; "
+                        "rate={:.1f}P/s; latency={:.3f}ms; packet_size={:.1f}B/{}B",
+                        get_host_string(),
+                        d_phy_message_counter,
+                        d_phy_interval_message_counter,
+                        d_lost_packet_interval_counter,
+                        rate,
+                        latency,
+                        size,
+                        d_mtu_size));
         d_lost_packet_interval_counter = 0;
         d_latency_interval_counter = 0;
         d_phy_interval_message_counter = 0;
@@ -264,39 +265,36 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 
     unsigned status_code = 0;
     if (dst != d_src_id) {
-        status = string_format(
-            "dropping... reason: Not for us! [dst=%i != %i=d_src_id]", dst, d_src_id);
+        status = fmt::format(
+            "dropping... reason: Not for us! [dst={} != {}=d_src_id]", dst, d_src_id);
         // GR_LOG_DEBUG(this->d_logger,
         //              host_info + " " + packet_header + " " + status);
         status_code = 1;
     }
     if (src == d_src_id) {
-        status = string_format(
-            "dropping... reason: loopback! [src=%i == %i=d_src_id]", src, d_src_id);
+        status = fmt::format(
+            "dropping... reason: loopback! [src={} == {}=d_src_id]", src, d_src_id);
         // GR_LOG_DEBUG(this->d_logger,
         //              host_info + " " + packet_header + " " + status);
         status_code = 2;
     }
     if (src != d_dst_id) {
-        status = string_format(
-            "dropping... reason: wrong endpoint! [src=%i == %i=d_dst_id]", src, d_dst_id);
+        status = fmt::format(
+            "dropping... reason: wrong endpoint! [src={} == {}=d_dst_id]", src, d_dst_id);
         // GR_LOG_DEBUG(this->d_logger,
         //              host_info + " " + packet_header + " " + status);
         status_code = 3;
     }
     if (rx_checksum != checksum) {
         // C++20 solution: std::string msg = std::format("test {}", 42);
-        // GR_LOG_DEBUG(
-        //     this->d_logger,
-        //     string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
-        //                   checksum,
-        //                   rx_checksum));
         status =
-            string_format("CRC16-CCITTFALSE failed! calculated/received: %04X != %04X",
-                          checksum,
-                          rx_checksum);
+            fmt::format("CRC16-CCITTFALSE failed! calculated/received: {:04X} != {:04X}",
+                        checksum,
+                        rx_checksum);
         status_code = 4;
     }
+
+    GR_LOG_DEBUG(this->d_logger, host_info + " " + packet_header + " " + status);
 
     if (status_code != 0) {
         GR_LOG_DEBUG(this->d_debug_logger,

@@ -7,11 +7,12 @@
 #
 
 from gnuradio import gr, gr_unittest
+
 # from gnuradio import blocks
 from lower_phy_receiver import lower_phy_receiver
 
-class qa_lower_phy_receiver(gr_unittest.TestCase):
 
+class qa_lower_phy_receiver(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -22,11 +23,14 @@ class qa_lower_phy_receiver(gr_unittest.TestCase):
         # FIXME: Test will fail until you pass sensible arguments to the constructor
         instance = lower_phy_receiver()
 
+        instance.set_ic_iterations(4)
+        self.assertEqual(instance.get_ic_iterations(), 4)
+
     def test_001_descriptive_test_name(self):
         # set up fg
         self.tb.run()
         # check data
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_lower_phy_receiver)

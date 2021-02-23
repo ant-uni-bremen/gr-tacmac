@@ -22,6 +22,7 @@
 #define INCLUDED_TACMAC_MAC_CONTROLLER_IMPL_H
 
 #include "tacmac_utilities.h"
+#include <fmt/format.h>
 #include <tacmac/mac_controller.h>
 
 namespace gr {
@@ -96,7 +97,7 @@ private:
     void print_phy_message_status(const uint64_t ticks);
     std::string get_host_string()
     {
-        return string_format("Host(%i) -> %i", d_src_id, d_dst_id);
+        return fmt::format("Host({}) -> {}", d_src_id, d_dst_id);
     }
 
     std::string get_packet_header_string(const unsigned dst,
@@ -104,8 +105,8 @@ private:
                                          const unsigned sequence,
                                          const unsigned payload_size)
     {
-        return string_format(
-            "PACKET(DST=%i, SRC=%i, SEQ=%i, SIZE=%i)", dst, src, sequence, payload_size);
+        return fmt::format(
+            "PACKET(DST={}, SRC={}, SEQ={}, SIZE={})", dst, src, sequence, payload_size);
     }
 
     uint64_t get_timestamp_ticks_ns_now();

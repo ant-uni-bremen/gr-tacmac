@@ -26,7 +26,7 @@ if(NOT tacmac_sources)
 endif(NOT tacmac_sources)
 
 add_library(gnuradio-tacmac SHARED ${tacmac_sources})
-target_link_libraries(gnuradio-tacmac gnuradio::gnuradio-runtime)
+target_link_libraries(gnuradio-tacmac gnuradio::gnuradio-runtime fmt::fmt)
 target_include_directories(gnuradio-tacmac
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     PUBLIC $<INSTALL_INTERFACE:include>
