@@ -1,0 +1,181 @@
+id: tacmac_phy_layer
+label: phy_layer
+category: "[tacmac]"
+
+templates:
+  imports: import tacmac
+  make: |-
+    tacmac.phy_layer(${antennas}, ${timeslots}, ${subcarriers}, ${active_subcarriers},
+      ${activate_cfo_compensation}, ${activate_phase_compensation},
+      ${ic_iterations},
+      ${scorr_threshold_high}, ${scorr_threshold_low}, ${xcorr_threshold},
+      ${num_network_interfaces}, ${dst_id}, ${src_id}, ${mtu_size},
+      ${cycle_interval}, ${timing_advance},
+      ${usrp_tx_addr}, ${usrp_rx_addr},
+      ${usrp_tx_channels}, ${usrp_rx_channels},
+      ${carrier_freq}, ${samp_rate},
+      ${tx_gain}, ${tx_digital_gain},
+      ${rx_gain}
+    )
+  callbacks:
+    - set_activate_cfo_compensation(${activate_cfo_compensation})
+    - set_ic_iterations(${ic_iterations})
+    - set_activate_phase_compensation(${activate_phase_compensation})
+    - set_scorr_threshold_high(${scorr_threshold_high})
+    - set_scorr_threshold_low(${scorr_threshold_low})
+    - set_xcorr_threshold(${xcorr_threshold})
+#  Make one 'parameters' list entry for every parameter you want settable from the GUI.
+#     Keys include:
+#     * id (makes the value accessible as keyname, e.g. in the make entry)
+#     * label (label shown in the GUI)
+#     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+parameters:
+  - id: antennas
+    label: Antennas
+    dtype: int
+    default: 2
+  - id: timeslots
+    label: Timeslots
+    dtype: int
+    default: 15
+  - id: subcarriers
+    label: Subcarriers
+    dtype: int
+    default: 64
+  - id: active_subcarriers
+    label: Active subcarriers
+    dtype: int
+    default: 60
+  - id: activate_cfo_compensation
+    label: Activate CFO compensation
+    dtype: bool
+    default: True
+  - id: activate_phase_compensation
+    label: Activate phase compensation
+    dtype: bool
+    default: True
+  - id: ic_iterations
+    label: IC iterations
+    dtype: int
+    default: 2
+  - id: scorr_threshold_high
+    label: SCorr threshold high
+    dtype: float
+    default: 0.98
+  - id: scorr_threshold_low
+    label: SCorr threshold low
+    dtype: float
+    default: 0.93
+  - id: xcorr_threshold
+    label: XCorr threshold
+    dtype: float
+    default: 30.0
+  - id: num_network_interfaces
+    label: Network interfaces
+    dtype: int
+    default: 1
+  - id: dst_id
+    label: Destination ID
+    dtype: int
+    default: 42
+  - id: src_id
+    label: Source ID
+    dtype: int
+    default: 0
+  - id: mtu_size
+    label: MTU size
+    dtype: int
+    default: 84
+  - id: cycle_interval
+    label: Cycle interval
+    dtype: float
+    default: 320e-6
+  - id: timing_advance
+    label: Timing advance
+    dtype: float
+    default: 280e-6
+  - id: usrp_tx_addr
+    label: USRP TX addr
+    dtype: string
+    default: "192.168.21.216"
+  - id: usrp_rx_addr
+    label: USRP RX addr
+    dtype: string
+    default: ""
+  - id: usrp_tx_channels
+    label: USRP TX channels
+    dtype: int_vector
+    default: "[2, 3]"
+  - id: usrp_rx_channels
+    label: USRP RX channels
+    dtype: int_vector
+    default: "[0, 1]"
+  - id: carrier_freq
+    label: Carrier freq.
+    dtype: float
+    default: 3.75e9
+  - id: samp_rate
+    label: Sample rate
+    dtype: float
+    default: 30.72e6
+  - id: tx_gain
+    label: TX gain
+    dtype: float
+    default: 55.0
+  - id: tx_digital_gain
+    label: TX digital gain
+    dtype: float
+    default: 2.7
+  - id: rx_gain
+    label: RX gain
+    dtype: float
+    default: 55.0
+
+
+    #- id: ...
+#  label: ...
+#  dtype: ...
+
+#  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
+#  Keys include:
+#      * label (an identifier for the GUI)
+#      * domain (optional - stream or message. Default is stream)
+#      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+#      * vlen (optional - data stream vector length. Default is 1)
+#      * optional (optional - set to 1 for optional inputs. Default is 0)
+
+outputs:
+  - label: LLCout
+    domain: message
+    optional: 1
+  - label: status
+    domain: message
+    optional: 1
+  - label: tx
+    domain: stream
+    dtype: complex
+    multiplicity: ${ antennas }
+    optional: true
+  - label: corr
+    domain: stream
+    dtype: complex
+    multiplicity: ${ antennas }
+    optional: true
+  - label: synced
+    domain: stream
+    dtype: complex
+    multiplicity: ${ antennas }
+    optional: true
+  - label: estimate
+    domain: stream
+    dtype: complex
+    multiplicity: ${ antennas }
+    optional: true
+  - label: symbol
+    domain: stream
+    dtype: complex
+    multiplicity: ${ antennas }
+    optional: true
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1

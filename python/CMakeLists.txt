@@ -25,7 +25,8 @@ GR_PYTHON_INSTALL(
     udp_interface.py
     elasticsearch_connector.py
     phy_transmitter.py
-    lower_phy_receiver.py DESTINATION ${GR_PYTHON_DIR}/tacmac
+    lower_phy_receiver.py
+    phy_layer.py DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
 ########################################################################
@@ -44,3 +45,4 @@ GR_ADD_TEST(qa_udp_interface ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa
 GR_ADD_TEST(qa_elasticsearch_connector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_elasticsearch_connector.py)
 GR_ADD_TEST(qa_phy_transmitter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_transmitter.py)
 GR_ADD_TEST(qa_lower_phy_receiver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lower_phy_receiver.py)
+GR_ADD_TEST(qa_phy_layer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_layer.py)
