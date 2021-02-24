@@ -520,7 +520,7 @@ blocks:
     bus_structure: null
     coordinate: [648, 1296.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_complex_to_mag_squared_0_0
   id: blocks_complex_to_mag_squared
   parameters:
@@ -534,9 +534,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [592, 1392.0]
+    coordinate: [589, 1389]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_float_to_complex_0
   id: blocks_float_to_complex
   parameters:
@@ -552,7 +552,7 @@ blocks:
     bus_structure: null
     coordinate: [800, 1360.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_int_to_float_0
   id: blocks_int_to_float
   parameters:
@@ -569,7 +569,7 @@ blocks:
     bus_structure: null
     coordinate: [1552, 780.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_int_to_float_0_0
   id: blocks_int_to_float
   parameters:
@@ -1461,7 +1461,104 @@ blocks:
     bus_structure: null
     coordinate: [1040, 608.0]
     rotation: 0
-    state: enabled
+    state: disabled
+- name: qtgui_time_sink_synced_stream_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 'sync_tab@0: 0, 0, 1,1'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"synchronization"'
+    nconnections: '1'
+    size: int(2 ** 14)
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.05'
+    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '"frame_start"'
+    type: complex
+    update_time: '0.4'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '.1'
+    ymin: -.1
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1393, 992]
+    rotation: 0
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -1558,7 +1655,7 @@ blocks:
     bus_structure: null
     coordinate: [1688, 756.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -1793,7 +1890,7 @@ blocks:
     bus_structure: null
     coordinate: [1376, 772.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_tag_to_stream_value_0_0
   id: tacmac_tag_to_stream_value
   parameters:
@@ -1934,6 +2031,7 @@ connections:
 - [blocks_pdu_to_tagged_stream_0_0, '0', tacmac_tag_to_stream_value_0_0, '0']
 - [hier_gfdm_ota_demo_0, '0', blocks_tag_debug_0, '0']
 - [hier_gfdm_ota_demo_0, '0', qtgui_time_sink_synced_stream, '0']
+- [hier_gfdm_ota_demo_0, '0', qtgui_time_sink_synced_stream_1, '0']
 - [hier_gfdm_ota_demo_0, '1', blocks_tag_debug_0, '1']
 - [hier_gfdm_ota_demo_0, '1', qtgui_time_sink_synced_stream, '1']
 - [hier_gfdm_ota_demo_0, '2', qtgui_const_sink_rx_symbols, '1']

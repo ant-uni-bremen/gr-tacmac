@@ -183,8 +183,8 @@ blocks:
     bus_structure: null
     coordinate: [784, 420.0]
     rotation: 0
-    state: enabled
-- name: gfdm_extract_burst_cc_0_0_0
+    state: disabled
+- name: gfdm_extract_burst_cc_1
   id: gfdm_extract_burst_cc
   parameters:
     affinity: ''
@@ -200,9 +200,73 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 708.0]
+    coordinate: [710, 711]
     rotation: 0
-    state: enabled
+    state: disabled
+- name: gfdm_receiver_cc_0
+  id: gfdm_receiver_cc
+  parameters:
+    activate_cfo_compensation: activate_cfo_compensation
+    activate_phase_compensation: phase_compensate
+    active_subcarriers: active_subcarriers
+    affinity: ''
+    alias: ''
+    channel_estimator_id: '1'
+    comment: ''
+    constellation: gfdm_constellation
+    cp_len: cp_len
+    cs_len: cs_len
+    frequency_domain_taps: frequency_domain_taps
+    ic_iterations: ic_iterations
+    map_resources_per_timeslot: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    overlap: overlap
+    preamble: preamble
+    ramp_len: ramp_len
+    subcarrier_map: subcarrier_map
+    subcarriers: subcarriers
+    sync_tag_key: tag_key
+    timeslots: timeslots
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [999, 391]
+    rotation: 0
+    state: true
+- name: gfdm_receiver_cc_0_0
+  id: gfdm_receiver_cc
+  parameters:
+    activate_cfo_compensation: activate_cfo_compensation
+    activate_phase_compensation: phase_compensate
+    active_subcarriers: active_subcarriers
+    affinity: ''
+    alias: ''
+    channel_estimator_id: '1'
+    comment: ''
+    constellation: gfdm_constellation
+    cp_len: cp_len
+    cs_len: cs_len
+    frequency_domain_taps: frequency_domain_taps
+    ic_iterations: ic_iterations
+    map_resources_per_timeslot: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    overlap: overlap
+    preamble: preamble
+    ramp_len: ramp_len
+    subcarrier_map: subcarrier_map
+    subcarriers: subcarriers
+    sync_tag_key: tag_key
+    timeslots: timeslots
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [923, 738]
+    rotation: 0
+    state: true
 - name: hier_gfdm_receiver_tagged_0
   id: hier_gfdm_receiver_tagged
   parameters:
@@ -233,8 +297,8 @@ blocks:
     bus_structure: null
     coordinate: [1024, 324.0]
     rotation: 0
-    state: enabled
-- name: hier_gfdm_receiver_tagged_0_0
+    state: disabled
+- name: hier_gfdm_receiver_tagged_1
   id: hier_gfdm_receiver_tagged
   parameters:
     active_subcarriers: active_subcarriers
@@ -264,7 +328,7 @@ blocks:
     bus_structure: null
     coordinate: [1024, 612.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: hier_multicarrier_sync_0
   id: hier_multicarrier_sync
   parameters:
@@ -286,7 +350,7 @@ blocks:
     coordinate: [192, 512.0]
     rotation: 0
     state: true
-- name: hier_multicarrier_sync_0_0
+- name: hier_multicarrier_sync_1
   id: hier_multicarrier_sync
   parameters:
     affinity: ''
@@ -729,7 +793,7 @@ blocks:
     coordinate: [1384, 444.0]
     rotation: 0
     state: true
-- name: symbolmapping_symbol_demapper_cf_0_0
+- name: symbolmapping_symbol_demapper_cf_1
   id: symbolmapping_symbol_demapper_cf
   parameters:
     affinity: ''
@@ -744,7 +808,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 732.0]
+    coordinate: [1384, 732]
     rotation: 0
     state: enabled
 - name: tag_key
@@ -819,27 +883,35 @@ blocks:
 connections:
 - [blocks_add_xx_0, '0', pad_sink_0_0_0_0, '0']
 - [gfdm_extract_burst_cc_0_0, '0', hier_gfdm_receiver_tagged_0, '0']
-- [gfdm_extract_burst_cc_0_0_0, '0', hier_gfdm_receiver_tagged_0_0, '0']
+- [gfdm_extract_burst_cc_1, '0', hier_gfdm_receiver_tagged_1, '0']
+- [gfdm_receiver_cc_0, '0', pad_sink_0_0_0, '0']
+- [gfdm_receiver_cc_0, '0', symbolmapping_symbol_demapper_cf_0, '0']
+- [gfdm_receiver_cc_0, '1', pad_sink_0_0_0_1, '0']
+- [gfdm_receiver_cc_0, '2', pad_sink_0, '0']
+- [gfdm_receiver_cc_0_0, '0', pad_sink_0_0_0_2, '0']
+- [gfdm_receiver_cc_0_0, '0', symbolmapping_symbol_demapper_cf_1, '0']
+- [gfdm_receiver_cc_0_0, '1', pad_sink_0_0_0_1_0, '0']
+- [gfdm_receiver_cc_0_0, '2', pad_sink_0_0, '0']
 - [hier_gfdm_receiver_tagged_0, '0', pad_sink_0_0_0_1, '0']
 - [hier_gfdm_receiver_tagged_0, '1', pad_sink_0_0_0, '0']
 - [hier_gfdm_receiver_tagged_0, '1', symbolmapping_symbol_demapper_cf_0, '0']
-- [hier_gfdm_receiver_tagged_0_0, '0', pad_sink_0_0_0_1_0, '0']
-- [hier_gfdm_receiver_tagged_0_0, '1', pad_sink_0_0_0_2, '0']
-- [hier_gfdm_receiver_tagged_0_0, '1', symbolmapping_symbol_demapper_cf_0_0, '0']
+- [hier_gfdm_receiver_tagged_1, '0', pad_sink_0_0_0_1_0, '0']
+- [hier_gfdm_receiver_tagged_1, '1', pad_sink_0_0_0_2, '0']
+- [hier_gfdm_receiver_tagged_1, '1', symbolmapping_symbol_demapper_cf_1, '0']
 - [hier_multicarrier_sync_0, '0', xfdm_sync_sync_tag_align_cc_0, '0']
 - [hier_multicarrier_sync_0, '1', pad_sink_0_1, '0']
-- [hier_multicarrier_sync_0_0, '0', xfdm_sync_sync_tag_align_cc_0, '1']
-- [hier_multicarrier_sync_0_0, '1', pad_sink_0_1_0, '0']
+- [hier_multicarrier_sync_1, '0', xfdm_sync_sync_tag_align_cc_0, '1']
+- [hier_multicarrier_sync_1, '1', pad_sink_0_1_0, '0']
 - [pad_source_0, '0', hier_multicarrier_sync_0, '0']
-- [pad_source_0_0, '0', hier_multicarrier_sync_0_0, '0']
+- [pad_source_0_0, '0', hier_multicarrier_sync_1, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', blocks_add_xx_0, '0']
 - [symbolmapping_symbol_demapper_cf_0, '0', pad_sink_0_0_0_0_0, '0']
-- [symbolmapping_symbol_demapper_cf_0_0, '0', blocks_add_xx_0, '1']
-- [symbolmapping_symbol_demapper_cf_0_0, '0', pad_sink_0_0_0_0_0_0, '0']
+- [symbolmapping_symbol_demapper_cf_1, '0', blocks_add_xx_0, '1']
+- [symbolmapping_symbol_demapper_cf_1, '0', pad_sink_0_0_0_0_0_0, '0']
 - [xfdm_sync_sync_tag_align_cc_0, '0', gfdm_extract_burst_cc_0_0, '0']
-- [xfdm_sync_sync_tag_align_cc_0, '0', pad_sink_0, '0']
-- [xfdm_sync_sync_tag_align_cc_0, '1', gfdm_extract_burst_cc_0_0_0, '0']
-- [xfdm_sync_sync_tag_align_cc_0, '1', pad_sink_0_0, '0']
+- [xfdm_sync_sync_tag_align_cc_0, '0', gfdm_receiver_cc_0, '0']
+- [xfdm_sync_sync_tag_align_cc_0, '1', gfdm_extract_burst_cc_1, '0']
+- [xfdm_sync_sync_tag_align_cc_0, '1', gfdm_receiver_cc_0_0, '0']
 
 metadata:
   file_format: 1
