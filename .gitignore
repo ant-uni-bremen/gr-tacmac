@@ -3,3 +3,5 @@ build*/
 *.pyc
 #.vscode/
 __pycache__/
+id_rsa
+id_ed25519
