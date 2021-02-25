@@ -123,9 +123,11 @@ class phy_layer(gr.hier_block2):
         rx_device_addr = tx_device_addr
         if usrp_rx_addr:
             rx_device_addr = parse_usrp_address(usrp_rx_addr)
-        usrp_device_args = (
-            "master_clock_rate=122.88e6,clock_source=gpsdo,time_source=gpsdo"
-        )
+        if "addr" not in rx_device_addr:
+            master_clock_rate = samp_rate
+        else:
+            master_clock_rate = "122.88e6"
+        usrp_device_args = f"master_clock_rate={master_clock_rate},clock_source=gpsdo,time_source=gpsdo"
 
         self.uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
@@ -297,8 +299,8 @@ class phy_layer(gr.hier_block2):
         # corr, synced, estimate, symbol
         for i in range(len(usrp_rx_channels) * 4):
             self.connect(
-                (self.tacmac_lower_phy_receiver, i + 1 + len(usrp_rx_channels)),
-                (self, len(usrp_rx_channels) + i),
+                (self.tacmac_lower_phy_receiver, i + 1 + len(usrp_tx_channels)),
+                (self, len(usrp_tx_channels) + i),
             )
 
         self.msg_connect((self.blocks_tagged_stream_to_pdu, "pdus"), (self, "LLCout"))

@@ -32,18 +32,6 @@ options:
     state: enabled
 
 blocks:
-- name: active_bandwidth
-  id: variable
-  parameters:
-    comment: ''
-    value: 1.0 * samp_rate * active_subcarriers / subcarriers
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [437, 177]
-    rotation: 0
-    state: enabled
 - name: full_device_id
   id: variable
   parameters:
@@ -56,30 +44,6 @@ blocks:
     coordinate: [767, 411]
     rotation: 0
     state: enabled
-- name: full_rx_addr
-  id: variable
-  parameters:
-    comment: ''
-    value: rx_addr if len(rx_addr) > 0 else tx_addr
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [448, 292.0]
-    rotation: 0
-    state: enabled
-- name: info_length
-  id: variable
-  parameters:
-    comment: ''
-    value: 8 * (mtu_size + 15)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [928, 52.0]
-    rotation: 0
-    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -89,7 +53,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [546, 162]
+    coordinate: [517, 226]
     rotation: 0
     state: enabled
 - name: activate_cfo_compensation
@@ -211,45 +175,7 @@ blocks:
     coordinate: [535, 80]
     rotation: 0
     state: true
-- name: hier_gfdm_ota_demo_0
-  id: hier_gfdm_ota_demo
-  parameters:
-    activate_cfo_compensation: phase_compensate
-    active_subcarriers: active_subcarriers
-    affinity: ''
-    alias: ''
-    comment: ''
-    cycle_interval: cycle_interval
-    db_device_id: full_device_id
-    db_hostname: db_hostname
-    dst_id: dst_id
-    ic_iter_range: ic_iter_range
-    info_length: info_length
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nports: nports
-    phase_compensate: phase_compensate
-    rgain: rx_gain
-    rx_addr: full_rx_addr
-    scorr_threshold_high: scorr_threshold_high
-    scorr_threshold_low: scorr_threshold_low
-    src_id: src_id
-    subcarriers: subcarriers
-    tfreq: tfreq
-    tgain: tx_gain
-    timeslots: timeslots
-    timing_advance: timing_advance
-    tx_addr: tx_addr
-    tx_digital_gain: tx_digital_gain
-    xcorr_threshold: xcorr_threshold
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [480, 404.0]
-    rotation: 0
-    state: true
-- name: ic_iter_range
+- name: ic_iterations
   id: parameter
   parameters:
     alias: ''
@@ -331,7 +257,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 84]
+    coordinate: [339, 102]
+    rotation: 0
+    state: true
+- name: rx_channels
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: 'RX channels, e.g. ''0 1'' '
+    short_id: ''
+    type: str
+    value: '"0 1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [204, 326]
     rotation: 0
     state: true
 - name: rx_gain
@@ -351,23 +294,6 @@ blocks:
     coordinate: [1032, 508.0]
     rotation: 0
     state: true
-- name: samp_rate
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: Sample rate
-    short_id: ''
-    type: eng_float
-    value: 15.625e6
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [642, 5]
-    rotation: 0
-    state: disabled
 - name: scorr_threshold_high
   id: parameter
   parameters:
@@ -436,6 +362,64 @@ blocks:
     coordinate: [298, 5]
     rotation: 0
     state: true
+- name: tacmac_elasticsearch_connector_0
+  id: tacmac_elasticsearch_connector
+  parameters:
+    affinity: ''
+    alias: ''
+    buffer_size: '5000'
+    comment: ''
+    data_type: 5gdata
+    device_id: full_device_id
+    hostname: db_hostname
+    index_prefix: measurements-
+    port: '9200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [529, 406]
+    rotation: 0
+    state: disabled
+- name: tacmac_phy_layer_0
+  id: tacmac_phy_layer
+  parameters:
+    activate_cfo_compensation: activate_cfo_compensation
+    activate_phase_compensation: phase_compensate
+    active_subcarriers: active_subcarriers
+    affinity: ''
+    alias: ''
+    carrier_freq: tfreq
+    comment: ''
+    cycle_interval: cycle_interval
+    dst_id: dst_id
+    ic_iterations: ic_iterations
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu_size: mtu_size
+    num_network_interfaces: nports
+    rx_gain: rx_gain
+    samp_rate: samp_rate
+    scorr_threshold_high: scorr_threshold_high
+    scorr_threshold_low: scorr_threshold_low
+    src_id: src_id
+    subcarriers: subcarriers
+    timeslots: timeslots
+    timing_advance: timing_advance
+    tx_digital_gain: tx_digital_gain
+    tx_gain: tx_gain
+    usrp_rx_addr: rx_addr
+    usrp_rx_channels: '[int(i) for i in rx_channels.split()]'
+    usrp_tx_addr: tx_addr
+    usrp_tx_channels: '[int(i) for i in tx_channels.split()]'
+    xcorr_threshold: xcorr_threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [112, 465]
+    rotation: 0
+    state: enabled
 - name: tfreq
   id: parameter
   parameters:
@@ -504,6 +488,23 @@ blocks:
     coordinate: [203, 101]
     rotation: 0
     state: true
+- name: tx_channels
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: TX channels, e.g. '2 3'
+    short_id: ''
+    type: str
+    value: 2 3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 326]
+    rotation: 0
+    state: true
 - name: tx_digital_gain
   id: parameter
   parameters:
@@ -557,7 +558,8 @@ blocks:
     state: true
 
 connections:
-- [hier_gfdm_ota_demo_0, '4', blocks_null_sink_0, '0']
+- [tacmac_phy_layer_0, '0', blocks_null_sink_0, '0']
+- [tacmac_phy_layer_0, status, tacmac_elasticsearch_connector_0, in]
 
 metadata:
   file_format: 1
