@@ -11,10 +11,6 @@
 namespace gr {
 namespace tacmac {
 
-// #pragma message("set the following appropriately and remove this warning")
-using input_type = float;
-// #pragma message("set the following appropriately and remove this warning")
-using output_type = float;
 status_collector::sptr status_collector::make()
 {
     return gnuradio::get_initial_sptr(new status_collector_impl());

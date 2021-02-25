@@ -37,7 +37,6 @@ class phy_layer(gr.hier_block2):
 
     def __init__(
         self,
-        antennas=2,
         timeslots=15,
         subcarriers=64,
         active_subcarriers=60,
@@ -63,12 +62,13 @@ class phy_layer(gr.hier_block2):
         tx_digital_gain=2.7,
         rx_gain=55.0,
     ):
+        noutputs = len(usrp_tx_channels) + len(usrp_rx_channels) * 4
         gr.hier_block2.__init__(
             self,
             "phy_layer",
-            gr.io_signature(0, 0, 0),  # Input signature
-            gr.io_signature(antennas * 5, antennas * 5, gr.sizeof_gr_complex),
-        )  # Output signature
+            gr.io_signature(0, 0, 0),
+            gr.io_signature(noutputs, noutputs, gr.sizeof_gr_complex),
+        )
         self.message_port_register_hier_out("LLCout")
         self.message_port_register_hier_out("status")
 
@@ -84,7 +84,7 @@ class phy_layer(gr.hier_block2):
         byte_info_length = mtu_size + packet_header_overhead
         bit_info_length = 8 * byte_info_length
 
-        self.constellation = constellation = digital.constellation_calcdist(
+        constellation = digital.constellation_calcdist(
             [-0.707 - 0.707j, -0.707 + 0.707j, 0.707 + 0.707j, 0.707 - 0.707j],
             [0, 1, 3, 2],
             4,
@@ -94,14 +94,18 @@ class phy_layer(gr.hier_block2):
         constellation_order = constellation.bits_per_symbol()
 
         cyclic_shift_step = 2
-        cyclic_shifts = list(range(0, antennas * cyclic_shift_step, cyclic_shift_step))
+        cyclic_shifts = list(
+            range(0, len(usrp_tx_channels) * cyclic_shift_step, cyclic_shift_step)
+        )
         self.conf = conf = get_gfdm_configuration(
             timeslots,
             subcarriers,
             active_subcarriers,
             overlap=2,
-            cp_len=subcarriers // 2,
-            cs_len=subcarriers // 4,
+            # cp_len=subcarriers // 2,
+            # cs_len=subcarriers // 4,
+            cp_len=16,
+            cs_len=8,
             filtertype="rrc",
             filteralpha=0.2,
             cyclic_shifts=cyclic_shifts,
@@ -134,7 +138,27 @@ class phy_layer(gr.hier_block2):
         self.uhd_usrp_source.set_clock_source("gpsdo", 0)
         self.uhd_usrp_source.set_time_source("gpsdo", 0)
         self.uhd_usrp_source.set_samp_rate(samp_rate)
-        self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
+
+        # see: https://files.ettus.com/manual/page_gpsdo_x3x0.html
+        # https://kb.ettus.com/Synchronizing_USRP_Events_Using_Timed_Commands_in_UHD
+        gps_locked = self.uhd_usrp_source.get_mboard_sensor("gps_locked", 0).to_bool()
+        if gps_locked:
+            print("Trying to align USRP time with host time...")
+            last = self.uhd_usrp_source.get_time_last_pps()
+            next = self.uhd_usrp_source.get_time_last_pps()
+            while last == next:
+                time.sleep(50e-3)
+                last = next
+                next = self.uhd_usrp_source.get_time_last_pps()
+            time.sleep(200e-3)
+            self.uhd_usrp_source.set_time_next_pps(
+                uhd.time_spec(
+                    self.uhd_usrp_source.get_mboard_sensor("gps_time").to_int() + 1
+                )
+            )
+            # maybe a check would be in order?
+        else:
+            self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
 
         for i in range(len(usrp_rx_channels)):
             self.uhd_usrp_source.set_center_freq(carrier_freq, i)
@@ -194,7 +218,7 @@ class phy_layer(gr.hier_block2):
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
         self.tacmac_lower_phy_receiver = tacmac.lower_phy_receiver(
-            antennas,
+            len(usrp_rx_channels),
             conf.timeslots,
             conf.subcarriers,
             conf.active_subcarriers,
@@ -271,8 +295,11 @@ class phy_layer(gr.hier_block2):
         )
 
         # corr, synced, estimate, symbol
-        for i in range(antennas * 4):
-            self.connect((self.tacmac_lower_phy_receiver, i + 3), (self, antennas + i))
+        for i in range(len(usrp_rx_channels) * 4):
+            self.connect(
+                (self.tacmac_lower_phy_receiver, i + 1 + len(usrp_rx_channels)),
+                (self, len(usrp_rx_channels) + i),
+            )
 
         self.msg_connect((self.blocks_tagged_stream_to_pdu, "pdus"), (self, "LLCout"))
         self.msg_connect(
@@ -310,18 +337,6 @@ class phy_layer(gr.hier_block2):
         self.tacmac_lower_phy_receiver.set_activate_cfo_compensation(
             activate_cfo_compensation
         )
-
-    def get_cycle_interval(self):
-        return self.tacmac_phy_transmitter.get_cycle_interval()
-
-    def set_cycle_interval(self, cycle_interval):
-        self.tacmac_phy_transmitter.set_cycle_interval(cycle_interval)
-
-    def get_timing_advance(self):
-        return self.tacmac_phy_transmitter.get_timing_advance()
-
-    def set_timing_advance(self, timing_advance):
-        self.tacmac_phy_transmitter.set_timing_advance(timing_advance)
 
     def get_ic_iterations(self):
         return self.tacmac_lower_phy_receiver.get_ic_iterations()
@@ -383,3 +398,15 @@ class phy_layer(gr.hier_block2):
     def set_tx_gain(self, tx_gain):
         for i in range(len(self.usrp_tx_channels)):
             self.uhd_usrp_sink.set_gain(tx_gain, i)
+
+    def get_cycle_interval(self):
+        return self.tacmac_phy_transmitter.get_cycle_interval()
+
+    def set_cycle_interval(self, cycle_interval):
+        self.tacmac_phy_transmitter.set_cycle_interval(cycle_interval)
+
+    def get_timing_advance(self):
+        return self.tacmac_phy_transmitter.get_timing_advance()
+
+    def set_timing_advance(self, timing_advance):
+        self.tacmac_phy_transmitter.set_timing_advance(timing_advance)

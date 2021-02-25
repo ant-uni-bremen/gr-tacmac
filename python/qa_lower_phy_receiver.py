@@ -19,17 +19,17 @@ class qa_lower_phy_receiver(gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-    def test_instance(self):
-        # FIXME: Test will fail until you pass sensible arguments to the constructor
+    def test_001_instance_default(self):
         instance = lower_phy_receiver()
 
         instance.set_ic_iterations(4)
         self.assertEqual(instance.get_ic_iterations(), 4)
 
-    def test_001_descriptive_test_name(self):
-        # set up fg
-        self.tb.run()
-        # check data
+    def test_002_one_antenna(self):
+        instance = lower_phy_receiver(nport=1)
+
+        instance.set_ic_iterations(4)
+        self.assertEqual(instance.get_ic_iterations(), 4)
 
 
 if __name__ == "__main__":

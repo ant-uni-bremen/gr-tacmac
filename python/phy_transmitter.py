@@ -67,38 +67,9 @@ class phy_transmitter(gr.hier_block2):
         self.message_port_register_hier_out("command")
 
         ##################################################
-        # Parameters
-        ##################################################
-        self.active_subcarriers = active_subcarriers
-        self.cp_len = cp_len
-        self.cs_len = cs_len
-        self.cycle_interval = cycle_interval
-        self.frame_size = frame_size
-        self.frequency_domain_taps = frequency_domain_taps
-        self.frozen_bit_positions = frozen_bit_positions
-        self.constellation_order = constellation_order
-        self.interleaver_indices = interleaver_indices
-        self.overlap = overlap
-        self.post_padding = post_padding
-        self.pre_padding = pre_padding
-        self.full_preambles = full_preambles
-        self.ramp_len = ramp_len
-        self.subcarrier_map = subcarrier_map
-        self.subcarriers = subcarriers
-        self.packet_length_key = packet_length_key
-        self.timeslots = timeslots
-        self.timing_advance = timing_advance
-        self.tx_digital_gain = tx_digital_gain
-        self.window_taps = window_taps
-        self.cyclic_shift = cyclic_shift
-        self.n_antennas = len(cyclic_shift)
-
-        ##################################################
         # Variables
         ##################################################
-        self.var_encoder = var_encoder = polarwrap.encoderwrap.make(
-            frame_size, frozen_bit_positions, 0
-        )
+        var_encoder = polarwrap.encoderwrap.make(frame_size, frozen_bit_positions, 0)
 
         ##################################################
         # Blocks
@@ -169,22 +140,19 @@ class phy_transmitter(gr.hier_block2):
         self.msg_connect((self, "time_tag"), (self.gfdm_short_burst_shaper, "time_tag"))
 
     def get_cycle_interval(self):
-        return self.cycle_interval
+        return self.gfdm_short_burst_shaper.cycle_interval()
 
     def set_cycle_interval(self, cycle_interval):
-        self.cycle_interval = cycle_interval
-        self.gfdm_short_burst_shaper.set_timing_advance(self.cycle_interval)
+        self.gfdm_short_burst_shaper.set_cycle_interval(cycle_interval)
 
     def get_timing_advance(self):
-        return self.timing_advance
+        return self.gfdm_short_burst_shaper.timing_advance()
 
     def set_timing_advance(self, timing_advance):
-        self.timing_advance = timing_advance
-        self.gfdm_short_burst_shaper.set_timing_advance(self.timing_advance)
+        self.gfdm_short_burst_shaper.set_timing_advance(timing_advance)
 
     def get_tx_digital_gain(self):
-        return self.tx_digital_gain
+        return self.gfdm_short_burst_shaper.scale()
 
     def set_tx_digital_gain(self, tx_digital_gain):
-        self.tx_digital_gain = tx_digital_gain
-        self.gfdm_short_burst_shaper.set_scale(self.tx_digital_gain)
+        self.gfdm_short_burst_shaper.set_scale(tx_digital_gain)
