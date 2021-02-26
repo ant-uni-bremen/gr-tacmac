@@ -48,8 +48,8 @@ class qa_phy_layer(gr_unittest.TestCase):
         instance.set_xcorr_threshold(42.42)
         self.assertAlmostEqual(instance.get_xcorr_threshold(), 42.42)
 
-        instance.set_tx_digital_gain(24.31)
-        self.assertAlmostEqual(instance.get_tx_digital_gain(), 24.31)
+        instance.set_tx_digital_gain(24.3)
+        self.assertAlmostEqual(instance.get_tx_digital_gain(), 24.3, 5)
 
         instance.set_carrier_freq(3.6e9)
         self.assertAlmostEqual(instance.get_carrier_freq(), 3.6e9)

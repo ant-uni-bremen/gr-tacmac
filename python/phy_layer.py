@@ -97,20 +97,25 @@ class phy_layer(gr.hier_block2):
         cyclic_shifts = list(
             range(0, len(usrp_tx_channels) * cyclic_shift_step, cyclic_shift_step)
         )
-        self.conf = conf = get_gfdm_configuration(
+
+        cs_len = 8
+        cp_len = 2 * cs_len
+        if cp_len >= subcarriers:
+            cp_len = subcarriers // 2
+            cs_len = cp_len // 2
+
+        conf = get_gfdm_configuration(
             timeslots,
             subcarriers,
             active_subcarriers,
             overlap=2,
-            # cp_len=subcarriers // 2,
-            # cs_len=subcarriers // 4,
-            cp_len=16,
-            cs_len=8,
+            cp_len=cp_len,
+            cs_len=cs_len,
             filtertype="rrc",
             filteralpha=0.2,
             cyclic_shifts=cyclic_shifts,
         )
-        self.code_conf = code_conf = polarwrap.get_polar_configuration(
+        code_conf = polarwrap.get_polar_configuration(
             constellation_order * timeslots * active_subcarriers,
             bit_info_length,
             interleaver_type="convolutional",
