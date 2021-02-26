@@ -190,6 +190,23 @@ class phy_layer(gr.hier_block2):
             self.uhd_usrp_sink.set_antenna("TX/RX", i)
             self.uhd_usrp_sink.set_gain(tx_gain, i)
 
+        # a bit of device info digging
+        tx_info = self.uhd_usrp_sink.get_usrp_info()
+        rx_info = self.uhd_usrp_source.get_usrp_info()
+        common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
+        tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
+        rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
+
+        print(f'UHD version: {uhd.get_version_string()}')
+        for k in common_keys:
+            print(f'{k:16}{tx_info[k]:20}{rx_info[k]}')
+
+        for k in tx_keys:
+            print(f'{k:16}{tx_info[k]}')
+
+        for k in rx_keys:
+            print(f'{k:16}{rx_info[k]}')
+
         ##################################################
         # Network interfaces
         ##################################################
