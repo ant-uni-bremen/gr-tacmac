@@ -61,6 +61,7 @@ class phy_layer(gr.hier_block2):
         tx_gain=55.0,
         tx_digital_gain=2.7,
         rx_gain=55.0,
+        master_clock_rate=122.88e6,
     ):
         noutputs = len(usrp_tx_channels) + len(usrp_rx_channels) * 4
         gr.hier_block2.__init__(
@@ -128,10 +129,11 @@ class phy_layer(gr.hier_block2):
         rx_device_addr = tx_device_addr
         if usrp_rx_addr:
             rx_device_addr = parse_usrp_address(usrp_rx_addr)
+
         if "addr" not in rx_device_addr:
             master_clock_rate = samp_rate
-        else:
-            master_clock_rate = "122.88e6"
+
+        master_clock_rate = str(master_clock_rate)
         usrp_device_args = f"master_clock_rate={master_clock_rate},clock_source=gpsdo,time_source=gpsdo"
 
         self.uhd_usrp_source = uhd.usrp_source(
