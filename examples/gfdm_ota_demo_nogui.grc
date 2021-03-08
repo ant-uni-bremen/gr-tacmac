@@ -65,7 +65,7 @@ blocks:
     label: Compesate CFO
     short_id: ''
     type: intx
-    value: '1'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -192,6 +192,23 @@ blocks:
     coordinate: [1344, 156.0]
     rotation: 0
     state: true
+- name: master_clock_rate
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Master clock rate
+    short_id: ''
+    type: eng_float
+    value: 122.88e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [952, 20.0]
+    rotation: 0
+    state: true
 - name: mtu_size
   id: parameter
   parameters:
@@ -234,8 +251,8 @@ blocks:
     hide: none
     label: Compesate phase
     short_id: ''
-    type: intx
-    value: '1'
+    type: ''
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -394,6 +411,7 @@ blocks:
     cycle_interval: cycle_interval
     dst_id: dst_id
     ic_iterations: ic_iterations
+    master_clock_rate: master_clock_rate
     maxoutbuf: '0'
     minoutbuf: '0'
     mtu_size: mtu_size
