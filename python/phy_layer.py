@@ -187,10 +187,14 @@ class phy_layer(gr.hier_block2):
         self.uhd_usrp_sink.set_time_source("gpsdo", 0)
         self.uhd_usrp_sink.set_samp_rate(samp_rate)
 
+        self.uhd_usrp_sink.set_min_output_buffer(4096)
+        self.uhd_usrp_sink.set_max_output_buffer(4096)
+
         for i in range(len(usrp_tx_channels)):
             self.uhd_usrp_sink.set_center_freq(carrier_freq, i)
             self.uhd_usrp_sink.set_antenna("TX/RX", i)
             self.uhd_usrp_sink.set_gain(tx_gain, i)
+            self.uhd_usrp_sink.set_bandwidth(samp_rate, i)
 
         # a bit of device info digging
         tx_info = self.uhd_usrp_sink.get_usrp_info()
@@ -198,7 +202,8 @@ class phy_layer(gr.hier_block2):
         common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
         tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
         rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
-
+        print(f'USRP TX channels: {usrp_tx_channels}')
+        print(f'USRP RX channels: {usrp_rx_channels}')
         print(f'UHD version: {uhd.get_version_string()}')
         for k in common_keys:
             print(f'{k:16}{tx_info[k]:20}{rx_info[k]}')
@@ -209,6 +214,10 @@ class phy_layer(gr.hier_block2):
         for k in rx_keys:
             print(f'{k:16}{rx_info[k]}')
 
+        usrp_type = 'n3xx'
+        if 'B2' in tx_info['mboard_id']:
+            usrp_type = 'b200'
+
         ##################################################
         # Network interfaces
         ##################################################
@@ -217,6 +226,8 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_status_collector = tacmac.status_collector()
 
+        more_padding = int(2 ** 14) if usrp_type == 'b200' else 0
+        print(f'more padding {more_padding}')
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
             conf.subcarriers,
@@ -232,8 +243,8 @@ class phy_layer(gr.hier_block2):
             code_conf.frame_size,
             code_conf.frozen_bit_positions,
             code_conf.interleaver_indices,
-            conf.pre_padding_len,
-            conf.post_padding_len,
+            conf.pre_padding_len + more_padding,
+            conf.post_padding_len + more_padding,
             conf.full_preambles,
             cycle_interval,
             timing_advance,
@@ -243,6 +254,7 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
+        print(f'cfo_compensation={activate_cfo_compensation}, phase_compensation={activate_phase_compensation}')
         self.tacmac_lower_phy_receiver = tacmac.lower_phy_receiver(
             len(usrp_rx_channels),
             conf.timeslots,
