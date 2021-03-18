@@ -72,8 +72,9 @@ class lower_phy_receiver(gr.hier_block2):
                 xcorr_threshold,
                 xcorr_compensate_frequency_offset,
                 packet_length_key,
+                antenna_port
             )
-            for _ in range(nport)
+            for antenna_port in range(nport)
         ]
 
         for port in range(nport):
@@ -110,8 +111,9 @@ class lower_phy_receiver(gr.hier_block2):
                 activate_phase_compensation,
                 activate_cfo_compensation,
                 packet_length_key,
+                antenna_port
             )
-            for _ in range(nport)
+            for antenna_port in range(nport)
         ]
 
         for port in range(nport):
@@ -158,9 +160,9 @@ class lower_phy_receiver(gr.hier_block2):
         ##################################################
         self.symbolmapping_symbol_demappers = [
             symbolmapping.symbol_demapper_cf(
-                gfdm_constellation.bits_per_symbol(), constellation_type, cnr_tag_key
+                gfdm_constellation.bits_per_symbol(), constellation_type, f'{cnr_tag_key}{antenna_port}'
             )
-            for _ in range(nport)
+            for antenna_port in range(nport)
         ]
 
         for port in range(nport):

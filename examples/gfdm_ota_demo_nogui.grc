@@ -32,6 +32,19 @@ options:
     state: enabled
 
 blocks:
+- name: additional_db_data
+  id: variable
+  parameters:
+    comment: ''
+    value: '{''rx_gain'': rx_gain, ''tx_gain'': tx_gain, ''timing_advance'': timing_advance,
+      ''network_ports'': nports, ''tx_channels'': tx_channels, ''rx_channels'': rx_channels}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [768, 476.0]
+    rotation: 0
+    state: enabled
 - name: full_device_id
   id: variable
   parameters:
@@ -382,6 +395,7 @@ blocks:
 - name: tacmac_elasticsearch_connector_0
   id: tacmac_elasticsearch_connector
   parameters:
+    additional_data: additional_db_data
     affinity: ''
     alias: ''
     buffer_size: '5000'
@@ -397,7 +411,7 @@ blocks:
     bus_structure: null
     coordinate: [529, 406]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_phy_layer_0
   id: tacmac_phy_layer
   parameters:

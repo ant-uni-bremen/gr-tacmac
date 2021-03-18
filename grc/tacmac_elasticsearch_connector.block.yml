@@ -4,8 +4,10 @@ category: "[tacmac]"
 
 templates:
   imports: import tacmac
-  make: tacmac.elasticsearch_connector(${hostname}, ${port}, ${device_id}, ${data_type}, ${index_prefix}, ${buffer_size})
+  make: tacmac.elasticsearch_connector(${hostname}, ${port}, ${device_id}, ${data_type}, ${index_prefix}, ${buffer_size}, ${additional_data})
 
+  callbacks:
+    - update_additional_data(${additional_data})
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
 #     * id (makes the value accessible as keyname, e.g. in the make entry)
@@ -36,6 +38,10 @@ parameters:
     label: DB buffer size
     dtype: int
     default: 5000
+  - id: additional_data
+    label: Additional data
+    dtype: raw
+    default: {}
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
 #      * label (an identifier for the GUI)

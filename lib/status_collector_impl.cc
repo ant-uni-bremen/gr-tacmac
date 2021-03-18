@@ -7,6 +7,7 @@
 
 #include "status_collector_impl.h"
 #include <gnuradio/io_signature.h>
+#include <fmt/core.h>
 
 namespace gr {
 namespace tacmac {
@@ -49,20 +50,6 @@ pmt::pmt_t status_collector_impl::handle_pdu_meta(const pmt::pmt_t& meta)
             status = pmt::dict_add(status, k, v);
         }
     }
-    long lost_packets =
-        pmt::to_long(pmt::dict_ref(status, pmt::mp("lost_packets"), pmt::from_long(-1)));
-    // if (lost_packets != 0) {
-    //     GR_LOG_DEBUG(d_logger, "### META ###");
-    //     for (size_t i = 0; i < pmt::length(status); i++) {
-    //         auto k = pmt::car(pmt::nth(i, status));
-    //         auto v = pmt::cdr(pmt::nth(i, status));
-    //         GR_LOG_DEBUG(d_logger,
-    //                      string_format("PDU: key=%s\tvalue=%s",
-    //                                    pmt::write_string(k).c_str(),
-    //                                    pmt::write_string(v).c_str()));
-    //     }
-    //     GR_LOG_DEBUG(d_logger, "### META END ###");
-    // }
     return pmt::cons(RX_MSG_KEY, status);
 }
 

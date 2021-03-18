@@ -30,7 +30,7 @@ class elasticsearch_connector(gr.sync_block):
 
     def __init__(self, hostname='localhost', port=9200, device_id=4711,
                  data_type='5gdata', index_prefix='measurements-',
-                 buffer_size=5000):
+                 buffer_size=5000, additional_data={}):
         gr.sync_block.__init__(self,
                                name="elasticsearch_connector",
                                in_sig=[],
@@ -48,6 +48,8 @@ class elasticsearch_connector(gr.sync_block):
         self._db_data_type = f'{data_type}'
         self._common_body = {'type': self._db_data_type,
                              'deviceId': self._db_device_id}
+
+        self._additional_data = additional_data
 
         # Configure database.
         self._db_index = f'{index_prefix}{datetime.date.today()}'
@@ -76,6 +78,9 @@ class elasticsearch_connector(gr.sync_block):
                                         hostname=hostname_func,
                                         size=buffer_size)
 
+    def update_additional_data(self, data):
+        self._additional_data.update(data)
+
     def send_to_buffer(self, body):
         self._db_buffer.add([body, ])
         if self._db_buffer.oldest_elapsed_time > 10.0:
@@ -97,6 +102,7 @@ class elasticsearch_connector(gr.sync_block):
             return
 
         body = {'direction': direction}
+        body.update(self._additional_data)
         for i in range(pmt.length(values)):
             k = str(pmt.to_python(pmt.car(pmt.nth(i, values))))
             v = pmt.cdr(pmt.nth(i, values))

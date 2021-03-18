@@ -21,23 +21,16 @@
 #ifndef INCLUDED_TACMAC_UTILITIES_H
 #define INCLUDED_TACMAC_UTILITIES_H
 
+#include <fmt/core.h>
 #include <pmt/pmt.h>
 #include <cstdint>
 #include <memory>
+#include <regex>
 #include <stdexcept>
 #include <string>
 
 namespace gr {
 namespace tacmac {
-
-/*
- * This is a C++11 solution to obtain formatted strings.
- *
- * Source: https://stackoverflow.com/a/26221725 under CC0
- *
- * As noted in the source this boils down to:
- * std::format() with C++20!
- */
 
 inline uint64_t double2ticks(const double interval)
 {
@@ -64,7 +57,29 @@ inline pmt::pmt_t flatten_dict(const pmt::pmt_t& dict)
         auto k = pmt::car(pmt::nth(i, dict));
         auto v = pmt::cdr(pmt::nth(i, dict));
         if (pmt::is_dict(v)) {
-            res = pmt::dict_update(res, v);
+            auto key_str = pmt::symbol_to_string(k);
+            bool holds_number = true;
+            int number = 0;
+            try {
+                auto numeric_str =
+                    std::regex_replace(key_str, std::regex(R"([^\d])"), "");
+                number = std::stoi(numeric_str);
+            } catch (const std::exception&) {
+                // catch all and ignore this try...
+                holds_number = false;
+            }
+
+            if (holds_number) {
+                for (size_t j = 0; j < pmt::length(v); j++) {
+                    auto ik = pmt::car(pmt::nth(j, v));
+                    auto nextkey = fmt::format("{}{}", pmt::symbol_to_string(ik), number);
+                    auto iv = pmt::cdr(pmt::nth(j, v));
+                    res = pmt::dict_add(res, pmt::string_to_symbol(nextkey), iv);
+                }
+            } else {
+                res = pmt::dict_update(res, v);
+            }
+
         } else {
             res = pmt::dict_add(res, k, v);
         }
