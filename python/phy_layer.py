@@ -167,6 +167,7 @@ class phy_layer(gr.hier_block2):
             )
             # maybe a check would be in order?
         else:
+            print("GPS not available: using system time...")
             self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
 
         for i in range(len(usrp_rx_channels)):
