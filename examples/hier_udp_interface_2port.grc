@@ -1,0 +1,220 @@
+options:
+  parameters:
+    author: Johannes Demel
+    catch_exceptions: 'True'
+    category: '[tacmac]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: hb
+    hier_block_src_path: '.:'
+    id: hier_udp_interface_2port
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: 2 Port UDP Interface Example
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: mtu_size
+  id: variable
+  parameters:
+    comment: ''
+    value: '84'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 36.0]
+    rotation: 0
+    state: enabled
+- name: phy_header_size
+  id: variable
+  parameters:
+    comment: ''
+    value: '15'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 164.0]
+    rotation: 0
+    state: enabled
+- name: blocks_socket_pdu_0
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: '"localhost"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: '4021'
+    tcp_no_delay: 'False'
+    type: UDP_CLIENT
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 260.0]
+    rotation: 0
+    state: true
+- name: blocks_socket_pdu_0_0
+  id: blocks_socket_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: '"localhost"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: mtu_size
+    port: '4042'
+    tcp_no_delay: 'False'
+    type: UDP_SERVER
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [752, 276.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: tx
+    num_streams: '1'
+    optional: 'False'
+    type: message
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 356.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: status
+    num_streams: '1'
+    optional: 'True'
+    type: message
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 212.0]
+    rotation: 0
+    state: true
+- name: pad_sink_0_1
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: timing
+    num_streams: '1'
+    optional: 'True'
+    type: message
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 404.0]
+    rotation: 0
+    state: true
+- name: pad_source_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: rx
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: message
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 372.0]
+    rotation: 0
+    state: true
+- name: tacmac_mac_controller_0
+  id: tacmac_mac_controller
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    destination_id: '42'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu_size: mtu_size
+    source_id: '21'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [944, 288.0]
+    rotation: 0
+    state: true
+- name: tacmac_udp_interface_0
+  id: tacmac_udp_interface
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dst_id: '42'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu_size: '68'
+    nports: '1'
+    src_id: '21'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 512.0]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_socket_pdu_0_0, pdus, tacmac_mac_controller_0, LLCin]
+- [pad_source_0, out, tacmac_mac_controller_0, PHYin]
+- [tacmac_mac_controller_0, LLCout, blocks_socket_pdu_0, pdus]
+- [tacmac_mac_controller_0, LLCout, pad_sink_0_0, in]
+- [tacmac_mac_controller_0, PHYout, pad_sink_0, in]
+- [tacmac_mac_controller_0, timing, pad_sink_0_1, in]
+
+metadata:
+  file_format: 1
