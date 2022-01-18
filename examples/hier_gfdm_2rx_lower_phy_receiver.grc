@@ -93,7 +93,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1696, 592.0]
+    coordinate: [1328, 696.0]
     rotation: 0
     state: true
 - name: cp_len
@@ -165,44 +165,6 @@ blocks:
     coordinate: [1320, 28.0]
     rotation: 0
     state: true
-- name: gfdm_extract_burst_cc_0_0
-  id: gfdm_extract_burst_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    burst_len: frame_len
-    burst_start_tag: tag_key
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: ''
-    tag_backoff: cp_len
-    use_cfo_compensation: activate_cfo_compensation
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [784, 420.0]
-    rotation: 0
-    state: disabled
-- name: gfdm_extract_burst_cc_1
-  id: gfdm_extract_burst_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    burst_len: frame_len
-    burst_start_tag: tag_key
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: ''
-    tag_backoff: cp_len
-    use_cfo_compensation: activate_cfo_compensation
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [710, 711]
-    rotation: 0
-    state: disabled
 - name: gfdm_receiver_cc_0
   id: gfdm_receiver_cc
   parameters:
@@ -211,6 +173,7 @@ blocks:
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''
+    antenna_port: '0'
     channel_estimator_id: '1'
     comment: ''
     constellation: gfdm_constellation
@@ -232,7 +195,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [999, 391]
+    coordinate: [920, 420.0]
     rotation: 0
     state: true
 - name: gfdm_receiver_cc_0_0
@@ -243,6 +206,7 @@ blocks:
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''
+    antenna_port: '1'
     channel_estimator_id: '1'
     comment: ''
     constellation: gfdm_constellation
@@ -264,71 +228,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [923, 738]
+    coordinate: [704, 620.0]
     rotation: 0
     state: true
-- name: hier_gfdm_receiver_tagged_0
-  id: hier_gfdm_receiver_tagged
-  parameters:
-    active_subcarriers: active_subcarriers
-    affinity: ''
-    alias: ''
-    comment: ''
-    compensate_phase: phase_compensate
-    cp_len: cp_len
-    cs_len: cs_len
-    frame_len: frame_len
-    frame_start_tag_key: tag_key
-    gfdm_constellation: gfdm_constellation
-    ic_iterations: ic_iterations
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    overlap: overlap
-    preamble: preamble
-    ramp_len: ramp_len
-    rx_filter_taps: frequency_domain_taps
-    subcarrier_map: subcarrier_map
-    subcarriers: subcarriers
-    timeslots: timeslots
-    which_estimator: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1024, 324.0]
-    rotation: 0
-    state: disabled
-- name: hier_gfdm_receiver_tagged_1
-  id: hier_gfdm_receiver_tagged
-  parameters:
-    active_subcarriers: active_subcarriers
-    affinity: ''
-    alias: ''
-    comment: ''
-    compensate_phase: phase_compensate
-    cp_len: cp_len
-    cs_len: cs_len
-    frame_len: frame_len
-    frame_start_tag_key: tag_key
-    gfdm_constellation: gfdm_constellation
-    ic_iterations: ic_iterations
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    overlap: overlap
-    preamble: preamble
-    ramp_len: ramp_len
-    rx_filter_taps: frequency_domain_taps
-    subcarrier_map: subcarrier_map
-    subcarriers: subcarriers
-    timeslots: timeslots
-    which_estimator: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1024, 612.0]
-    rotation: 0
-    state: disabled
 - name: hier_multicarrier_sync_0
   id: hier_multicarrier_sync
   parameters:
@@ -347,7 +249,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 512.0]
+    coordinate: [296, 560.0]
     rotation: 0
     state: true
 - name: hier_multicarrier_sync_1
@@ -368,7 +270,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 656.0]
+    coordinate: [296, 696.0]
     rotation: 0
     state: true
 - name: ic_iterations
@@ -433,7 +335,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 516.0]
+    coordinate: [1208, 628.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0
@@ -451,7 +353,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 660.0]
+    coordinate: [1056, 892.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0_0
@@ -469,7 +371,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 524.0]
+    coordinate: [1168, 364.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0_0_0
@@ -487,7 +389,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1792, 604.0]
+    coordinate: [1408, 708.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0_0_0_0
@@ -541,7 +443,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 396.0]
+    coordinate: [1200, 604.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0_0_1_0
@@ -559,7 +461,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 684.0]
+    coordinate: [1280, 956.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0_0_2
@@ -577,7 +479,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 812.0]
+    coordinate: [1328, 892.0]
     rotation: 0
     state: true
 - name: pad_sink_0_1
@@ -595,7 +497,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 468.0]
+    coordinate: [536, 396.0]
     rotation: 0
     state: true
 - name: pad_sink_0_1_0
@@ -613,7 +515,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 692.0]
+    coordinate: [504, 876.0]
     rotation: 0
     state: true
 - name: pad_source_0
@@ -633,7 +535,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 556.0]
+    coordinate: [176, 604.0]
     rotation: 0
     state: true
 - name: pad_source_0_0
@@ -653,7 +555,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 700.0]
+    coordinate: [176, 740.0]
     rotation: 0
     state: true
 - name: phase_compensate
@@ -790,7 +692,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 444.0]
+    coordinate: [1168, 508.0]
     rotation: 0
     state: true
 - name: symbolmapping_symbol_demapper_cf_1
@@ -808,7 +710,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 732]
+    coordinate: [1136, 708.0]
     rotation: 0
     state: enabled
 - name: tag_key
@@ -876,14 +778,12 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 568.0]
+    coordinate: [536, 560.0]
     rotation: 0
     state: enabled
 
 connections:
 - [blocks_add_xx_0, '0', pad_sink_0_0_0_0, '0']
-- [gfdm_extract_burst_cc_0_0, '0', hier_gfdm_receiver_tagged_0, '0']
-- [gfdm_extract_burst_cc_1, '0', hier_gfdm_receiver_tagged_1, '0']
 - [gfdm_receiver_cc_0, '0', pad_sink_0_0_0, '0']
 - [gfdm_receiver_cc_0, '0', symbolmapping_symbol_demapper_cf_0, '0']
 - [gfdm_receiver_cc_0, '1', pad_sink_0_0_0_1, '0']
@@ -892,12 +792,6 @@ connections:
 - [gfdm_receiver_cc_0_0, '0', symbolmapping_symbol_demapper_cf_1, '0']
 - [gfdm_receiver_cc_0_0, '1', pad_sink_0_0_0_1_0, '0']
 - [gfdm_receiver_cc_0_0, '2', pad_sink_0_0, '0']
-- [hier_gfdm_receiver_tagged_0, '0', pad_sink_0_0_0_1, '0']
-- [hier_gfdm_receiver_tagged_0, '1', pad_sink_0_0_0, '0']
-- [hier_gfdm_receiver_tagged_0, '1', symbolmapping_symbol_demapper_cf_0, '0']
-- [hier_gfdm_receiver_tagged_1, '0', pad_sink_0_0_0_1_0, '0']
-- [hier_gfdm_receiver_tagged_1, '1', pad_sink_0_0_0_2, '0']
-- [hier_gfdm_receiver_tagged_1, '1', symbolmapping_symbol_demapper_cf_1, '0']
 - [hier_multicarrier_sync_0, '0', xfdm_sync_sync_tag_align_cc_0, '0']
 - [hier_multicarrier_sync_0, '1', pad_sink_0_1, '0']
 - [hier_multicarrier_sync_1, '0', xfdm_sync_sync_tag_align_cc_0, '1']
@@ -908,9 +802,7 @@ connections:
 - [symbolmapping_symbol_demapper_cf_0, '0', pad_sink_0_0_0_0_0, '0']
 - [symbolmapping_symbol_demapper_cf_1, '0', blocks_add_xx_0, '1']
 - [symbolmapping_symbol_demapper_cf_1, '0', pad_sink_0_0_0_0_0_0, '0']
-- [xfdm_sync_sync_tag_align_cc_0, '0', gfdm_extract_burst_cc_0_0, '0']
 - [xfdm_sync_sync_tag_align_cc_0, '0', gfdm_receiver_cc_0, '0']
-- [xfdm_sync_sync_tag_align_cc_0, '1', gfdm_extract_burst_cc_1, '0']
 - [xfdm_sync_sync_tag_align_cc_0, '1', gfdm_receiver_cc_0_0, '0']
 
 metadata:

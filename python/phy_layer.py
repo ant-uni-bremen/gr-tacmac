@@ -19,7 +19,7 @@ import symbolmapping
 from gfdm.pygfdm import get_gfdm_configuration
 
 
-def parse_usrp_address(addr):
+def parse_usrp_address(addr: str):
     uhd_keywords = ["serial", "addr", "resource", "name", "type", "vid", "pid"]
     for k in uhd_keywords:
         # we expect plain IP addresses. Otherwise, prefer user input.
@@ -52,7 +52,7 @@ class phy_layer(gr.hier_block2):
         mtu_size=84,
         cycle_interval=320.0e-6,
         timing_advance=280e-6,
-        usrp_tx_addr="192.168.21.216",
+        usrp_tx_addr="",
         usrp_rx_addr="",
         usrp_tx_channels=[2, 3],
         usrp_rx_channels=[0, 1],
@@ -125,6 +125,9 @@ class phy_layer(gr.hier_block2):
         ##################################################
         # USRP
         ##################################################
+        if len(usrp_tx_addr) == 0:
+            device = tacmac.uhd_configuration.get_device()
+            usrp_tx_addr = parse_usrp_address(device['addr'])
         tx_device_addr = parse_usrp_address(usrp_tx_addr)
         rx_device_addr = tx_device_addr
         if usrp_rx_addr:

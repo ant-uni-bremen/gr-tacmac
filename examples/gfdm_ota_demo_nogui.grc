@@ -23,6 +23,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: GFDM over-the-air demo headless
+    window_size: (1000,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -512,7 +513,7 @@ blocks:
     label: TX address
     short_id: ''
     type: str
-    value: '"192.168.31.216"'
+    value: '""'
   states:
     bus_sink: false
     bus_source: false

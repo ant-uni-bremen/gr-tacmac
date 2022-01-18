@@ -27,4 +27,5 @@ from .elasticsearch_connector import elasticsearch_connector
 from .phy_transmitter import phy_transmitter
 from .lower_phy_receiver import lower_phy_receiver
 from .phy_layer import phy_layer
+from .uhd_configuration import get_device
 #

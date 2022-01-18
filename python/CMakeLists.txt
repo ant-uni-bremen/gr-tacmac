@@ -26,7 +26,14 @@ GR_PYTHON_INSTALL(
     elasticsearch_connector.py
     phy_transmitter.py
     lower_phy_receiver.py
-    phy_layer.py DESTINATION ${GR_PYTHON_DIR}/tacmac
+    phy_layer.py
+    uhd_configuration.py DESTINATION ${GR_PYTHON_DIR}/tacmac
+)
+
+install(
+    FILES
+    usrp_info.yml
+    DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
 ########################################################################

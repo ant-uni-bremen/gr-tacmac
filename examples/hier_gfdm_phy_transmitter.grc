@@ -63,7 +63,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 548.0]
+    coordinate: [296, 556.0]
     rotation: 0
     state: true
 - name: cp_len
@@ -231,7 +231,7 @@ blocks:
     cycle_interval: cycle_interval
     length_tag_name: tag_key
     maxoutbuf: '0'
-    minoutbuf: ''
+    minoutbuf: '0'
     nports: len(cyclic_shift)
     post_padding: post_padding
     pre_padding: pre_padding
@@ -242,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 516.0]
+    coordinate: [1120, 516.0]
     rotation: 0
     state: enabled
 - name: gfdm_transmitter_cc_0
@@ -290,7 +290,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 524.0]
+    coordinate: [504, 532.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -355,7 +355,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 499]
+    coordinate: [1344, 540.0]
     rotation: 0
     state: true
 - name: pad_sink_0_0
@@ -373,7 +373,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 596.0]
+    coordinate: [1344, 604.0]
     rotation: 0
     state: true
 - name: pad_sink_0_1
@@ -391,7 +391,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1522, 549]
+    coordinate: [1344, 572.0]
     rotation: 0
     state: true
 - name: pad_source_0
@@ -411,7 +411,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 548.0]
+    coordinate: [48, 556.0]
     rotation: 0
     state: true
 - name: pad_source_0_0
@@ -431,7 +431,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 724.0]
+    coordinate: [32, 604.0]
     rotation: 0
     state: true
 - name: post_padding
@@ -534,7 +534,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 532.0]
+    coordinate: [704, 540.0]
     rotation: 0
     state: true
 - name: tag_key
