@@ -73,7 +73,7 @@ def add_config_info(devices, config):
 def find_primary_device(devices):
     hostname = get_hostname()
     for d in devices:
-        if d["primary_host"] == hostname:
+        if d.get("primary_host", "") == hostname:
             return d
     return None
 
@@ -90,6 +90,7 @@ def get_device(hint=""):
     devices = find_devices(hint)
     config = load_config_file("usrp_info.yml")
     devices = add_config_info(devices, config)
+    # pprint(devices)
     if len(devices) == 1:
         return devices[0]
     primary_device = find_primary_device(devices)

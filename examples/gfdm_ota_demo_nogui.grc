@@ -412,7 +412,7 @@ blocks:
     bus_structure: null
     coordinate: [529, 406]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: tacmac_phy_layer_0
   id: tacmac_phy_layer
   parameters:

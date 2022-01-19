@@ -8,6 +8,7 @@
 
 import time
 import numpy as np
+from pprint import pprint
 from gnuradio import gr
 from gnuradio import uhd
 from gnuradio import digital
@@ -116,11 +117,23 @@ class phy_layer(gr.hier_block2):
             filteralpha=0.2,
             cyclic_shifts=cyclic_shifts,
         )
+        print("### GFDM configuration")
+        print_dict = {}
+        for k, v in conf._asdict().items():
+             if isinstance(v, int):
+                 print_dict[k] = v
+        pprint(print_dict)
         code_conf = polarwrap.get_polar_configuration(
             constellation_order * timeslots * active_subcarriers,
             bit_info_length,
             interleaver_type="convolutional",
         )
+        print("### FEC configuration")
+        print_dict = {}
+        for k, v in code_conf._asdict().items():
+             if isinstance(v, int):
+                 print_dict[k] = v
+        pprint(print_dict)
 
         ##################################################
         # USRP
@@ -230,7 +243,11 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_status_collector = tacmac.status_collector()
 
-        more_padding = int(2 ** 14) if usrp_type == 'b200' else 0
+        more_padding = 0
+        if usrp_type == 'b200':
+            buffer_max = 4096 ## This is the "short frame" hard limit!
+            possible_padding = max(buffer_max - conf.padded_frame_len, 0)
+            more_padding = min(possible_padding, 1024)
         print(f'more padding {more_padding}')
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
@@ -248,7 +265,7 @@ class phy_layer(gr.hier_block2):
             code_conf.frozen_bit_positions,
             code_conf.interleaver_indices,
             conf.pre_padding_len + more_padding,
-            conf.post_padding_len + more_padding,
+            conf.post_padding_len,
             conf.full_preambles,
             cycle_interval,
             timing_advance,
