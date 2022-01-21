@@ -25,6 +25,9 @@
 #include <fmt/format.h>
 #include <tacmac/mac_controller.h>
 
+// std::span would be nice -> requires C++20
+// #include <span>
+
 namespace gr {
 namespace tacmac {
 
@@ -49,6 +52,67 @@ namespace tacmac {
 //     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0'
 //     inside
 // }
+
+struct ipv4_header {
+    // ipv4_header(std::span<uint8_t> header_bytes){}
+    ipv4_header(uint8_t* header_bytes, unsigned size)
+    {
+        version = (header_bytes[0] >> 4) & 0x0f;
+        ihl = header_bytes[0] & 0x0f;
+        dscp = (header_bytes[1] >> 2) & 0x3f;
+        ecn = header_bytes[1] & 0x03;
+        total_length = 256 * header_bytes[2] + header_bytes[3];
+        identification = 256 * header_bytes[4] + header_bytes[5];
+        flag_reserved = (header_bytes[6] >> 7) & 0x01;
+        flag_df = (header_bytes[6] >> 6) & 0x01;
+        flag_mf = (header_bytes[6] >> 5) & 0x01;
+        fragment_offset = 256 * (header_bytes[6] & 0x1f) + header_bytes[7];
+        ttl = header_bytes[8];
+        protocol = header_bytes[9];
+        header_checksum = 256 * header_bytes[10] + header_bytes[11];
+        src_ip_addr = parse_address(header_bytes + 12);
+        dst_ip_addr = parse_address(header_bytes + 16);
+    }
+
+    std::string address_to_string(const u_int32_t addr)
+    {
+        return fmt::format("{}.{}.{}.{}",
+                           (addr >> 24) & 0xff,
+                           (addr >> 16) & 0xff,
+                           (addr >> 8) & 0xff,
+                           addr & 0xff);
+    }
+
+    uint32_t parse_address(uint8_t* bytes)
+    {
+        uint32_t address = 0;
+        uint32_t mask = 0x000000ff;
+        for (unsigned i = 0; i < 4; ++i) {
+            unsigned leftshift = 8 * (3 - i);
+            address += (uint32_t(bytes[i]) << leftshift) & (mask << leftshift);
+        }
+        return address;
+    }
+
+    unsigned version;
+    unsigned ihl;          // Internet Header Length
+    unsigned dscp;         // Differentiated Services Code Point
+    unsigned ecn;          // Explicit Congestion Notification
+    uint16_t total_length; // header + payload length in byte [20-65535]
+    uint16_t identification;
+
+    // flags
+    unsigned flag_reserved; // reserved must be 0
+    unsigned flag_df;       // Don't Fragment
+    unsigned flag_mf;       // More Fragments
+
+    uint16_t fragment_offset;
+    unsigned ttl;      // Time to Live
+    unsigned protocol; // L4 protocol.
+    unsigned header_checksum;
+    uint32_t src_ip_addr;
+    uint32_t dst_ip_addr;
+};
 
 class mac_controller_impl : public mac_controller
 {
