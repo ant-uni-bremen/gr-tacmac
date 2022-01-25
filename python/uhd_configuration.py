@@ -149,8 +149,6 @@ def load_default_configuration(**kwargs):
     fg_config.update(config['flowgraph_defaults'])
     fg_config.update(config['database_defaults'])
     fg_config.update(kwargs)
-    if 'tx_addr' not in fg_config:
-        fg_config['tx_addr'] = fg_config['addr']
     return fg_config
 
 
