@@ -6,15 +6,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-install(FILES
-    tacmac_mac_controller.block.yml
-    tacmac_periodic_time_tag_cc.block.yml
-    tacmac_tag_to_stream_value.block.yml
-    tacmac_status_collector.block.yml
-    tacmac_tags_to_msg_dict.block.yml
-    tacmac_udp_interface.block.yml
-    tacmac_elasticsearch_connector.block.yml
-    tacmac_phy_transmitter.block.yml
-    tacmac_lower_phy_receiver.block.yml
-    tacmac_phy_layer.block.yml DESTINATION share/gnuradio/grc/blocks
-)
+file(GLOB yml_files "*.yml")
+install(FILES ${yml_files} DESTINATION share/gnuradio/grc/blocks)

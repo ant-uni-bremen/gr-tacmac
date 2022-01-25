@@ -35,15 +35,20 @@ GR_PYTHON_INSTALL(
 ########################################################################
 include(GrTest)
 
+file(GLOB py_qa_test_files "qa_*.py")
+
+# We can toggle these on and off. We should mostly toggle them off.
+list(REMOVE_ITEM py_qa_test_files
+      ${CMAKE_CURRENT_SOURCE_DIR}/qa_compatibility.py
+      ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_layer.py
+)
+
 set(GR_TEST_TARGET_DEPS gnuradio-tacmac)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/python/bindings)
-GR_ADD_TEST(qa_mac_controller ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mac_controller.py)
-GR_ADD_TEST(qa_periodic_time_tag_cc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_periodic_time_tag_cc.py)
-GR_ADD_TEST(qa_tag_to_stream_value ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_to_stream_value.py)
-GR_ADD_TEST(qa_status_collector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_status_collector.py)
-GR_ADD_TEST(qa_tags_to_msg_dict ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tags_to_msg_dict.py)
-GR_ADD_TEST(qa_udp_interface ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_udp_interface.py)
-GR_ADD_TEST(qa_elasticsearch_connector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_elasticsearch_connector.py)
-GR_ADD_TEST(qa_phy_transmitter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_transmitter.py)
-GR_ADD_TEST(qa_lower_phy_receiver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lower_phy_receiver.py)
-GR_ADD_TEST(qa_phy_layer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_layer.py)
+foreach(py_qa_test_file ${py_qa_test_files})
+get_filename_component(py_qa_test_name ${py_qa_test_file} NAME_WE)
+if (CMAKE_CROSSCOMPILING)
+    get_filename_component(py_qa_test_file ${py_qa_test_file} NAME)
+endif(CMAKE_CROSSCOMPILING)
+GR_ADD_TEST(${py_qa_test_name} ${QA_PYTHON_EXECUTABLE} -B ${py_qa_test_file})
+endforeach(py_qa_test_file)
