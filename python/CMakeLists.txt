@@ -30,12 +30,6 @@ GR_PYTHON_INSTALL(
     uhd_configuration.py DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
-install(
-    FILES
-    usrp_info.yml
-    DESTINATION ${GR_PYTHON_DIR}/tacmac
-)
-
 ########################################################################
 # Handle the unit tests
 ########################################################################

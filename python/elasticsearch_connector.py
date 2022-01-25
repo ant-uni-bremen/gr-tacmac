@@ -14,6 +14,7 @@ from elasticbatch import ElasticBuffer
 from gnuradio import gr
 import pmt
 import socket
+import requests
 
 
 class elasticsearch_connector(gr.sync_block):
@@ -28,32 +29,37 @@ class elasticsearch_connector(gr.sync_block):
     4. Send data. Take care of correct transmission properties.
     """
 
-    def __init__(self, hostname='localhost', port=9200, device_id=4711,
-                 data_type='5gdata', index_prefix='measurements-',
-                 buffer_size=5000, additional_data={}):
-        gr.sync_block.__init__(self,
-                               name="elasticsearch_connector",
-                               in_sig=[],
-                               out_sig=[])
+    def __init__(
+        self,
+        hostname="localhost",
+        port=9200,
+        device_id=4711,
+        data_type="5gdata",
+        index_prefix="measurements-",
+        buffer_size=5000,
+        additional_data={},
+    ):
+        gr.sync_block.__init__(
+            self, name="elasticsearch_connector", in_sig=[], out_sig=[]
+        )
         self.message_port_register_in(pmt.mp("in"))
         self.set_msg_handler(pmt.mp("in"), self.handle_msg)
 
         self._hostname = socket.gethostname()
         # set up database connection
-        dbname = f'{hostname}:{port}'
-        client_kwargs = {'hosts': dbname}
+        dbname = f"{hostname}:{port}"
+        client_kwargs = {"hosts": dbname}
 
         # Configure common metadata
-        self._db_device_id = f'{device_id}'
-        self._db_data_type = f'{data_type}'
-        self._common_body = {'type': self._db_data_type,
-                             'deviceId': self._db_device_id}
+        self._db_device_id = f"{device_id}"
+        self._db_data_type = f"{data_type}"
+        self._common_body = {"type": self._db_data_type, "deviceId": self._db_device_id}
 
         self._additional_data = additional_data
 
         # Configure database.
-        self._db_index = f'{index_prefix}{datetime.date.today()}'
-        self._db_doc_type = 'doc'
+        self._db_index = f"{index_prefix}{datetime.date.today()}"
+        self._db_doc_type = "doc"
 
         def index_func(doc):
             return self._db_index
@@ -70,19 +76,45 @@ class elasticsearch_connector(gr.sync_block):
         def timestamp_func(doc):
             return int(1e3 * datetime.datetime.now().timestamp())
 
-        self._db_buffer = ElasticBuffer(client_kwargs=client_kwargs,
-                                        _index=index_func,
-                                        type=data_type_func,
-                                        deviceId=device_id_func,
-                                        timestamp=timestamp_func,
-                                        hostname=hostname_func,
-                                        size=buffer_size)
+        self._database_available = self.is_database_available(dbname)
+        if self._database_available:
+            self._db_buffer = ElasticBuffer(
+                client_kwargs=client_kwargs,
+                _index=index_func,
+                type=data_type_func,
+                deviceId=device_id_func,
+                timestamp=timestamp_func,
+                hostname=hostname_func,
+                size=buffer_size,
+            )
+        else:
+            print(f'WARNING: elasticsearch database "{dbname}" not available!')
+
+    def is_database_available(self, dbname, timeout=2):
+        req = f"http://{dbname}/_cluster/health"
+        try:
+            response = requests.get(req, timeout=timeout)
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except (
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ConnectionError,
+        ):
+            return False
 
     def update_additional_data(self, data):
         self._additional_data.update(data)
 
     def send_to_buffer(self, body):
-        self._db_buffer.add([body, ])
+        if not self._database_available:
+            return
+        self._db_buffer.add(
+            [
+                body,
+            ]
+        )
         if self._db_buffer.oldest_elapsed_time > 10.0:
             # Just flush if we buffered for more than 10.0s.
             # This is a fixed threshold for now.
@@ -90,28 +122,28 @@ class elasticsearch_connector(gr.sync_block):
 
     def handle_msg(self, msg):
         meta = pmt.symbol_to_string(pmt.car(msg))
-        direction = 'unknown'
-        if 'rx' in meta:
-            direction = 'rx'
-        elif 'tx' in meta:
-            direction = 'tx'
+        direction = "unknown"
+        if "rx" in meta:
+            direction = "rx"
+        elif "tx" in meta:
+            direction = "tx"
         values = pmt.cdr(msg)
 
         if not pmt.is_dict(values):
             self.send_to_buffer({"foo": pmt.to_python(values)})
             return
 
-        body = {'direction': direction}
+        body = {"direction": direction}
         body.update(self._additional_data)
         for i in range(pmt.length(values)):
             k = str(pmt.to_python(pmt.car(pmt.nth(i, values))))
             v = pmt.cdr(pmt.nth(i, values))
             if pmt.is_number(v):
                 if pmt.is_complex(v):
-                    body[f'qos.{k}.real'] = pmt.to_python(v).real
-                    body[f'qos.{k}.imag'] = pmt.to_python(v).imag
+                    body[f"qos.{k}.real"] = pmt.to_python(v).real
+                    body[f"qos.{k}.imag"] = pmt.to_python(v).imag
                 else:
-                    body[f'qos.{k}'] = pmt.to_python(v)
+                    body[f"qos.{k}"] = pmt.to_python(v)
         self.send_to_buffer(body)
 
     def work(self, input_items, output_items):

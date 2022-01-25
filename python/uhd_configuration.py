@@ -15,6 +15,17 @@ from pprint import pprint
 import platform
 
 
+def find_configuration_file(filename=None):
+    if filename is not None:
+        return filename
+    files = list(pathlib.Path(".").glob("**/tacmac_configuration.yml"))
+    if len(files) != 1:
+        print(f"Warning: expected ONE configuration file, found: {len(files)}")
+    if len(files) == 0:
+        return ""
+    return files[0]
+
+
 def validate_config_file(filename):
     config_locs = ["python", ".", pathlib.Path(__file__).parent]
     for loc in config_locs:
@@ -88,7 +99,8 @@ def find_usb_device(devices):
 
 def get_device(hint=""):
     devices = find_devices(hint)
-    config = load_config_file("usrp_info.yml")
+    configfilename = find_configuration_file()
+    config = load_config_file(configfilename)["usrps"]
     devices = add_config_info(devices, config)
     # pprint(devices)
     if len(devices) == 1:
@@ -101,10 +113,58 @@ def get_device(hint=""):
         return usb_device
 
 
+def remove_empty_kwargs(kwargs):
+    keys = list(kwargs.keys())
+    for k in keys:
+        if not kwargs[k]:
+            kwargs.pop(k)
+    return kwargs
+
+
+def load_default_configuration(**kwargs):
+    kwargs = remove_empty_kwargs(kwargs)
+    fg_config = {}
+    for k, v in kwargs.items():
+        print(k, v)
+    filename = kwargs.get("configuration_filename", None)
+    filename = find_configuration_file(filename)
+    config = load_config_file(filename)
+    fg_config["hostname"] = hostname = kwargs.get("hostname", get_hostname())
+    hostconfig = config["hosts"].get(hostname, {})
+
+    fg_config["role"] = role = hostconfig.get("role", kwargs.get("role", "device"))
+    fg_config.update(config["roles"][role])
+
+    devicename = hostconfig.get("usrp", "N/A")
+    device = config["usrps"].get(devicename, {"type": "b200"})
+    device.update(config["usrp_defaults"][device["type"]])
+    device_hint = f"type={device['type']}"
+    if "serial" in device:
+        device_hint = f"serial={device['serial']},type={device['type']}"
+    found_devices = find_devices(device_hint)
+    if found_devices:
+        device.update(found_devices[0])
+    device["usrp"] = device.get("name", devicename)
+    fg_config.update(device)
+    fg_config.update(config['flowgraph_defaults'])
+    fg_config.update(config['database_defaults'])
+    fg_config.update(kwargs)
+    if 'tx_addr' not in fg_config:
+        fg_config['tx_addr'] = fg_config['addr']
+    return fg_config
+
+
 def main():
-    hostname = get_hostname()
-    config = load_config_file("usrp_info.yml")
+    config = load_default_configuration(foo="bar", bla=None, fu='')
     pprint(config)
+    return
+    # config_file = find_configuration_file()
+    # for f in config_file:
+    #     print(f)
+    # print(config_file)
+    # return
+    hostname = get_hostname()
+    # pprint(config)
 
     # devices = find_devices()
     # devices = add_config_info(devices, config)

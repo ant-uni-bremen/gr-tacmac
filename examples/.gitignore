@@ -1,2 +1,4 @@
 *.py
 *.svg
+
+!run_demo_nogui_autoconfigured.py

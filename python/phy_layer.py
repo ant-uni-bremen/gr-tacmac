@@ -146,8 +146,8 @@ class phy_layer(gr.hier_block2):
         if usrp_rx_addr:
             rx_device_addr = parse_usrp_address(usrp_rx_addr)
 
-        if "addr" not in rx_device_addr:
-            master_clock_rate = samp_rate
+        # if "addr" not in rx_device_addr:
+        #     master_clock_rate = samp_rate
 
         master_clock_rate = str(master_clock_rate)
         usrp_device_args = f"master_clock_rate={master_clock_rate},clock_source=gpsdo,time_source=gpsdo"

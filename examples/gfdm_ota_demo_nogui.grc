@@ -12,7 +12,7 @@ options:
     generate_options: no_gui
     hier_block_src_path: '.:'
     id: gfdm_ota_demo_nogui
-    max_nouts: '2048'
+    max_nouts: '4096'
     output_language: python
     placement: (0,0)
     qt_qss_theme: ''
@@ -78,13 +78,30 @@ blocks:
     hide: none
     label: Compesate CFO
     short_id: ''
-    type: intx
-    value: 'True'
+    type: ''
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [1344, 332.0]
+    rotation: 0
+    state: true
+- name: activate_phase_compensation
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Compesate phase
+    short_id: ''
+    type: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1344, 252.0]
     rotation: 0
     state: true
 - name: active_subcarriers
@@ -257,23 +274,6 @@ blocks:
     coordinate: [768, 84.0]
     rotation: 0
     state: true
-- name: phase_compensate
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: Compesate phase
-    short_id: ''
-    type: ''
-    value: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1344, 252.0]
-    rotation: 0
-    state: true
 - name: rx_addr
   id: parameter
   parameters:
@@ -412,12 +412,12 @@ blocks:
     bus_structure: null
     coordinate: [529, 406]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_phy_layer_0
   id: tacmac_phy_layer
   parameters:
     activate_cfo_compensation: activate_cfo_compensation
-    activate_phase_compensation: phase_compensate
+    activate_phase_compensation: activate_phase_compensation
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''
@@ -530,7 +530,7 @@ blocks:
     label: TX channels, e.g. '2 3'
     short_id: ''
     type: str
-    value: 2 3
+    value: '"2 3"'
   states:
     bus_sink: false
     bus_source: false
@@ -586,7 +586,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1344, 428.0]
+    coordinate: [1344, 412.0]
     rotation: 0
     state: true
 

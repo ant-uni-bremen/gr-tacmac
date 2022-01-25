@@ -31,30 +31,11 @@
 namespace gr {
 namespace tacmac {
 
-/*
- * This is a C++11 solution to obtain formatted strings.
- *
- * Source: https://stackoverflow.com/a/26221725 under CC0
- *
- * As noted in the source this boils down to:
- * std::format() with C++20!
- */
-// template <typename... Args>
-// std::string string_format(const std::string& format, Args... args)
-// {
-//     size_t size =
-//         snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
-//     if (size <= 0) {
-//         throw std::runtime_error("Error during formatting.");
-//     }
-//     std::unique_ptr<char[]> buf(new char[size]);
-//     snprintf(buf.get(), size, format.c_str(), args...);
-//     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0'
-//     inside
-// }
-
 struct ipv4_header {
-    // ipv4_header(std::span<uint8_t> header_bytes){}
+    /*
+     * https://en.wikipedia.org/wiki/IPv4#Packet_structure
+     */
+    // ipv4_header(std::span<uint8_t> header_bytes){} C++20 solution!
     ipv4_header(uint8_t* header_bytes, unsigned size)
     {
         version = (header_bytes[0] >> 4) & 0x0f;
@@ -72,9 +53,11 @@ struct ipv4_header {
         header_checksum = 256 * header_bytes[10] + header_bytes[11];
         src_ip_addr = parse_address(header_bytes + 12);
         dst_ip_addr = parse_address(header_bytes + 16);
+        src_ip_string = address_to_string(src_ip_addr);
+        dst_ip_string = address_to_string(dst_ip_addr);
     }
 
-    std::string address_to_string(const u_int32_t addr)
+    std::string address_to_string(const uint32_t addr)
     {
         return fmt::format("{}.{}.{}.{}",
                            (addr >> 24) & 0xff,
@@ -111,7 +94,9 @@ struct ipv4_header {
     unsigned protocol; // L4 protocol.
     unsigned header_checksum;
     uint32_t src_ip_addr;
+    std::string src_ip_string;
     uint32_t dst_ip_addr;
+    std::string dst_ip_string;
 };
 
 class mac_controller_impl : public mac_controller

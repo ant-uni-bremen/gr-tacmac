@@ -172,6 +172,25 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
         return;
     }
 
+    // auto ip_header = ipv4_header(payload.data(), 20);
+    // fmt::print("{} -> {}: IPv{}, length={}B, ihl={} ({}B), protocol={}, TTL={}, DSCP={}, "
+    //            "ECN={}, ID={}, flags=(R={}, DF={}, MF{}), FragmentOffset={}\n",
+    //            ip_header.src_ip_string,
+    //            ip_header.dst_ip_string,
+    //            ip_header.version,
+    //            ip_header.total_length,
+    //            ip_header.ihl,
+    //            ip_header.ihl * 4,
+    //            ip_header.protocol,
+    //            ip_header.ttl,
+    //            ip_header.dscp,
+    //            ip_header.ecn,
+    //            ip_header.identification,
+    //            ip_header.flag_reserved,
+    //            ip_header.flag_df,
+    //            ip_header.flag_mf,
+    //            ip_header.fragment_offset);
+
     auto header = create_header(frame_counter, ticks, payload.size());
 
     auto meta = flatten_dict(pmt::car(pdu));
