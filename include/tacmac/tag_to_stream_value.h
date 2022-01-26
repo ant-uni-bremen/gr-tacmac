@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2019 Johannes Demel.
+ * Copyright 2019, 2022 Johannes Demel.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,10 @@ namespace tacmac {
  * \brief Grab tag value and put it on output stream
  * \ingroup tacmac
  *
+ * This might be a convoluted tag.
+ * First, search for keys with `key'.
+ * Then search in a pmt::dict for `dict_key`.
+ *
  */
 template <class T>
 class TACMAC_API tag_to_stream_value : virtual public gr::block
@@ -46,7 +50,7 @@ public:
      * class. tacmac::tag_to_stream_value::make is the public interface for
      * creating new instances.
      */
-    static sptr make(size_t sizeof_stream_item, std::string key);
+    static sptr make(size_t sizeof_stream_item, std::string key, std::string dict_key);
 };
 // typedef tag_to_stream_value<std::int16_t> tag_to_stream_value_ss;
 typedef tag_to_stream_value<std::int32_t> tag_to_stream_value_ci;

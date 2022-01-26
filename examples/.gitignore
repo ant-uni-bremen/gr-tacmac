@@ -2,3 +2,4 @@
 *.svg
 
 !run_demo_nogui_autoconfigured.py
+!run_demo_qtgui_autoconfigured.py

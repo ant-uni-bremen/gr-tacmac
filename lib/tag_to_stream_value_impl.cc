@@ -24,6 +24,7 @@
 
 #include "tag_to_stream_value_impl.h"
 #include <gnuradio/io_signature.h>
+#include <fmt/core.h>
 
 #include <type_traits>
 
@@ -31,11 +32,11 @@ namespace gr {
 namespace tacmac {
 
 template <class T>
-typename tag_to_stream_value<T>::sptr
-tag_to_stream_value<T>::make(size_t sizeof_stream_item, std::string key)
+typename tag_to_stream_value<T>::sptr tag_to_stream_value<T>::make(
+    size_t sizeof_stream_item, std::string key, std::string dict_key)
 {
     return gnuradio::get_initial_sptr(
-        new tag_to_stream_value_impl<T>(sizeof_stream_item, key));
+        new tag_to_stream_value_impl<T>(sizeof_stream_item, key, dict_key));
 }
 
 
@@ -44,11 +45,13 @@ tag_to_stream_value<T>::make(size_t sizeof_stream_item, std::string key)
  */
 template <class T>
 tag_to_stream_value_impl<T>::tag_to_stream_value_impl(size_t sizeof_stream_item,
-                                                      std::string key)
+                                                      std::string key,
+                                                      std::string dict_key)
     : gr::block("tag_to_stream_value",
                 gr::io_signature::make(1, 1, sizeof_stream_item),
                 gr::io_signature::make(1, 1, sizeof(T))),
-      d_key(pmt::intern(key))
+      d_key(pmt::intern(key)),
+      d_dict_key(pmt::intern(dict_key))
 {
     this->set_tag_propagation_policy(gr::block::TPP_DONT);
 }
@@ -66,19 +69,22 @@ void tag_to_stream_value_impl<T>::forecast(int noutput_items,
                                            gr_vector_int& ninput_items_required)
 {
     ninput_items_required[0] = noutput_items;
-    // for(int i = 0; i < ninput_items_required.size(); ++i){
-    //   ninput_items_required[i] = noutput_items;
-    // }
 }
 
 template <class T>
 pmt::pmt_t tag_to_stream_value_impl<T>::get_tag_value(const tag_t& tag) const
 {
-    // pmt::pmt_t info = tag.value;
     if (!pmt::is_dict(tag.value)) {
+        // fmt::print("plain key={}, value={}\n",
+        //            pmt::write_string(d_key),
+        //            pmt::write_string(tag.value));
         return tag.value;
     } else {
-        return pmt::dict_ref(tag.value, d_key, pmt::PMT_NIL);
+        auto value = pmt::dict_ref(tag.value, d_dict_key, pmt::PMT_NIL);
+        // fmt::print("dict  key={}, value={}\n",
+        //            pmt::write_string(d_dict_key),
+        //            pmt::write_string(value));
+        return value;
     }
 }
 

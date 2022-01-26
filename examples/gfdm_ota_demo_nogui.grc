@@ -12,7 +12,7 @@ options:
     generate_options: no_gui
     hier_block_src_path: '.:'
     id: gfdm_ota_demo_nogui
-    max_nouts: '4096'
+    max_nouts: '2048'
     output_language: python
     placement: (0,0)
     qt_qss_theme: ''
@@ -78,8 +78,8 @@ blocks:
     hide: none
     label: Compesate CFO
     short_id: ''
-    type: ''
-    value: 'False'
+    type: intx
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -93,15 +93,15 @@ blocks:
     alias: ''
     comment: ''
     hide: none
-    label: Compesate phase
+    label: Compesate CFO
     short_id: ''
-    type: ''
-    value: 'False'
+    type: intx
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1344, 252.0]
+    coordinate: [1344, 244.0]
     rotation: 0
     state: true
 - name: active_subcarriers
@@ -412,7 +412,7 @@ blocks:
     bus_structure: null
     coordinate: [529, 406]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: tacmac_phy_layer_0
   id: tacmac_phy_layer
   parameters:
@@ -530,7 +530,7 @@ blocks:
     label: TX channels, e.g. '2 3'
     short_id: ''
     type: str
-    value: '"2 3"'
+    value: 2 3
   states:
     bus_sink: false
     bus_source: false
@@ -586,7 +586,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1344, 412.0]
+    coordinate: [1344, 428.0]
     rotation: 0
     state: true
 

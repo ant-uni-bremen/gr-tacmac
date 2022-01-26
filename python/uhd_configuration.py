@@ -15,10 +15,10 @@ from pprint import pprint
 import platform
 
 
-def find_configuration_file(filename=None):
+def find_configuration_file(filename=None, search_path_root="."):
     if filename is not None:
         return filename
-    files = list(pathlib.Path(".").glob("**/tacmac_configuration.yml"))
+    files = list(pathlib.Path(search_path_root).glob("**/tacmac_configuration.yml"))
     if len(files) != 1:
         print(f"Warning: expected ONE configuration file, found: {len(files)}")
     if len(files) == 0:
@@ -131,6 +131,7 @@ def load_default_configuration(**kwargs):
     config = load_config_file(filename)
     fg_config["hostname"] = hostname = kwargs.get("hostname", get_hostname())
     hostconfig = config["hosts"].get(hostname, {})
+    fg_config.update(hostconfig)
 
     fg_config["role"] = role = hostconfig.get("role", kwargs.get("role", "device"))
     fg_config.update(config["roles"][role])

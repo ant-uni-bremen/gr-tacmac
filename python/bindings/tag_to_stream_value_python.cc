@@ -39,7 +39,8 @@ void bind_tag_to_stream_value_template(py::module& m, const char* classname)
                std::shared_ptr<tag_to_stream_value>>(m, classname)
         .def(py::init(&gr::tacmac::tag_to_stream_value<T>::make),
              py::arg("sizeof_stream_item"),
-             py::arg("key"));
+             py::arg("key"),
+             py::arg("dict_key"));
 }
 
 void bind_tag_to_stream_value(py::module& m)

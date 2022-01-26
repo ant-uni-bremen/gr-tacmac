@@ -4,7 +4,7 @@ category: '[tacmac]'
 
 templates:
   imports: import tacmac
-  make: tacmac.tag_to_stream_value_${type.fcn}(${intype.size}*${vlen}, ${dict_key})
+  make: tacmac.tag_to_stream_value_${type.fcn}(${intype.size}*${vlen}, ${tag_key}, ${dict_key})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -12,8 +12,11 @@ templates:
 #     * label (label shown in the GUI)
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 parameters:
+- id: tag_key
+  label: Tag key
+  dtype: string
 - id: dict_key
-  label: Key
+  label: Dict key
   dtype: string
 -   id: type
     label: Output Type

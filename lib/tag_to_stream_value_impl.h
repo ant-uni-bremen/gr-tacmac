@@ -30,6 +30,7 @@ class tag_to_stream_value_impl : public tag_to_stream_value<T>
 {
 private:
     const pmt::pmt_t d_key;
+    const pmt::pmt_t d_dict_key;
 
     pmt::pmt_t get_tag_value(const tag_t& tag) const;
 
@@ -37,7 +38,7 @@ private:
 
 
 public:
-    tag_to_stream_value_impl(size_t sizeof_stream_item, std::string key);
+    tag_to_stream_value_impl(size_t sizeof_stream_item, std::string key, std::string dict_key);
     ~tag_to_stream_value_impl();
 
     // Where all the action really happens

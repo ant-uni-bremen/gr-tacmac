@@ -7,11 +7,11 @@
 # Author: Johannes Demel
 # GNU Radio version: 3.9.5.0
 
+from pprint import pprint
 from tacmac import load_default_configuration
 from argparse import Namespace
-from gfdm_ota_demo_nogui import argument_parser
-from gfdm_ota_demo_nogui import main as fg_main
-from pprint import pprint
+from gfdm_ota_demo_qtgui import argument_parser
+from gfdm_ota_demo_qtgui import main as fg_main
 
 
 def main():
