@@ -1,0 +1,65 @@
+id: tacmac_upper_phy_receiver
+label: Upper PHY receiver
+category: "[tacmac]"
+
+templates:
+  imports: import tacmac
+  make: tacmac.upper_phy_receiver(${num_rx_streams}, ${constellation_order}, ${bit_info_length}, ${rx_packet_length_key}, ${cnr_tag_key}, ${constellation_type}, ${list_size}, ${crc_len}, ${decoder_type})
+
+parameters:
+  - id: num_rx_streams
+    label: RX ports
+    dtype: int
+  - id: constellation_order
+    label: Constellation order
+    dtype: int
+  - id: bit_info_length
+    label: Info length
+    dtype: int
+  - id: rx_packet_length_key
+    label: RX packet len key
+    dtype: str
+    default: "rx_len"
+  - id: cnr_tag_key
+    label: CNR tag key
+    dtype: str
+    default: "cnr"
+  - id: constellation_type
+    label: Constellation type
+    dtype: str
+    default: "GRAY"
+  - id: list_size
+    label: Decoder list size
+    dtype: int
+    default: 8
+  - id: crc_len
+    label: CRC length
+    dtype: int
+    default: 16
+  - id: decoder_type
+    label: Decoder type
+    dtype: str
+    default: "mixed"
+
+inputs:
+  - label: rx
+    domain: stream
+    dtype: complex
+    multiplicity: ${ num_rx_streams }
+    optional: false
+
+outputs:
+  - label: pdus
+    domain: message
+    optional: 1
+  - label: data
+    domain: stream
+    dtype: byte
+    optional: 1
+  - label: LLR
+    domain: stream
+    dtype: float
+    multiplicity: ${ num_rx_streams }
+    optional: 1
+
+file_format: 1

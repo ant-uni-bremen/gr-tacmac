@@ -44,7 +44,7 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cc(8, 'phase')
+        t2s = tacmac.tag_to_stream_value_cc(8, 'phase', '')
         src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_c()
@@ -71,7 +71,7 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cc(8, 'phase')
+        t2s = tacmac.tag_to_stream_value_cc(8, 'phase', 'phase')
         src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_c()
@@ -95,7 +95,7 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cf(8, 'phase')
+        t2s = tacmac.tag_to_stream_value_cf(8, 'phase', '')
         src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_f()
@@ -119,7 +119,7 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_ci(8, 'phase')
+        t2s = tacmac.tag_to_stream_value_ci(8, 'phase', '')
         src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_i()

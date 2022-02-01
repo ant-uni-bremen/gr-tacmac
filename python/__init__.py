@@ -28,4 +28,5 @@ from .phy_transmitter import phy_transmitter
 from .lower_phy_receiver import lower_phy_receiver
 from .phy_layer import phy_layer
 from .uhd_configuration import get_device, load_default_configuration
+from .upper_phy_receiver import upper_phy_receiver
 #
