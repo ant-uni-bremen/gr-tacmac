@@ -173,7 +173,8 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     }
 
     // auto ip_header = ipv4_header(payload.data(), 20);
-    // fmt::print("{} -> {}: IPv{}, length={}B, ihl={} ({}B), protocol={}, TTL={}, DSCP={}, "
+    // fmt::print("{} -> {}: IPv{}, length={}B, ihl={} ({}B), protocol={}, TTL={},
+    // DSCP={}, "
     //            "ECN={}, ID={}, flags=(R={}, DF={}, MF{}), FragmentOffset={}\n",
     //            ip_header.src_ip_string,
     //            ip_header.dst_ip_string,
