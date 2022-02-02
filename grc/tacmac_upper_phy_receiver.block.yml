@@ -4,7 +4,7 @@ category: "[tacmac]"
 
 templates:
   imports: import tacmac
-  make: tacmac.upper_phy_receiver(${num_rx_streams}, ${constellation_order}, ${bit_info_length}, ${rx_packet_length_key}, ${cnr_tag_key}, ${constellation_type}, ${list_size}, ${crc_len}, ${decoder_type})
+  make: tacmac.upper_phy_receiver(${num_rx_streams}, ${constellation_order}, ${frame_size}, ${bit_info_length}, ${rx_packet_length_key}, ${cnr_tag_key}, ${constellation_type}, ${list_size}, ${crc_len}, ${decoder_type})
 
 parameters:
   - id: num_rx_streams
@@ -13,20 +13,23 @@ parameters:
   - id: constellation_order
     label: Constellation order
     dtype: int
+  - id: frame_size
+    label: Frame size
+    dtype: int
   - id: bit_info_length
     label: Info length
     dtype: int
   - id: rx_packet_length_key
     label: RX packet len key
-    dtype: str
+    dtype: string
     default: "rx_len"
   - id: cnr_tag_key
     label: CNR tag key
-    dtype: str
+    dtype: string
     default: "cnr"
   - id: constellation_type
     label: Constellation type
-    dtype: str
+    dtype: string
     default: "GRAY"
   - id: list_size
     label: Decoder list size
@@ -38,7 +41,7 @@ parameters:
     default: 16
   - id: decoder_type
     label: Decoder type
-    dtype: str
+    dtype: string
     default: "mixed"
 
 inputs:

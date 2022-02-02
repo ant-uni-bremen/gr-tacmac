@@ -28,7 +28,9 @@ GR_PYTHON_INSTALL(
     lower_phy_receiver.py
     phy_layer.py
     uhd_configuration.py
-    upper_phy_receiver.py DESTINATION ${GR_PYTHON_DIR}/tacmac
+    upper_phy_receiver.py
+    phy_receiver.py
+    upper_phy_transmitter.py DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
 ########################################################################

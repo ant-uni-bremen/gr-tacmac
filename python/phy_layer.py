@@ -6,6 +6,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import pathlib
+import datetime
 import time
 import numpy as np
 from pprint import pprint
@@ -63,6 +65,7 @@ class phy_layer(gr.hier_block2):
         tx_digital_gain=2.7,
         rx_gain=55.0,
         master_clock_rate=122.88e6,
+        save_rx_samples_to_file=False,
     ):
         noutputs = len(usrp_tx_channels) + len(usrp_rx_channels) * 4
         gr.hier_block2.__init__(
@@ -120,8 +123,8 @@ class phy_layer(gr.hier_block2):
         print("### GFDM configuration")
         print_dict = {}
         for k, v in conf._asdict().items():
-             if isinstance(v, int):
-                 print_dict[k] = v
+            if isinstance(v, int):
+                print_dict[k] = v
         pprint(print_dict)
         code_conf = polarwrap.get_polar_configuration(
             constellation_order * timeslots * active_subcarriers,
@@ -131,8 +134,8 @@ class phy_layer(gr.hier_block2):
         print("### FEC configuration")
         print_dict = {}
         for k, v in code_conf._asdict().items():
-             if isinstance(v, int):
-                 print_dict[k] = v
+            if isinstance(v, int):
+                print_dict[k] = v
         pprint(print_dict)
 
         ##################################################
@@ -140,7 +143,7 @@ class phy_layer(gr.hier_block2):
         ##################################################
         if len(usrp_tx_addr) == 0:
             device = tacmac.uhd_configuration.get_device()
-            usrp_tx_addr = parse_usrp_address(device['addr'])
+            usrp_tx_addr = parse_usrp_address(device["addr"])
         tx_device_addr = parse_usrp_address(usrp_tx_addr)
         rx_device_addr = tx_device_addr
         if usrp_rx_addr:
@@ -191,6 +194,29 @@ class phy_layer(gr.hier_block2):
             self.uhd_usrp_source.set_antenna("RX2", i)
             self.uhd_usrp_source.set_gain(rx_gain, i)
 
+        if save_rx_samples_to_file:
+            file_suffix = "cdat"
+            timestring = str(datetime.datetime.now()).replace(" ", "-")
+            rx_info = self.uhd_usrp_source.get_usrp_info()
+            usrpstring = f"{rx_info['mboard_id']}-n310-{rx_info['rx_antenna']}"
+            folder = pathlib.Path.cwd().absolute()
+            cfostring = f"{int(activate_cfo_compensation)}"
+            self.rx_samples_file_sinks = []
+            for i in range(len(usrp_rx_channels)):
+                rxfilename = f"{folder}/{usrpstring}-{i}_CFO-{cfostring}_{timestring}.{file_suffix}"
+                print(f"port={i} -> {rxfilename}")
+                self.rx_samples_file_sinks.append(
+                    blocks.file_sink(
+                        gr.sizeof_gr_complex,
+                        rxfilename,
+                        False,
+                    )
+                )
+                self.rx_samples_file_sinks[i].set_unbuffered(False)
+                self.connect(
+                    (self.uhd_usrp_source, i), (self.rx_samples_file_sinks[i], 0)
+                )
+
         self.uhd_usrp_sink = uhd.usrp_sink(
             ",".join((rx_device_addr, usrp_device_args)),
             uhd.stream_args(
@@ -219,21 +245,21 @@ class phy_layer(gr.hier_block2):
         common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
         tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
         rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
-        print(f'USRP TX channels: {usrp_tx_channels}')
-        print(f'USRP RX channels: {usrp_rx_channels}')
-        print(f'UHD version: {uhd.get_version_string()}')
+        print(f"USRP TX channels: {usrp_tx_channels}")
+        print(f"USRP RX channels: {usrp_rx_channels}")
+        print(f"UHD version: {uhd.get_version_string()}")
         for k in common_keys:
-            print(f'{k:16}{tx_info[k]:20}{rx_info[k]}')
+            print(f"{k:16}{tx_info[k]:20}{rx_info[k]}")
 
         for k in tx_keys:
-            print(f'{k:16}{tx_info[k]}')
+            print(f"{k:16}{tx_info[k]}")
 
         for k in rx_keys:
-            print(f'{k:16}{rx_info[k]}')
+            print(f"{k:16}{rx_info[k]}")
 
-        usrp_type = 'n3xx'
-        if 'B2' in tx_info['mboard_id']:
-            usrp_type = 'b200'
+        usrp_type = "n3xx"
+        if "B2" in tx_info["mboard_id"]:
+            usrp_type = "b200"
 
         ##################################################
         # Network interfaces
@@ -244,11 +270,11 @@ class phy_layer(gr.hier_block2):
         self.tacmac_status_collector = tacmac.status_collector()
 
         more_padding = 0
-        if usrp_type == 'b200':
-            buffer_max = 4096 ## This is the "short frame" hard limit!
+        if usrp_type == "b200":
+            buffer_max = 4096  ## This is the "short frame" hard limit!
             possible_padding = max(buffer_max - conf.padded_frame_len, 0)
             more_padding = min(possible_padding, 1024)
-        print(f'more padding {more_padding}')
+        print(f"more padding {more_padding}")
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
             conf.subcarriers,
@@ -275,7 +301,9 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
-        print(f'cfo_compensation={activate_cfo_compensation}, phase_compensation={activate_phase_compensation}')
+        print(
+            f"cfo_compensation={activate_cfo_compensation}, phase_compensation={activate_phase_compensation}"
+        )
         self.tacmac_lower_phy_receiver = tacmac.lower_phy_receiver(
             len(usrp_rx_channels),
             conf.timeslots,
@@ -352,6 +380,9 @@ class phy_layer(gr.hier_block2):
             (self.blocks_stream_to_tagged_stream, 0),
             (self.blocks_tagged_stream_to_pdu, 0),
         )
+
+        # tag_dbg = blocks.tag_debug(gr.sizeof_float, '', "frame_start0")
+        # self.connect((self.tacmac_lower_phy_receiver, 0), (tag_dbg, 0))
 
         # corr, synced, estimate, symbol
         for i in range(len(usrp_rx_channels) * 4):

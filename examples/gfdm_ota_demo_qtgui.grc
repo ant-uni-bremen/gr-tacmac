@@ -1822,6 +1822,23 @@ blocks:
     coordinate: [880, 188.0]
     rotation: 0
     state: true
+- name: save_rx_samples
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: 'Activate RX sample to file '
+    short_id: ''
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [344, 364.0]
+    rotation: 0
+    state: true
 - name: scorr_threshold_high
   id: parameter
   parameters:
@@ -1964,6 +1981,7 @@ blocks:
     num_network_interfaces: nports
     rx_gain: rgain
     samp_rate: samp_rate
+    save_rx_samples_to_file: 'False'
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id
@@ -2004,6 +2022,7 @@ blocks:
     num_network_interfaces: nports
     rx_gain: rgain
     samp_rate: samp_rate
+    save_rx_samples_to_file: save_rx_samples
     scorr_threshold_high: scorr_threshold_high_range
     scorr_threshold_low: scorr_threshold_low_range
     src_id: src_id

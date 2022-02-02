@@ -6,15 +6,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-from cmath import inf
 from gnuradio import gr, gr_unittest, blocks
-
-# from gnuradio import blocks
 from upper_phy_receiver import upper_phy_receiver
+from upper_phy_transmitter import upper_phy_transmitter
 import numpy as np
 import pypolar
 import symbolmapping
 from polarwrap import get_polar_configuration
+import pmt
 
 
 def encode_frame(bits, block_len, punctured_len, crc_len, frozen_bit_positions):
@@ -38,7 +37,7 @@ class qa_upper_phy_receiver(gr_unittest.TestCase):
         self.tb = None
 
     def test_instance(self):
-        instance = upper_phy_receiver(2, 2, 900, 792)
+        instance = upper_phy_receiver(2, 2, 1800, 792)
 
     def test_001_single_rx_stream(self):
         constellation_order = 2
@@ -67,7 +66,7 @@ class qa_upper_phy_receiver(gr_unittest.TestCase):
 
         src = blocks.vector_source_c(symbols)
         instance = upper_phy_receiver(
-            1, constellation_order, symbols_per_frame, info_len
+            1, constellation_order, config.frame_size, config.info_size
         )
         snk = blocks.vector_sink_b()
         self.tb.connect(src, instance, snk)
@@ -104,7 +103,7 @@ class qa_upper_phy_receiver(gr_unittest.TestCase):
 
         srcs = [blocks.vector_source_c(symbols) for _ in range(4)]
         instance = upper_phy_receiver(
-            4, constellation_order, symbols_per_frame, info_len
+            4, constellation_order, config.frame_size, config.info_size
         )
         snk = blocks.vector_sink_b()
         llrs = [blocks.vector_sink_f() for _ in range(4)]
@@ -132,6 +131,47 @@ class qa_upper_phy_receiver(gr_unittest.TestCase):
 
         summed_llrs = np.array(sumllrs.data())
         np.testing.assert_equal(summed, summed_llrs)
+
+    def test_003_transceiver_integration(self):
+        constellation_order = 2
+        frame_size = 1800
+        info_len = 792
+        crc_len = 16
+        config = get_polar_configuration(
+            frame_size, info_len, interleaver_type="convolutional"
+        )
+
+        bits = np.random.randint(0, 2, config.info_size - crc_len).astype(np.int32)
+        packed_bits = np.packbits(bits).astype(np.uint8)
+
+        src = blocks.vector_source_b(packed_bits)
+        tagger = blocks.stream_to_tagged_stream(
+            gr.sizeof_char, 1, packed_bits.size, "foo"
+        )
+        topdu = blocks.tagged_stream_to_pdu(blocks.byte_t, "foo")
+        self.tb.connect(src, tagger, topdu)
+
+        transmitter = upper_phy_transmitter(
+            constellation_order, config.frame_size, config.info_size, crc_len, "test"
+        )
+        self.tb.msg_connect((topdu, "pdus"), (transmitter, "pdus"))
+        snk = blocks.vector_sink_c()
+        self.tb.connect(transmitter, snk)
+
+        receiver = upper_phy_receiver(
+            4, constellation_order, config.frame_size, config.info_size, crc_len=crc_len
+        )
+        for i in range(4):
+            self.tb.connect((transmitter, 0), (receiver, i))
+
+        dbg = blocks.message_debug()
+        self.tb.msg_connect(receiver, "pdus", dbg, "store")
+        self.tb.run()
+        for i in range(dbg.num_messages()):
+            msg = dbg.get_message(i)
+            meta = pmt.to_python(pmt.car(msg))
+            bits = pmt.to_python(pmt.cdr(msg))
+            np.testing.assert_equal(bits[:-2], packed_bits)
 
 
 if __name__ == "__main__":

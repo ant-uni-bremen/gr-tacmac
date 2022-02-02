@@ -6,11 +6,10 @@
 
 # The presence of this file turns this directory into a Python package
 
-'''
+"""
 This is the GNU Radio TACMAC module. Place your Python package
 description here (python/__init__.py).
-'''
-from __future__ import unicode_literals
+"""
 import os
 
 # import pybind11 generated symbols into the tacmac namespace
@@ -29,4 +28,7 @@ from .lower_phy_receiver import lower_phy_receiver
 from .phy_layer import phy_layer
 from .uhd_configuration import get_device, load_default_configuration
 from .upper_phy_receiver import upper_phy_receiver
+from .phy_receiver import phy_receiver
+from .upper_phy_transmitter import upper_phy_transmitter
+
 #

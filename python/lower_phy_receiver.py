@@ -55,7 +55,6 @@ class lower_phy_receiver(gr.hier_block2):
         ##################################################
         # Variables
         ##################################################
-        normalize_scorr = True
         xcorr_compensate_frequency_offset = True
         constellation_type = "GRAY"
         cnr_tag_key = "cnr"  # still a "magic value"
@@ -68,7 +67,6 @@ class lower_phy_receiver(gr.hier_block2):
                 preamble,
                 scorr_threshold_high,
                 scorr_threshold_low,
-                normalize_scorr,
                 xcorr_threshold,
                 xcorr_compensate_frequency_offset,
                 packet_length_key,

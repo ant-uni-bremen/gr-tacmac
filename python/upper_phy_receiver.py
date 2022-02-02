@@ -21,7 +21,7 @@ class upper_phy_receiver(gr.hier_block2):
         self,
         num_rx_streams,
         constellation_order,
-        symbols_per_frame,
+        frame_size,
         bit_info_length,
         rx_packet_length_key="rx_len",
         cnr_tag_key="cnr",
@@ -44,13 +44,13 @@ class upper_phy_receiver(gr.hier_block2):
 
         self.message_port_register_hier_out("pdus")
 
-        assert bit_info_length % 8 == 0, "Bits per frame must be a byte multiple!"
+        assert bit_info_length % 8 == 0, f"Bits per frame must be a byte multiple! but is {bit_info_length}."
         config = polarwrap.get_polar_configuration(
-            constellation_order * symbols_per_frame,
+            frame_size,
             bit_info_length,
             interleaver_type="convolutional",
         )
-        
+
         ##################################################
         # Symboldemapping
         ##################################################
@@ -89,7 +89,7 @@ class upper_phy_receiver(gr.hier_block2):
         )
 
         self.blocks_stream_to_tagged_stream = blocks.stream_to_tagged_stream(
-            gr.sizeof_char, 1, config.frame_byte_size, rx_packet_length_key
+            gr.sizeof_char, 1, config.info_byte_size, rx_packet_length_key
         )
 
         self.blocks_tagged_stream_to_pdu = blocks.tagged_stream_to_pdu(
