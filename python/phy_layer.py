@@ -271,7 +271,7 @@ class phy_layer(gr.hier_block2):
 
         more_padding = 0
         if usrp_type == "b200":
-            buffer_max = 4096  ## This is the "short frame" hard limit!
+            buffer_max = 4096  # This is the "short frame" hard limit!
             possible_padding = max(buffer_max - conf.padded_frame_len, 0)
             more_padding = min(possible_padding, 1024)
         print(f"more padding {more_padding}")
