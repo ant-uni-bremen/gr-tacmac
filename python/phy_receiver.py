@@ -82,11 +82,6 @@ class phy_receiver(gr.hier_block2):
             filteralpha=0.2,
             cyclic_shifts=list(range(num_antenna_ports)),
         )
-        import numpy as np
-
-        for k, v in gfdm_config._asdict().items():
-            if not isinstance(v, np.ndarray) and not isinstance(v, list):
-                print(f"GFDM: {k:20}{v}")
 
         xcorr_compensate_freq_offset = True
         self.synchronizer = multi_port_sync_cc(
@@ -170,9 +165,6 @@ class phy_receiver(gr.hier_block2):
             interleaver_type=interleaver_type,
         )
 
-        for k, v in code_config._asdict().items():
-            if not isinstance(v, np.ndarray) and not isinstance(v, list):
-                print(f"Code: {k:16}{v}")
         cnr_tag_key = "cnr"
         constellation_type = "GRAY"
         list_size = 8
