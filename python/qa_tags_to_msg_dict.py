@@ -10,17 +10,19 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
 import numpy as np
+
 try:
     from tacmac import tags_to_msg_dict
 except ImportError:
     import os
     import sys
+
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
     from tacmac import tags_to_msg_dict
 
-class qa_tags_to_msg_dict(gr_unittest.TestCase):
 
+class qa_tags_to_msg_dict(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -32,7 +34,7 @@ class qa_tags_to_msg_dict(gr_unittest.TestCase):
         instance = tags_to_msg_dict(2)
 
     def test_001_descriptive_test_name(self):
-        tag_key = 'energy_start'
+        tag_key = "energy_start"
         burst_len = 100
         n_frames = 5
         tags_per_frame = 3
@@ -43,10 +45,10 @@ class qa_tags_to_msg_dict(gr_unittest.TestCase):
             ref = np.concatenate((ref, frame))
             for t in range(tags_per_frame):
                 tag = gr.tag_t()
-                tag.key = pmt.string_to_symbol(f'{tag_key}{i}{t}')
+                tag.key = pmt.string_to_symbol(f"{tag_key}{i}{t}")
                 tag.offset = burst_len * i
-                tag.srcid = pmt.string_to_symbol('qa')
-                tag.value = pmt.mp(f'foovalue{i}{t}')
+                tag.srcid = pmt.string_to_symbol("qa")
+                tag.value = pmt.mp(f"foovalue{i}{t}")
                 tags.append(tag)
 
         instance = tags_to_msg_dict(8)
@@ -61,9 +63,9 @@ class qa_tags_to_msg_dict(gr_unittest.TestCase):
         self.assertEqual(dbg.num_messages(), n_frames)
         for i in range(n_frames):
             result_msg = dbg.get_message(i)
-            print(i, ':', result_msg)
+            print(i, ":", result_msg)
             self.assertEqual(pmt.length(result_msg), tags_per_frame)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_tags_to_msg_dict)

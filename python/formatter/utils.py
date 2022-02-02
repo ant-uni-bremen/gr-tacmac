@@ -18,32 +18,59 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 #
-from __future__ import print_function, division
+
 import pmt
 import numpy as np
 
 
-def generate_tacnet_header(target_idx, request_or_sender_idx, frame_idx,
-                           downlink_direction=False):
-    f = np.unpackbits(np.array([frame_idx, ], dtype=np.uint8))[3:]
-    d = np.array([downlink_direction, ], dtype=f.dtype)
-    rs = np.unpackbits(np.array([request_or_sender_idx, ], dtype=np.uint8))[3:]
-    t = np.unpackbits(np.array([target_idx, ], dtype=np.uint8))[3:]
+def generate_tacnet_header(
+    target_idx, request_or_sender_idx, frame_idx, downlink_direction=False
+):
+    f = np.unpackbits(
+        np.array(
+            [
+                frame_idx,
+            ],
+            dtype=np.uint8,
+        )
+    )[3:]
+    d = np.array(
+        [
+            downlink_direction,
+        ],
+        dtype=f.dtype,
+    )
+    rs = np.unpackbits(
+        np.array(
+            [
+                request_or_sender_idx,
+            ],
+            dtype=np.uint8,
+        )
+    )[3:]
+    t = np.unpackbits(
+        np.array(
+            [
+                target_idx,
+            ],
+            dtype=np.uint8,
+        )
+    )[3:]
     bits = np.concatenate((t, rs, d, f))
     return np.packbits(bits)[::-1]
 
 
 def parse_tacnet_header(header):
     bits = np.unpackbits(header[::-1])
-    frame_idx = int(np.packbits(np.concatenate((np.zeros(3,
-                                                         dtype=bits.dtype),
-                                                bits[-5:])))[0])
-    target_idx = int(np.packbits(np.concatenate((np.zeros(3,
-                                                          dtype=bits.dtype),
-                                                 bits[0:5])))[0])
-    sender_idx = int(np.packbits(np.concatenate((np.zeros(3,
-                                                          dtype=bits.dtype),
-                                                 bits[5:10])))[0])
+    frame_idx = int(
+        np.packbits(np.concatenate((np.zeros(3, dtype=bits.dtype), bits[-5:])))[0]
+    )
+    target_idx = int(
+        np.packbits(np.concatenate((np.zeros(3, dtype=bits.dtype), bits[0:5])))[0]
+    )
+    sender_idx = int(
+        np.packbits(np.concatenate((np.zeros(3, dtype=bits.dtype), bits[5:10])))[0]
+    )
     direction = bool(bits[10])
     return target_idx, sender_idx, frame_idx, direction
 
@@ -72,10 +99,10 @@ def get_pdu_header(dest_id, src_id, frame_num, checksum=None):
 
 
 def extract_pdu_header(header):
-    d = pmt.to_long(pmt.dict_ref(header, pmt.intern('dest_id'), pmt.PMT_NIL))
-    s = pmt.to_long(pmt.dict_ref(header, pmt.intern('src_id'), pmt.PMT_NIL))
-    f = pmt.to_long(pmt.dict_ref(header, pmt.intern('frame_num'), pmt.PMT_NIL))
-    c = pmt.dict_ref(header, pmt.intern('checksum'), pmt.PMT_NIL)
+    d = pmt.to_long(pmt.dict_ref(header, pmt.intern("dest_id"), pmt.PMT_NIL))
+    s = pmt.to_long(pmt.dict_ref(header, pmt.intern("src_id"), pmt.PMT_NIL))
+    f = pmt.to_long(pmt.dict_ref(header, pmt.intern("frame_num"), pmt.PMT_NIL))
+    c = pmt.dict_ref(header, pmt.intern("checksum"), pmt.PMT_NIL)
     if pmt.is_u8vector(c):
         c = pmt_u8vector_to_ndarray(c)
     elif pmt.eq(c, pmt.PMT_T):
@@ -99,8 +126,7 @@ def get_pdu_payload(payload):
 
 
 def ndarray_to_pmt_u8vector(d):
-    return pmt.init_u8vector(len(d),
-                             np.array(d).astype(dtype=np.uint8).tolist())
+    return pmt.init_u8vector(len(d), np.array(d).astype(dtype=np.uint8).tolist())
 
 
 def pmt_u8vector_to_ndarray(msg):
@@ -108,7 +134,7 @@ def pmt_u8vector_to_ndarray(msg):
 
 
 def get_hex_char_string(char_vec):
-    return ' '.join('{:02x}'.format(i) for i in char_vec)
+    return " ".join("{:02x}".format(i) for i in char_vec)
 
 
 def string_to_int_list(s):
@@ -119,8 +145,16 @@ def string_to_int_list(s):
 
 def hex_string_to_int_list(s):
     s = s.replace(" ", "")
-    l = map(''.join, zip(*[iter(s)]*2))
-    h = [''.join(['0x', i, ]) for i in l]
+    l = map("".join, zip(*[iter(s)] * 2))
+    h = [
+        "".join(
+            [
+                "0x",
+                i,
+            ]
+        )
+        for i in l
+    ]
     il = [int(i, 16) for i in h]
     return il
 
@@ -147,5 +181,5 @@ def main():
     print(get_hex_char_string(vals))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -56,7 +56,9 @@ class phy_receiver(gr.hier_block2):
             ),
         )  # Output signature
 
-        print(f"{num_antenna_ports=}, {timeslots=}, {subcarriers=}, {active_subcarriers=}, {bit_info_length=}")
+        print(
+            f"{num_antenna_ports=}, {timeslots=}, {subcarriers=}, {active_subcarriers=}, {bit_info_length=}"
+        )
 
         self.message_port_register_hier_out("pdus")
 
@@ -81,6 +83,7 @@ class phy_receiver(gr.hier_block2):
             cyclic_shifts=list(range(num_antenna_ports)),
         )
         import numpy as np
+
         for k, v in gfdm_config._asdict().items():
             if not isinstance(v, np.ndarray) and not isinstance(v, list):
                 print(f"GFDM: {k:20}{v}")
@@ -166,7 +169,7 @@ class phy_receiver(gr.hier_block2):
             bit_info_length,
             interleaver_type=interleaver_type,
         )
-        
+
         for k, v in code_config._asdict().items():
             if not isinstance(v, np.ndarray) and not isinstance(v, list):
                 print(f"Code: {k:16}{v}")
@@ -187,7 +190,7 @@ class phy_receiver(gr.hier_block2):
             crc_len,
             decoder_type,
         )
-        
+
         for port in range(num_antenna_ports):
             self.connect((self.demodulator, port), (self.upper_phy, port))
 

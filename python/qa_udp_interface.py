@@ -7,11 +7,12 @@
 #
 
 from gnuradio import gr, gr_unittest
+
 # from gnuradio import blocks
 from udp_interface import udp_interface
 
-class qa_udp_interface(gr_unittest.TestCase):
 
+class qa_udp_interface(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -32,5 +33,5 @@ class qa_udp_interface(gr_unittest.TestCase):
         # check data
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_udp_interface)

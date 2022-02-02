@@ -39,11 +39,11 @@ class qa_phy_layer(gr_unittest.TestCase):
         instance.set_ic_iterations(25)
         self.assertEqual(instance.get_ic_iterations(), 25)
 
-        instance.set_scorr_threshold_low(.3)
-        self.assertAlmostEqual(instance.get_scorr_threshold_low(), .3)
+        instance.set_scorr_threshold_low(0.3)
+        self.assertAlmostEqual(instance.get_scorr_threshold_low(), 0.3)
 
-        instance.set_scorr_threshold_high(.4)
-        self.assertAlmostEqual(instance.get_scorr_threshold_high(), .4)
+        instance.set_scorr_threshold_high(0.4)
+        self.assertAlmostEqual(instance.get_scorr_threshold_high(), 0.4)
 
         instance.set_xcorr_threshold(42.42)
         self.assertAlmostEqual(instance.get_xcorr_threshold(), 42.42)
@@ -54,11 +54,11 @@ class qa_phy_layer(gr_unittest.TestCase):
         instance.set_carrier_freq(3.6e9)
         self.assertAlmostEqual(instance.get_carrier_freq(), 3.6e9)
 
-        instance.set_rx_gain(25.)
-        self.assertAlmostEqual(instance.get_rx_gain(), 25.)
+        instance.set_rx_gain(25.0)
+        self.assertAlmostEqual(instance.get_rx_gain(), 25.0)
 
-        instance.set_tx_gain(16.)
-        self.assertAlmostEqual(instance.get_tx_gain(), 16.)
+        instance.set_tx_gain(16.0)
+        self.assertAlmostEqual(instance.get_tx_gain(), 16.0)
 
     def test_001_descriptive_test_name(self):
         # set up fg

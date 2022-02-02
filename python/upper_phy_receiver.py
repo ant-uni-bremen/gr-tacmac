@@ -44,7 +44,9 @@ class upper_phy_receiver(gr.hier_block2):
 
         self.message_port_register_hier_out("pdus")
 
-        assert bit_info_length % 8 == 0, f"Bits per frame must be a byte multiple! but is {bit_info_length}."
+        assert (
+            bit_info_length % 8 == 0
+        ), f"Bits per frame must be a byte multiple! but is {bit_info_length}."
         config = polarwrap.get_polar_configuration(
             frame_size,
             bit_info_length,

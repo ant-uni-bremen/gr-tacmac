@@ -9,17 +9,19 @@
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
+
 try:
     from tacmac import status_collector
 except ImportError:
     import os
     import sys
+
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
     from tacmac import status_collector
 
-class qa_status_collector(gr_unittest.TestCase):
 
+class qa_status_collector(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -31,7 +33,7 @@ class qa_status_collector(gr_unittest.TestCase):
         instance = status_collector()
 
     def test_001_descriptive_test_name(self):
-        test_messages = [pmt.mp('wtf')]
+        test_messages = [pmt.mp("wtf")]
         instance = status_collector()
         dbg = blocks.message_debug()
 
@@ -50,5 +52,5 @@ class qa_status_collector(gr_unittest.TestCase):
         self.tb.wait()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_status_collector)

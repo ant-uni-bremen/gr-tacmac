@@ -10,8 +10,8 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import tacmac_python as tacmac
 
-class qa_periodic_time_tag_cc(gr_unittest.TestCase):
 
+class qa_periodic_time_tag_cc(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -25,5 +25,5 @@ class qa_periodic_time_tag_cc(gr_unittest.TestCase):
         # check data
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_periodic_time_tag_cc)

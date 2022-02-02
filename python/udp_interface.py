@@ -29,7 +29,9 @@ class udp_interface(gr.hier_block2):
         self.message_port_register_hier_out("tx")
         self.message_port_register_hier_out("timing")
         self.message_port_register_hier_out("status")
-        print(f'udp interface src={src_id}, dst={dst_id}, nports={nports}, mtu_size={mtu_size}')
+        print(
+            f"udp interface src={src_id}, dst={dst_id}, nports={nports}, mtu_size={mtu_size}"
+        )
 
         if src_id != 0 and nports > 1:
             raise RuntimeError(f"Invalid config! src={src_id} MUST be 0 for BS")
@@ -79,5 +81,3 @@ class udp_interface(gr.hier_block2):
                 (self._mac_controllers[port], "LLCout"),
                 (self, "status"),
             )
-            
-            

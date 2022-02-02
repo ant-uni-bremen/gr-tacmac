@@ -26,7 +26,6 @@ import pmt
 
 
 class qa_tag_to_stream_value(gr_unittest.TestCase):
-
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -37,15 +36,19 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
         tags = []
         ref = []
         for i in range(5):
-            r = 1. * i + 1.j * i
+            r = 1.0 * i + 1.0j * i
             ref.append(r)
-            d = [i * 500, pmt.intern('phase'), pmt.from_complex(r),
-                 pmt.intern('testsource')]
+            d = [
+                i * 500,
+                pmt.intern("phase"),
+                pmt.from_complex(r),
+                pmt.intern("testsource"),
+            ]
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cc(8, 'phase', '')
-        src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
+        t2s = tacmac.tag_to_stream_value_cc(8, "phase", "")
+        src = blocks.vector_source_c([0.0j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_c()
         self.tb.connect(src, t2s, snk)
@@ -61,18 +64,16 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
         tags = []
         ref = []
         for i in range(5):
-            r = 1. + 1. * i + 1.j * i
+            r = 1.0 + 1.0 * i + 1.0j * i
             ref.append(r)
             v = pmt.make_dict()
-            v = pmt.dict_add(v, pmt.intern('phase'),
-                             pmt.from_complex(r))
-            d = [i * 500, pmt.intern('phase'), v,
-                 pmt.intern('testsource')]
+            v = pmt.dict_add(v, pmt.intern("phase"), pmt.from_complex(r))
+            d = [i * 500, pmt.intern("phase"), v, pmt.intern("testsource")]
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cc(8, 'phase', 'phase')
-        src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
+        t2s = tacmac.tag_to_stream_value_cc(8, "phase", "phase")
+        src = blocks.vector_source_c([0.0j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_c()
         self.tb.connect(src, t2s, snk)
@@ -88,15 +89,19 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
         tags = []
         ref = []
         for i in range(5):
-            r = 1. * i
+            r = 1.0 * i
             ref.append(r)
-            d = [i * 500, pmt.intern('phase'), pmt.from_float(r),
-                 pmt.intern('testsource')]
+            d = [
+                i * 500,
+                pmt.intern("phase"),
+                pmt.from_float(r),
+                pmt.intern("testsource"),
+            ]
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_cf(8, 'phase', '')
-        src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
+        t2s = tacmac.tag_to_stream_value_cf(8, "phase", "")
+        src = blocks.vector_source_c([0.0j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_f()
         self.tb.connect(src, t2s, snk)
@@ -114,13 +119,17 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
         for i in range(5):
             r = i
             ref.append(r)
-            d = [i * 500, pmt.intern('phase'), pmt.from_long(r),
-                 pmt.intern('testsource')]
+            d = [
+                i * 500,
+                pmt.intern("phase"),
+                pmt.from_long(r),
+                pmt.intern("testsource"),
+            ]
             t = gr.tag_utils.python_to_tag(d)
             tags.append(t)
 
-        t2s = tacmac.tag_to_stream_value_ci(8, 'phase', '')
-        src = blocks.vector_source_c([0.j] * 10000, False, 1, tags)
+        t2s = tacmac.tag_to_stream_value_ci(8, "phase", "")
+        src = blocks.vector_source_c([0.0j] * 10000, False, 1, tags)
         # hb = blocks.head(gr.sizeof_gr_complex, 4000)
         snk = blocks.vector_sink_i()
         self.tb.connect(src, t2s, snk)
@@ -133,5 +142,5 @@ class qa_tag_to_stream_value(gr_unittest.TestCase):
         self.assertTupleEqual(tuple(res), tuple(ref))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     gr_unittest.run(qa_tag_to_stream_value)
