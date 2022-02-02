@@ -46,7 +46,7 @@ class qa_phy_layer(gr_unittest.TestCase):
         self.assertAlmostEqual(instance.get_scorr_threshold_high(), 0.4)
 
         instance.set_xcorr_threshold(42.42)
-        self.assertAlmostEqual(instance.get_xcorr_threshold(), 42.42)
+        self.assertAlmostEqual(instance.get_xcorr_threshold(), 42.42, 5)
 
         instance.set_tx_digital_gain(24.3)
         self.assertAlmostEqual(instance.get_tx_digital_gain(), 24.3, 5)

@@ -301,60 +301,22 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
-        print(
-            f"cfo_compensation={activate_cfo_compensation}, phase_compensation={activate_phase_compensation}"
-        )
-        self.tacmac_lower_phy_receiver = tacmac.lower_phy_receiver(
+        self.tacmac_phy_receiver = tacmac.phy_receiver(
             len(usrp_rx_channels),
             conf.timeslots,
             conf.subcarriers,
             conf.active_subcarriers,
-            conf.overlap,
-            conf.subcarrier_map,
-            conf.cp_len,
-            conf.cs_len,
-            conf.ramp_len,
-            conf.rx_filter_taps,
-            constellation,
-            ic_iterations,
+            code_conf.info_size,
+            activate_cfo_compensation,
             activate_phase_compensation,
-            conf.core_preamble,
+            ic_iterations,
             scorr_threshold_high,
             scorr_threshold_low,
             xcorr_threshold,
-            activate_cfo_compensation,
-            rx_packet_start_key,
         )
+
         self.tacmac_periodic_time_tag_cc = tacmac.periodic_time_tag_cc(
             samp_rate, int(samp_rate // 10000)
-        )
-
-        ##################################################
-        # Polar Decoder
-        ##################################################
-        list_size = 8
-        crc_bits = 16
-        decoder_type = "mixed"
-        decoder_object = polarwrap.decoderwrap.make(
-            code_conf.frame_size,
-            list_size,
-            code_conf.frozen_bit_positions,
-            crc_bits,
-            decoder_type,
-        )
-
-        self.symbolmapping_interleaver = symbolmapping.interleaver_ff(
-            code_conf.interleaver_indices, True, False
-        )
-        self.fec_generic_decoder = fec.decoder(
-            decoder_object, gr.sizeof_float, gr.sizeof_char
-        )
-        self.blocks_stream_to_tagged_stream = blocks.stream_to_tagged_stream(
-            gr.sizeof_char, 1, byte_info_length, rx_packet_length_key
-        )
-
-        self.blocks_tagged_stream_to_pdu = blocks.tagged_stream_to_pdu(
-            blocks.byte_t, rx_packet_length_key
         )
 
         ##################################################
@@ -371,31 +333,31 @@ class phy_layer(gr.hier_block2):
 
         self.connect((self.uhd_usrp_source, 0), (self.tacmac_periodic_time_tag_cc, 0))
         for i in range(len(usrp_rx_channels)):
-            self.connect((self.uhd_usrp_source, i), (self.tacmac_lower_phy_receiver, i))
-
-        self.connect(
-            (self.tacmac_lower_phy_receiver, 0),
-            (self.symbolmapping_interleaver, 0),
-            (self.fec_generic_decoder, 0),
-            (self.blocks_stream_to_tagged_stream, 0),
-            (self.blocks_tagged_stream_to_pdu, 0),
-        )
+            self.connect((self.uhd_usrp_source, i), (self.tacmac_phy_receiver, i))
 
         # tag_dbg = blocks.tag_debug(gr.sizeof_float, '', "frame_start0")
         # self.connect((self.tacmac_lower_phy_receiver, 0), (tag_dbg, 0))
-
-        # corr, synced, estimate, symbol
-        for i in range(len(usrp_rx_channels) * 4):
+        nstreams = len(usrp_rx_channels)
+        for i in range(nstreams):
+            # correlation values
+            self.connect((self.tacmac_phy_receiver, nstreams + i), (self, nstreams + i))
+            # RX stream with sync tags
+            self.connect((self.tacmac_phy_receiver, i), (self, 2 * nstreams + i))
+            # channel estimates
             self.connect(
-                (self.tacmac_lower_phy_receiver, i + 1 + len(usrp_tx_channels)),
-                (self, len(usrp_tx_channels) + i),
+                (self.tacmac_phy_receiver, 3 * nstreams + i), (self, 3 * nstreams + i)
+            )
+            # received symbols
+            self.connect(
+                (self.tacmac_phy_receiver, 4 * nstreams + i), (self, 4 * nstreams + i)
             )
 
-        self.msg_connect((self.blocks_tagged_stream_to_pdu, "pdus"), (self, "LLCout"))
+        self.msg_connect((self.tacmac_phy_receiver, "pdus"), (self, "LLCout"))
         self.msg_connect(
-            (self.blocks_tagged_stream_to_pdu, "pdus"),
+            (self.tacmac_phy_receiver, "pdus"),
             (self.tacmac_udp_interface, "rx"),
         )
+
         self.msg_connect(
             (self.tacmac_periodic_time_tag_cc, "time_tag"),
             (self.tacmac_phy_transmitter, "time_tag"),
@@ -421,44 +383,44 @@ class phy_layer(gr.hier_block2):
         )
 
     def get_activate_cfo_compensation(self):
-        return self.tacmac_lower_phy_receiver.get_activate_cfo_compensation()
+        return self.tacmac_phy_receiver.get_activate_cfo_compensation()
 
     def set_activate_cfo_compensation(self, activate_cfo_compensation):
-        self.tacmac_lower_phy_receiver.set_activate_cfo_compensation(
+        self.tacmac_phy_receiver.set_activate_cfo_compensation(
             activate_cfo_compensation
         )
 
     def get_ic_iterations(self):
-        return self.tacmac_lower_phy_receiver.get_ic_iterations()
+        return self.tacmac_phy_receiver.get_ic_iterations()
 
     def set_ic_iterations(self, ic_iterations):
-        self.tacmac_lower_phy_receiver.set_ic_iterations(ic_iterations)
+        self.tacmac_phy_receiver.set_ic_iterations(ic_iterations)
 
     def get_activate_phase_compensation(self):
-        return self.tacmac_lower_phy_receiver.get_activate_phase_compensation()
+        return self.tacmac_phy_receiver.get_activate_phase_compensation()
 
     def set_activate_phase_compensation(self, activate_phase_compensation):
-        self.tacmac_lower_phy_receiver.set_activate_phase_compensation(
+        self.tacmac_phy_receiver.set_activate_phase_compensation(
             activate_phase_compensation
         )
 
     def get_scorr_threshold_high(self):
-        return self.tacmac_lower_phy_receiver.get_scorr_threshold_high()
+        return self.tacmac_phy_receiver.get_scorr_threshold_high()
 
     def set_scorr_threshold_high(self, scorr_threshold_high):
-        self.tacmac_lower_phy_receiver.set_scorr_threshold_high(scorr_threshold_high)
+        self.tacmac_phy_receiver.set_scorr_threshold_high(scorr_threshold_high)
 
     def get_scorr_threshold_low(self):
-        return self.tacmac_lower_phy_receiver.get_scorr_threshold_low()
+        return self.tacmac_phy_receiver.get_scorr_threshold_low()
 
     def set_scorr_threshold_low(self, scorr_threshold_low):
-        self.tacmac_lower_phy_receiver.set_scorr_threshold_low(scorr_threshold_low)
+        self.tacmac_phy_receiver.set_scorr_threshold_low(scorr_threshold_low)
 
     def get_xcorr_threshold(self):
-        return self.tacmac_lower_phy_receiver.get_xcorr_threshold()
+        return self.tacmac_phy_receiver.get_xcorr_threshold()
 
     def set_xcorr_threshold(self, xcorr_threshold):
-        self.tacmac_lower_phy_receiver.set_xcorr_threshold(xcorr_threshold)
+        self.tacmac_phy_receiver.set_xcorr_threshold(xcorr_threshold)
 
     def get_tx_digital_gain(self):
         return self.tacmac_phy_transmitter.get_tx_digital_gain()
