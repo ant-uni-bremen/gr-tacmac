@@ -33,6 +33,10 @@ def parse_usrp_address(addr: str):
     )
 
 
+def get_usrp_device_args_string(master_clock_rate, clock_source, time_source):
+    return f"master_clock_rate={master_clock_rate},clock_source={clock_source},time_source={time_source}"
+
+
 class phy_layer(gr.hier_block2):
     """
     PHY layer for polar GFDM demo
@@ -153,7 +157,11 @@ class phy_layer(gr.hier_block2):
         #     master_clock_rate = samp_rate
 
         master_clock_rate = str(master_clock_rate)
-        usrp_device_args = f"master_clock_rate={master_clock_rate},clock_source=gpsdo,time_source=gpsdo"
+        usrp_clock_source = "internal"
+        usrp_time_source = "internal"
+        usrp_device_args = get_usrp_device_args_string(
+            master_clock_rate, usrp_clock_source, usrp_time_source
+        )
 
         self.uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
@@ -171,6 +179,13 @@ class phy_layer(gr.hier_block2):
         # https://kb.ettus.com/Synchronizing_USRP_Events_Using_Timed_Commands_in_UHD
         gps_locked = self.uhd_usrp_source.get_mboard_sensor("gps_locked", 0).to_bool()
         if gps_locked:
+            usrp_clock_source = "gpsdo"
+            usrp_time_source = "gpsdo"
+            self.uhd_usrp_source.set_clock_source(usrp_clock_source)
+            self.uhd_usrp_source.set_time_source(usrp_time_source)
+            usrp_device_args = get_usrp_device_args_string(
+                master_clock_rate, usrp_clock_source, usrp_time_source
+            )
             print("Trying to align USRP time with host time...")
             last = self.uhd_usrp_source.get_time_last_pps()
             next = self.uhd_usrp_source.get_time_last_pps()
