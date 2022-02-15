@@ -433,6 +433,7 @@ blocks:
     num_network_interfaces: nports
     rx_gain: rx_gain
     samp_rate: samp_rate
+    save_rx_samples_to_file: 'False'
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id

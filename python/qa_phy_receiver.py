@@ -22,6 +22,8 @@ class qa_phy_receiver(gr_unittest.TestCase):
     def test_instance(self):
         # FIXME: Test will fail until you pass sensible arguments to the constructor
         instance = phy_receiver(2, 15, 64, 60, 792, True, True, 4, 0.98, 0.95, 30.0)
+        instance.set_activate_cfo_compensation(True)
+        instance.set_activate_cfo_compensation(False)
 
     def test_001_descriptive_test_name(self):
         # set up fg

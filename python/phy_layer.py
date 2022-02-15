@@ -10,7 +10,7 @@ import pathlib
 import datetime
 import time
 import numpy as np
-from pprint import pprint
+from pprint import pprint, pformat
 from gnuradio import gr
 from gnuradio import uhd
 from gnuradio import digital
@@ -78,6 +78,7 @@ class phy_layer(gr.hier_block2):
             gr.io_signature(0, 0, 0),
             gr.io_signature(noutputs, noutputs, gr.sizeof_gr_complex),
         )
+        self.logger = gr.logger(f"gr_log.{self.symbol_name()}")
         self.message_port_register_hier_out("LLCout")
         self.message_port_register_hier_out("status")
 
@@ -124,23 +125,24 @@ class phy_layer(gr.hier_block2):
             filteralpha=0.2,
             cyclic_shifts=cyclic_shifts,
         )
-        print("### GFDM configuration")
+
         print_dict = {}
         for k, v in conf._asdict().items():
             if isinstance(v, int):
                 print_dict[k] = v
-        pprint(print_dict)
+        self.logger.debug("GFDM configuration\n" + pformat(print_dict))
+
         code_conf = polarwrap.get_polar_configuration(
             constellation_order * timeslots * active_subcarriers,
             bit_info_length,
             interleaver_type="convolutional",
         )
-        print("### FEC configuration")
+
         print_dict = {}
         for k, v in code_conf._asdict().items():
             if isinstance(v, int):
                 print_dict[k] = v
-        pprint(print_dict)
+        self.logger.debug("FEC configuration\n" + pformat(print_dict))
 
         ##################################################
         # USRP
@@ -162,6 +164,8 @@ class phy_layer(gr.hier_block2):
         usrp_device_args = get_usrp_device_args_string(
             master_clock_rate, usrp_clock_source, usrp_time_source
         )
+
+        self.logger.debug(f"{usrp_device_args=}")
 
         self.uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
@@ -186,7 +190,7 @@ class phy_layer(gr.hier_block2):
             usrp_device_args = get_usrp_device_args_string(
                 master_clock_rate, usrp_clock_source, usrp_time_source
             )
-            print("Trying to align USRP time with host time...")
+            self.logger.debug("Trying to align USRP time with host time...")
             last = self.uhd_usrp_source.get_time_last_pps()
             next = self.uhd_usrp_source.get_time_last_pps()
             while last == next:
@@ -201,7 +205,7 @@ class phy_layer(gr.hier_block2):
             )
             # maybe a check would be in order?
         else:
-            print("GPS not available: using system time...")
+            self.logger.debug("USRP.GPS not available: using system time...")
             self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
 
         for i in range(len(usrp_rx_channels)):
@@ -219,7 +223,7 @@ class phy_layer(gr.hier_block2):
             self.rx_samples_file_sinks = []
             for i in range(len(usrp_rx_channels)):
                 rxfilename = f"{folder}/{usrpstring}-{i}_CFO-{cfostring}_{timestring}.{file_suffix}"
-                print(f"port={i} -> {rxfilename}")
+                self.logger.info(f"port={i} -> {rxfilename}")
                 self.rx_samples_file_sinks.append(
                     blocks.file_sink(
                         gr.sizeof_gr_complex,
@@ -260,17 +264,19 @@ class phy_layer(gr.hier_block2):
         common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
         tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
         rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
-        print(f"USRP TX channels: {usrp_tx_channels}")
-        print(f"USRP RX channels: {usrp_rx_channels}")
-        print(f"UHD version: {uhd.get_version_string()}")
-        for k in common_keys:
-            print(f"{k:16}{tx_info[k]:20}{rx_info[k]}")
+        self.logger.debug(
+            f"USRP channels: TX={usrp_tx_channels}\tRX={usrp_rx_channels}"
+        )
+        self.logger.debug(f"UHD version: {uhd.get_version_string()}")
+        usrp_common = "\n".join(
+            [f"{k:16}{tx_info[k]:20}{rx_info[k]}" for k in common_keys]
+        )
+        self.logger.debug(f"USRP common config\n{usrp_common}")
+        usrp_tx_info = "\n".join([f"{k:16}{tx_info[k]}" for k in tx_keys])
+        self.logger.debug(f"USRP TX config\n{usrp_tx_info}")
 
-        for k in tx_keys:
-            print(f"{k:16}{tx_info[k]}")
-
-        for k in rx_keys:
-            print(f"{k:16}{rx_info[k]}")
+        usrp_rx_info = "\n".join([f"{k:16}{rx_info[k]}" for k in rx_keys])
+        self.logger.debug(f"USRP RX config\n{usrp_rx_info}")
 
         usrp_type = "n3xx"
         if "B2" in tx_info["mboard_id"]:
@@ -289,7 +295,10 @@ class phy_layer(gr.hier_block2):
             buffer_max = 4096  # This is the "short frame" hard limit!
             possible_padding = max(buffer_max - conf.padded_frame_len, 0)
             more_padding = min(possible_padding, 1024)
-        print(f"more padding {more_padding}")
+        self.logger.debug(
+            f"{usrp_type=}, {conf.pre_padding_len=}, {more_padding=}, {conf.post_padding_len=}"
+        )
+
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
             conf.subcarriers,
@@ -316,6 +325,9 @@ class phy_layer(gr.hier_block2):
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
+        self.logger.debug(
+            f"{activate_cfo_compensation=}, {activate_phase_compensation=}"
+        )
         self.tacmac_phy_receiver = tacmac.phy_receiver(
             len(usrp_rx_channels),
             conf.timeslots,

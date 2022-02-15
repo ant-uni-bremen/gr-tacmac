@@ -8,6 +8,7 @@
 
 
 from os import times
+from pprint import pprint
 from gnuradio import gr, digital
 from xfdm_sync import multi_port_sync_cc
 from gfdm.pygfdm import get_gfdm_configuration
@@ -56,11 +57,15 @@ class phy_receiver(gr.hier_block2):
             ),
         )  # Output signature
 
-        print(
+        self.message_port_register_hier_out("pdus")
+
+        self.logger = gr.logger(f"gr_log.{self.symbol_name()}")
+        self.logger.debug(
             f"{num_antenna_ports=}, {timeslots=}, {subcarriers=}, {active_subcarriers=}, {bit_info_length=}"
         )
-
-        self.message_port_register_hier_out("pdus")
+        self.logger.debug(
+            f"{activate_cfo_compensation=}, {activate_phase_compensation=}"
+        )
 
         rx_packet_start_key = "frame_start"
         rx_packet_length_key = "rx_len"
@@ -192,6 +197,7 @@ class phy_receiver(gr.hier_block2):
         return self.demodulator.get_activate_cfo_compensation()
 
     def set_activate_cfo_compensation(self, activate_cfo_compensation):
+        self.logger.debug(f"set_activate_cfo_compensation({activate_cfo_compensation})")
         self.demodulator.set_activate_cfo_compensation(activate_cfo_compensation)
 
     def get_ic_iterations(self):

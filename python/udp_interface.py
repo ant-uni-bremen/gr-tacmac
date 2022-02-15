@@ -24,13 +24,15 @@ class udp_interface(gr.hier_block2):
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0),
         )  # Output signature
+        self.logger = gr.logger(f"gr_log.{self.symbol_name()}")
 
         self.message_port_register_hier_in("rx")
         self.message_port_register_hier_out("tx")
         self.message_port_register_hier_out("timing")
         self.message_port_register_hier_out("status")
-        print(
-            f"udp interface src={src_id}, dst={dst_id}, nports={nports}, mtu_size={mtu_size}"
+
+        self.logger.debug(
+            f"src={src_id}, dst={dst_id}, nports={nports}, mtu_size={mtu_size}"
         )
 
         if src_id != 0 and nports > 1:
@@ -61,7 +63,7 @@ class udp_interface(gr.hier_block2):
                     False,
                 )
             )
-            print(port, str(portbase + dst_id + port))
+            self.logger.debug(f"add {port=} at UDP port={portbase + dst_id + port}")
 
             self._input_udp_blocks.append(
                 blocks.socket_pdu(
