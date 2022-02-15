@@ -27,6 +27,7 @@ def main():
     for k in vars(args).keys():
         if k not in d:
             print("missing", k)
+            d[k] = vars(args)[k]
 
     fg_main(options=options)
 

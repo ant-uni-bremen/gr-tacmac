@@ -1451,7 +1451,7 @@ blocks:
     style8: '1'
     style9: '1'
     tr_chan: '0'
-    tr_delay: 30e-6
+    tr_delay: '0'
     tr_level: '0.05'
     tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
@@ -1724,6 +1724,23 @@ blocks:
     coordinate: [880, 188.0]
     rotation: 0
     state: true
+- name: save_rx_to_file
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Save RX samples to file (Yes > 0)
+    short_id: ''
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 348.0]
+    rotation: 0
+    state: true
 - name: scorr_threshold_high
   id: parameter
   parameters:
@@ -1866,7 +1883,7 @@ blocks:
     num_network_interfaces: nports
     rx_gain: rgain
     samp_rate: samp_rate
-    save_rx_samples_to_file: 'False'
+    save_rx_samples_to_file: save_rx_to_file > 0
     scorr_threshold_high: scorr_threshold_high_range
     scorr_threshold_low: scorr_threshold_low_range
     src_id: src_id
