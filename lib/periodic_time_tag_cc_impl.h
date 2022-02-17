@@ -8,6 +8,7 @@
 #ifndef INCLUDED_TACMAC_PERIODIC_TIME_TAG_CC_IMPL_H
 #define INCLUDED_TACMAC_PERIODIC_TIME_TAG_CC_IMPL_H
 
+#include <fmt/core.h>
 #include <tacmac/periodic_time_tag_cc.h>
 
 static const pmt::pmt_t TIME_KEY = pmt::string_to_symbol("rx_time");
@@ -36,9 +37,7 @@ private:
                                          const uint64_t full_secs,
                                          const double frac_secs) const
     {
-        return std::string("Tag: offset=" + std::to_string(offset) + ", time=(" +
-                           std::to_string(full_secs) + " - " + std::to_string(frac_secs) +
-                           ")s");
+        return fmt::format("Tag: offset={}, time=({} - )s", offset, full_secs, frac_secs);
     }
 
 public:

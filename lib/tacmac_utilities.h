@@ -23,6 +23,7 @@
 
 #include <fmt/core.h>
 #include <pmt/pmt.h>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <regex>
@@ -31,6 +32,11 @@
 
 namespace gr {
 namespace tacmac {
+
+inline uint64_t get_timestamp_ticks_ns_now()
+{
+    return std::chrono::high_resolution_clock::now().time_since_epoch().count();
+}
 
 inline uint64_t double2ticks(const double interval)
 {

@@ -209,7 +209,9 @@ class phy_layer(gr.hier_block2):
             # maybe a check would be in order?
         else:
             self.logger.debug("USRP.GPS not available: using system time...")
-            self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
+            self.uhd_usrp_source.set_time_now(
+                uhd.time_spec(time.time()), uhd.ALL_MBOARDS
+            )
 
         self.logger.info("Configuring USRP source RF ...")
         for i in range(len(usrp_rx_channels)):
@@ -419,6 +421,11 @@ class phy_layer(gr.hier_block2):
             (self.tacmac_status_collector, "out"),
             (self, "status"),
         )
+
+        # self.msg_connect(
+        #     (self.uhd_usrp_sink, "async_msgs"),
+        #     (self.tacmac_status_collector, "in"),
+        # )
 
     def get_activate_cfo_compensation(self):
         return self.tacmac_phy_receiver.get_activate_cfo_compensation()

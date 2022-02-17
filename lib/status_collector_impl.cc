@@ -73,10 +73,10 @@ pmt::pmt_t status_collector_impl::handle_uhd_tx(const pmt::pmt_t& msg)
 
 pmt::pmt_t status_collector_impl::handle_uhd_tx_async(const pmt::pmt_t& msg)
 {
-    // GR_LOG_DEBUG(d_logger, "ASYNC:  " + pmt::write_string(msg));
+    // All this fuzz just to make sure we return a pmt::dict.
     auto status = pmt::make_dict();
     auto data = pmt::cdr(msg);
-    // GR_LOG_DEBUG(d_logger, pmt::write_string(data));
+
     auto event_code_list =
         pmt::dict_ref(data, pmt::intern("event_code"), pmt::intern("NA"));
     std::vector<std::string> event_codes;
@@ -93,16 +93,16 @@ pmt::pmt_t status_collector_impl::handle_uhd_tx_async(const pmt::pmt_t& msg)
     status =
         pmt::dict_add(status, pmt::intern("event_code"), pmt::nth(0, event_code_list));
 
-    std::string event_codes_string = "'" + event_codes[0] + "'";
+    std::string event_codes_string = fmt::format("'{}'", event_codes[0]);
     bool has_error_event = event_codes[0] != "burst_ack";
     for (int i = 1; i < event_codes.size(); i++) {
-        event_codes_string += ", '" + event_codes[i] + "'";
+        event_codes_string += fmt::format(", '{}'", event_codes[i]);
         has_error_event |= event_codes[i] != "burst_ack";
     }
 
     auto channel = pmt::to_uint64(
         pmt::dict_ref(data, pmt::mp("channel"), pmt::from_uint64(8 * 8 * 8 * 8)));
-    //     GR_LOG_DEBUG(d_logger, "channel=" + std::to_string(channel));
+
     auto time_spec = pmt::dict_ref(data, pmt::mp("time_spec"), pmt::mp("NA"));
     d_async_full_secs = pmt::to_long(pmt::car(time_spec));
     d_async_frac_secs = pmt::to_double(pmt::cdr(time_spec));
@@ -110,19 +110,7 @@ pmt::pmt_t status_collector_impl::handle_uhd_tx_async(const pmt::pmt_t& msg)
         status,
         pmt::intern("time"),
         pmt::from_uint64(timespec2ticks(d_async_full_secs, d_async_frac_secs)));
-    // has_error_event = true;
-    // if (has_error_event) {
-    //     GR_LOG_DEBUG(
-    //         d_logger,
-    //         string_format(
-    //             "UHD_ASYNC: "
-    //             "RXtime=%s\tTXtime=%s\tevent_time=%s\tchannel=%i\tevent_codes=%s",
-    //             get_formatted_time_spec(d_full_secs, d_frac_secs).c_str(),
-    //             get_formatted_time_spec(d_tx_full_secs, d_tx_frac_secs).c_str(),
-    //             get_formatted_time_spec(d_async_full_secs, d_async_frac_secs).c_str(),
-    //             channel,
-    //             event_codes_string.c_str()));
-    // }
+
     return pmt::cons(UHD_ASYNC_MSG_KEY, status);
 }
 

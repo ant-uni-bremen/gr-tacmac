@@ -11,6 +11,7 @@
 
 #include "periodic_time_tag_cc_impl.h"
 #include <gnuradio/io_signature.h>
+#include <fmt/core.h>
 
 namespace gr {
 namespace tacmac {
@@ -55,8 +56,9 @@ void periodic_time_tag_cc_impl::log_status_summary()
 
     GR_LOG_DEBUG(
         d_logger,
-        "STATUS: " + get_formatted_tag_string(d_tag_offset, d_full_secs, d_frac_secs) +
-            ", counter=" + std::to_string(d_slot_counter));
+        fmt::format("STATUS: {}, counter={}",
+                    get_formatted_tag_string(d_tag_offset, d_full_secs, d_frac_secs),
+                    d_slot_counter));
     d_next_status_summary += uint64_t(2 * d_samp_rate);
 }
 
@@ -76,9 +78,11 @@ int periodic_time_tag_cc_impl::work(int noutput_items,
     for (auto t : tags) {
         double tag_rate = pmt::to_double(t.value);
         if (std::fabs(tag_rate - d_samp_rate) > 1.0e-1) {
-            std::string err_msg("Runtime rate change not supported! configured=" +
-                                std::to_string(d_samp_rate / 1.0e6) + "MSps, received=" +
-                                std::to_string(tag_rate / 1.0e6) + "MSps");
+            std::string err_msg = fmt::format(
+                "Runtime rate change not supported! configured={}MSps, received={}MSps",
+                d_samp_rate / 1.0e6,
+                tag_rate / 1.0e6);
+
             GR_LOG_ERROR(this->d_logger, err_msg);
             throw std::runtime_error(err_msg);
         }

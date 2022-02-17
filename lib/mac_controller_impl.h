@@ -31,7 +31,8 @@
 namespace gr {
 namespace tacmac {
 
-uint64_t parse_timestamp(const std::vector<uint8_t>& bytes){
+uint64_t parse_timestamp(const std::vector<uint8_t>& bytes)
+{
     uint64_t timestamp = 0;
     for (int i = 0; i < 8; ++i) {
         timestamp |= uint64_t(bytes[i]) << ((7 - i) * 8);
@@ -168,8 +169,6 @@ private:
         return fmt::format(
             "PACKET(DST={}, SRC={}, SEQ={}, SIZE={})", dst, src, sequence, payload_size);
     }
-
-    uint64_t get_timestamp_ticks_ns_now();
 
 public:
     mac_controller_impl(unsigned destination_id, unsigned source_id, unsigned mtu_size);
