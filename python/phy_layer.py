@@ -167,6 +167,7 @@ class phy_layer(gr.hier_block2):
 
         self.logger.debug(f"{usrp_device_args=}")
 
+        self.logger.info("Creating USRP source ...")
         self.uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
             uhd.stream_args(
@@ -175,6 +176,7 @@ class phy_layer(gr.hier_block2):
                 channels=usrp_rx_channels,
             ),
         )
+        self.logger.info("Configuring USRP source clocks ...")
         self.uhd_usrp_source.set_clock_source("gpsdo", 0)
         self.uhd_usrp_source.set_time_source("gpsdo", 0)
         self.uhd_usrp_source.set_samp_rate(samp_rate)
@@ -183,6 +185,7 @@ class phy_layer(gr.hier_block2):
         # https://kb.ettus.com/Synchronizing_USRP_Events_Using_Timed_Commands_in_UHD
         gps_locked = self.uhd_usrp_source.get_mboard_sensor("gps_locked", 0).to_bool()
         if gps_locked:
+            self.logger.info("Configuring USRP with GPSDO ...")
             usrp_clock_source = "gpsdo"
             usrp_time_source = "gpsdo"
             self.uhd_usrp_source.set_clock_source(usrp_clock_source)
@@ -208,12 +211,14 @@ class phy_layer(gr.hier_block2):
             self.logger.debug("USRP.GPS not available: using system time...")
             self.uhd_usrp_source.set_time_unknown_pps(uhd.time_spec(time.time()))
 
+        self.logger.info("Configuring USRP source RF ...")
         for i in range(len(usrp_rx_channels)):
             self.uhd_usrp_source.set_center_freq(carrier_freq, i)
             self.uhd_usrp_source.set_antenna("RX2", i)
             self.uhd_usrp_source.set_gain(rx_gain, i)
 
         if save_rx_samples_to_file:
+            self.logger.info("Save RX samples to files ...")
             file_suffix = "cdat"
             timestring = str(datetime.datetime.now()).replace(" ", "-")
             rx_info = self.uhd_usrp_source.get_usrp_info()
@@ -236,6 +241,7 @@ class phy_layer(gr.hier_block2):
                     (self.uhd_usrp_source, i), (self.rx_samples_file_sinks[i], 0)
                 )
 
+        self.logger.info("Creating USRP sink ...")
         self.uhd_usrp_sink = uhd.usrp_sink(
             ",".join((rx_device_addr, usrp_device_args)),
             uhd.stream_args(
@@ -245,6 +251,7 @@ class phy_layer(gr.hier_block2):
             ),
             tx_packet_length_key,
         )
+        self.logger.info("Configuring USRP sink clocks ...")
         self.uhd_usrp_sink.set_clock_source("gpsdo", 0)
         self.uhd_usrp_sink.set_time_source("gpsdo", 0)
         self.uhd_usrp_sink.set_samp_rate(samp_rate)
@@ -252,6 +259,7 @@ class phy_layer(gr.hier_block2):
         self.uhd_usrp_sink.set_min_output_buffer(4096)
         self.uhd_usrp_sink.set_max_output_buffer(4096)
 
+        self.logger.info("Configuring USRP sink RF ...")
         for i in range(len(usrp_tx_channels)):
             self.uhd_usrp_sink.set_center_freq(carrier_freq, i)
             self.uhd_usrp_sink.set_antenna("TX/RX", i)
@@ -299,6 +307,7 @@ class phy_layer(gr.hier_block2):
             f"{usrp_type=}, {conf.pre_padding_len=}, {more_padding=}, {conf.post_padding_len=}"
         )
 
+        use_timed_commands = True
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
             conf.subcarriers,
@@ -322,6 +331,7 @@ class phy_layer(gr.hier_block2):
             tx_digital_gain,
             conf.cyclic_shifts,
             tx_packet_length_key,
+            use_timed_commands,
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
@@ -362,8 +372,9 @@ class phy_layer(gr.hier_block2):
         for i in range(len(usrp_rx_channels)):
             self.connect((self.uhd_usrp_source, i), (self.tacmac_phy_receiver, i))
 
-        # tag_dbg = blocks.tag_debug(gr.sizeof_float, '', "frame_start0")
-        # self.connect((self.tacmac_lower_phy_receiver, 0), (tag_dbg, 0))
+        # self.tag_dbg = blocks.tag_debug(gr.sizeof_gr_complex, "", "")
+        # self.connect((self.tacmac_phy_transmitter, 0), (self.tag_dbg, 0))
+
         nstreams = len(usrp_rx_channels)
         for i in range(nstreams):
             # correlation values
