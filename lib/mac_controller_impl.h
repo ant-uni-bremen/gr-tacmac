@@ -31,6 +31,14 @@
 namespace gr {
 namespace tacmac {
 
+uint64_t parse_timestamp(const std::vector<uint8_t>& bytes){
+    uint64_t timestamp = 0;
+    for (int i = 0; i < 8; ++i) {
+        timestamp |= uint64_t(bytes[i]) << ((7 - i) * 8);
+    }
+    return timestamp;
+}
+
 struct ipv4_header {
     /*
      * https://en.wikipedia.org/wiki/IPv4#Packet_structure
@@ -120,6 +128,9 @@ private:
     uint64_t d_phy_payload_size_counter = 0;
     uint64_t d_latency_interval_counter = 0;
     uint64_t d_lost_packet_interval_counter = 0;
+
+    uint64_t d_last_phy_ticks = 0;
+    uint64_t d_last_llc_ticks = 0;
 
 
     std::vector<uint8_t> create_header(const size_t frame_counter,
