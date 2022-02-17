@@ -52,6 +52,7 @@ class phy_transmitter(gr.hier_block2):
             2,
         ],
         packet_length_key="packet_len",
+        use_timed_commands=True,
     ):
         gr.hier_block2.__init__(
             self,
@@ -112,7 +113,7 @@ class phy_transmitter(gr.hier_block2):
             tx_digital_gain,
             len(cyclic_shift),
             packet_length_key,
-            True,
+            use_timed_commands,
             timing_advance,
             cycle_interval,
         )
