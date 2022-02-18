@@ -375,7 +375,7 @@ class phy_layer(gr.hier_block2):
             self.connect((self.uhd_usrp_source, i), (self.tacmac_phy_receiver, i))
 
         # self.tag_dbg = blocks.tag_debug(gr.sizeof_gr_complex, "", "")
-        # self.connect((self.tacmac_phy_transmitter, 0), (self.tag_dbg, 0))
+        # self.connect((self.tacmac_phy_receiver, 3 * 2), (self.tag_dbg, 0))
 
         nstreams = len(usrp_rx_channels)
         for i in range(nstreams):
@@ -397,6 +397,12 @@ class phy_layer(gr.hier_block2):
             (self.tacmac_phy_receiver, "pdus"),
             (self.tacmac_udp_interface, "rx"),
         )
+
+        # self.msg_dbg = blocks.message_debug()
+        # self.msg_connect(
+        #     (self.tacmac_phy_receiver, "pdus"),
+        #     (self.msg_dbg, "print"),
+        # )
 
         self.msg_connect(
             (self.tacmac_periodic_time_tag_cc, "time_tag"),

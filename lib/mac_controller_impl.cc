@@ -297,7 +297,8 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
         status_code = 4;
     }
 
-    // GR_LOG_DEBUG(this->d_logger, host_info + " " + packet_header + " " + status);
+    // GR_LOG_DEBUG(this->d_logger,
+    //              fmt::format("{} {} {}", host_info, packet_header, status));
 
     if (status_code != 0) {
         GR_LOG_DEBUG(this->d_debug_logger,
