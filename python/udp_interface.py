@@ -44,8 +44,11 @@ class udp_interface(gr.hier_block2):
         self._mac_controllers = []
 
         for port in range(nports):
+            dev_dst_id = dst_id + port
+            server_port = portbase + dst_id + port
+            client_port = portbase + src_id + port
             self._mac_controllers.append(
-                tacmac.mac_controller(dst_id + port, src_id, mtu_size)
+                tacmac.mac_controller(dev_dst_id, src_id, mtu_size)
             )
             self.msg_connect((self._mac_controllers[port], "PHYout"), (self, "tx"))
             self.msg_connect((self, "rx"), (self._mac_controllers[port], "PHYin"))
@@ -58,16 +61,16 @@ class udp_interface(gr.hier_block2):
                 blocks.socket_pdu(
                     "UDP_CLIENT",
                     "localhost",
-                    str(portbase + src_id + port),
+                    str(client_port),
                     mtu_size,
                     False,
                 )
             )
-            self.logger.debug(f"add {port=} at UDP port={portbase + dst_id + port}")
+            self.logger.debug(f"add {port=}\t{dev_dst_id} at UDP {server_port=}\t{client_port=}")
 
             self._input_udp_blocks.append(
                 blocks.socket_pdu(
-                    "UDP_SERVER", "", str(portbase + dst_id + port), mtu_size, False
+                    "UDP_SERVER", "", str(server_port), mtu_size, False
                 )
             )
 
