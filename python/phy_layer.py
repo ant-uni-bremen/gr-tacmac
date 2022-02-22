@@ -310,6 +310,7 @@ class phy_layer(gr.hier_block2):
         )
 
         use_timed_commands = True
+        enable_tx_latency_reporting = False
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,
             conf.subcarriers,
@@ -334,6 +335,7 @@ class phy_layer(gr.hier_block2):
             conf.cyclic_shifts,
             tx_packet_length_key,
             use_timed_commands,
+            enable_tx_latency_reporting,
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
@@ -374,6 +376,8 @@ class phy_layer(gr.hier_block2):
         for i in range(len(usrp_rx_channels)):
             self.connect((self.uhd_usrp_source, i), (self.tacmac_phy_receiver, i))
 
+        # self.tag_dbg = blocks.tag_debug(gr.sizeof_gr_complex, "tx_latency", "dsp_latency")
+        # self.connect((self.tacmac_phy_transmitter, 0), (self.tag_dbg, 0))
         # self.tag_dbg = blocks.tag_debug(gr.sizeof_gr_complex, "", "")
         # self.connect((self.tacmac_phy_receiver, 3 * 2), (self.tag_dbg, 0))
 

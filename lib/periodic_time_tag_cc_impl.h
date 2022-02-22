@@ -37,7 +37,8 @@ private:
                                          const uint64_t full_secs,
                                          const double frac_secs) const
     {
-        return fmt::format("Tag: offset={}, time=({} - )s", offset, full_secs, frac_secs);
+        return fmt::format(
+            "Tag: offset={}, time=({} - {:.7f})s", offset, full_secs, frac_secs);
     }
 
 public:

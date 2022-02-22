@@ -53,6 +53,7 @@ class phy_transmitter(gr.hier_block2):
         ],
         packet_length_key="packet_len",
         use_timed_commands=True,
+        enable_tx_latency_reporting=False,
     ):
         gr.hier_block2.__init__(
             self,
@@ -116,6 +117,7 @@ class phy_transmitter(gr.hier_block2):
             use_timed_commands,
             timing_advance,
             cycle_interval,
+            enable_tx_latency_reporting,
         )
 
         ##################################################

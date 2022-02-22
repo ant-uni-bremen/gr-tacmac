@@ -133,6 +133,29 @@ private:
     uint64_t d_last_phy_ticks = 0;
     uint64_t d_last_llc_ticks = 0;
 
+    enum phy_status_t { OK, NOT_US, LOOPBACK, WRONG_SRC, INVALID_CRC };
+    phy_status_t check_phy_packet(const unsigned dst,
+                                  const unsigned src,
+                                  const uint16_t calced_checksum,
+                                  const u_int16_t packet_checksum) const;
+    std::string get_status_string(const phy_status_t status) const
+    {
+        switch (status) {
+        case OK:
+            return std::string("OK");
+        case NOT_US:
+            return std::string("Not for us!");
+        case LOOPBACK:
+            return std::string("Loopback!");
+        case WRONG_SRC:
+            return std::string("Wrong source!");
+        case INVALID_CRC:
+            return std::string("Invalid CRC!");
+        default:
+            return std::string("Missing case!");
+        }
+    }
+
 
     std::vector<uint8_t> create_header(const size_t frame_counter,
                                        const uint64_t ticks,
@@ -153,6 +176,8 @@ private:
     const pmt::pmt_t PMT_PAYLOAD_SIZE = pmt::mp("payload_size");
     const pmt::pmt_t PMT_LOST_PACKETS = pmt::mp("lost_packets");
     const pmt::pmt_t PMT_LATENCY = pmt::mp("latency");
+    const pmt::pmt_t PMT_DSP_LATENCY = pmt::mp("dsp_latency");
+    const pmt::pmt_t PMT_ECHO_TICKS = pmt::mp("echo_ticks");
 
     void print_llc_message_status(const uint64_t ticks);
     void print_phy_message_status(const uint64_t ticks);

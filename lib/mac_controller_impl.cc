@@ -156,6 +156,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     d_tx_frame_counter %= std::numeric_limits<uint16_t>::max();
 
     const uint64_t ticks = get_timestamp_ticks_ns_now();
+    const uint64_t echo_ticks = ticks - d_last_phy_ticks;
     d_last_llc_ticks = ticks;
 
     std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
@@ -168,15 +169,15 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
         return;
     }
 
-    const float rtt = 1.0e-6 * (ticks - d_last_phy_ticks);
-    GR_LOG_DEBUG(this->d_logger,
-                 fmt::format("{}\tLLC: {}: packet: {:2}->{:2} (#={:5})\t{:.4f}ms",
-                             ticks,
-                             get_host_string(),
-                             d_src_id,
-                             d_dst_id,
-                             frame_counter,
-                             rtt));
+    // const float rtt = 1.0e-6 * (ticks - d_last_phy_ticks);
+    // GR_LOG_DEBUG(this->d_logger,
+    //              fmt::format("{}\tLLC: {}: packet: {:2}->{:2} (#={:5})\t{:.4f}ms",
+    //                          ticks,
+    //                          get_host_string(),
+    //                          d_src_id,
+    //                          d_dst_id,
+    //                          frame_counter,
+    //                          rtt));
 
     // auto ip_header = ipv4_header(payload.data(), 20);
     // fmt::print("{} -> {}: IPv{}, length={}B, ihl={} ({}B), protocol={}, TTL={},
@@ -206,6 +207,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     meta = pmt::dict_add(meta, PMT_SEQUENCE, pmt::from_long(frame_counter));
     meta = pmt::dict_add(meta, PMT_TIME, pmt::from_long(ticks));
     meta = pmt::dict_add(meta, PMT_PAYLOAD_SIZE, pmt::from_long(payload.size()));
+    meta = pmt::dict_add(meta, PMT_ECHO_TICKS, pmt::from_long(echo_ticks));
 
     payload.insert(payload.begin(), header.begin(), header.end());
     payload.resize(d_mtu_size + header.size(), 0);
@@ -251,6 +253,28 @@ void mac_controller_impl::print_phy_message_status(const uint64_t ticks)
     }
 }
 
+mac_controller_impl::phy_status_t
+mac_controller_impl::check_phy_packet(const unsigned dst,
+                                      const unsigned src,
+                                      const uint16_t calced_checksum,
+                                      const u_int16_t packet_checksum) const
+{
+    auto status = phy_status_t::OK;
+    if (dst != d_src_id) {
+        status = phy_status_t::NOT_US;
+    }
+    if (src == d_src_id) {
+        status = phy_status_t::LOOPBACK;
+    }
+    if (src != d_dst_id) {
+        status = phy_status_t::WRONG_SRC;
+    }
+    if (packet_checksum != calced_checksum) {
+        status = phy_status_t::INVALID_CRC;
+    }
+    return status;
+}
+
 void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 {
     const std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
@@ -266,41 +290,22 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     const unsigned sequence = (uint16_t(payload[2] << 8) | uint16_t(payload[3]));
     const unsigned payload_size = payload[4];
 
-    std::string host_info = get_host_string();
-    std::string packet_header =
-        get_packet_header_string(dst, src, sequence, payload_size);
+    const auto status_code = check_phy_packet(dst, src, checksum, rx_checksum);
 
-    std::string status("OK");
-
-    unsigned status_code = 0;
-    if (dst != d_src_id) {
-        status = fmt::format(
-            "dropping... reason: Not for us! [dst={} != {}=d_src_id]", dst, d_src_id);
-        status_code = 1;
-    }
-    if (src == d_src_id) {
-        status = fmt::format(
-            "dropping... reason: loopback! [src={} == {}=d_src_id]", src, d_src_id);
-        status_code = 2;
-    }
-    if (src != d_dst_id) {
-        status = fmt::format(
-            "dropping... reason: wrong endpoint! [src={} == {}=d_dst_id]", src, d_dst_id);
-        status_code = 3;
-    }
-    if (rx_checksum != checksum) {
-        // C++20 solution: replace `fmt::format` with `std::format`.
-        status =
-            fmt::format("CRC16-CCITTFALSE failed! calculated/received: {:04X} != {:04X}",
-                        checksum,
-                        rx_checksum);
-        status_code = 4;
-    }
-
-    // GR_LOG_DEBUG(this->d_logger,
-    //              fmt::format("{} {} {}", host_info, packet_header, status));
-
-    if (status_code != 0) {
+    if (status_code != phy_status_t::OK) {
+        const std::string host_info = get_host_string();
+        const std::string packet_header =
+            get_packet_header_string(dst, src, sequence, payload_size);
+        const auto status =
+            fmt::format("packet status: {} [packet(src={}, dst={}), controller(src={}, "
+                        "dst={}), CRC(received={:04X}, calculated={:04X})]",
+                        get_status_string(status_code),
+                        src,
+                        dst,
+                        d_src_id,
+                        d_dst_id,
+                        rx_checksum,
+                        checksum);
         GR_LOG_DEBUG(this->d_debug_logger,
                      fmt::format("{} {} {}", host_info, packet_header, status));
         return;
@@ -336,20 +341,24 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     d_latency_interval_counter += latency_ticks;
     d_lost_packet_interval_counter += lost_packets;
 
+    // The RX packet metadata keys are suffixed with a number at this point. It goes from
+    // 0 ... N-1 RX streams.
     const uint64_t rx_dsp_latency =
         pmt::to_uint64(pmt::dict_ref(meta, pmt::mp("time0"), pmt::from_uint64(0)));
-    const float dsp_latency_ms = 1.0e-6 * (ticks - rx_dsp_latency);
-    const float rtt = 1.0e-6 * (ticks - d_last_llc_ticks);
-    GR_LOG_DEBUG(
-        this->d_logger,
-        fmt::format("{}\tPHY: {}: packet: {:2}->{:2} (#={:5})\t{:.4f}ms\t{:.4f}ms",
-                    ticks,
-                    get_host_string(),
-                    src,
-                    dst,
-                    sequence,
-                    rtt,
-                    dsp_latency_ms));
+    meta = pmt::dict_add(meta, PMT_DSP_LATENCY, pmt::from_long(rx_dsp_latency));
+
+    // const float dsp_latency_ms = 1.0e-6 * (ticks - rx_dsp_latency);
+    // const float rtt = 1.0e-6 * (ticks - d_last_llc_ticks);
+    // GR_LOG_DEBUG(
+    //     this->d_logger,
+    //     fmt::format("{}\tPHY: {}: packet: {:2}->{:2} (#={:5})\t{:.4f}ms\t{:.4f}ms",
+    //                 ticks,
+    //                 get_host_string(),
+    //                 src,
+    //                 dst,
+    //                 sequence,
+    //                 rtt,
+    //                 dsp_latency_ms));
 
     message_port_pub(d_llc_out_port,
                      pmt::cons(meta, pmt::init_u8vector(data.size(), data)));
