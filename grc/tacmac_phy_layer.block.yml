@@ -15,7 +15,7 @@ templates:
       ${usrp_tx_channels}, ${usrp_rx_channels},
       ${carrier_freq}, ${samp_rate},
       ${tx_gain}, ${tx_digital_gain},
-      ${rx_gain}, ${master_clock_rate}, ${save_rx_samples_to_file}
+      ${rx_gain}, ${master_clock_rate}, ${save_rx_samples_to_file}, ${use_timed_commands}
     )
   callbacks:
     - set_activate_cfo_compensation(${activate_cfo_compensation})
@@ -140,6 +140,10 @@ parameters:
     label: Save RX to file
     dtype: bool
     default: False
+  - id: use_timed_commands
+    label: Use timed commands
+    dtype: bool
+    default: True
 
     #- id: ...
 #  label: ...

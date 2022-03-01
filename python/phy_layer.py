@@ -70,6 +70,7 @@ class phy_layer(gr.hier_block2):
         rx_gain=55.0,
         master_clock_rate=122.88e6,
         save_rx_samples_to_file=False,
+        use_timed_commands=True,
     ):
         noutputs = len(usrp_tx_channels) + len(usrp_rx_channels) * 4
         gr.hier_block2.__init__(
@@ -88,8 +89,6 @@ class phy_layer(gr.hier_block2):
         # Variables
         ##################################################
         tx_packet_length_key = "packet_len"
-        rx_packet_length_key = "rx_len"
-        rx_packet_start_key = "frame_start"
         packet_header_overhead = 15
         byte_info_length = mtu_size + packet_header_overhead
         bit_info_length = 8 * byte_info_length
@@ -309,7 +308,6 @@ class phy_layer(gr.hier_block2):
             f"{usrp_type=}, {conf.pre_padding_len=}, {more_padding=}, {conf.post_padding_len=}"
         )
 
-        use_timed_commands = True
         enable_tx_latency_reporting = False
         self.tacmac_phy_transmitter = tacmac.phy_transmitter(
             conf.timeslots,

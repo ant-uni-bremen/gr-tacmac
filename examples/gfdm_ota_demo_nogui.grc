@@ -442,6 +442,7 @@ blocks:
     timing_advance: timing_advance
     tx_digital_gain: tx_digital_gain
     tx_gain: tx_gain
+    use_timed_commands: use_timed_commands > 0
     usrp_rx_addr: rx_addr
     usrp_rx_channels: '[int(i) for i in rx_channels.split()]'
     usrp_tx_addr: tx_addr
@@ -571,6 +572,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1032, 420.0]
+    rotation: 0
+    state: true
+- name: use_timed_commands
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Use timed commands
+    short_id: ''
+    type: intx
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [376, 284.0]
     rotation: 0
     state: true
 - name: xcorr_threshold

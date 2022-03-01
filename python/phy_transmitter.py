@@ -61,6 +61,8 @@ class phy_transmitter(gr.hier_block2):
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(len(cyclic_shift), len(cyclic_shift), gr.sizeof_gr_complex),
         )  # Output signature
+        self.logger = gr.logger(f"gr_log.{self.symbol_name()}")
+        self.logger.debug(f"{use_timed_commands=}, {enable_tx_latency_reporting=}")
 
         assert len(cyclic_shift) == len(full_preambles)
 
