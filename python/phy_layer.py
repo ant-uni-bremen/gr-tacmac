@@ -257,8 +257,10 @@ class phy_layer(gr.hier_block2):
         self.uhd_usrp_sink.set_time_source("gpsdo", 0)
         self.uhd_usrp_sink.set_samp_rate(samp_rate)
 
-        self.uhd_usrp_sink.set_min_output_buffer(4096)
-        self.uhd_usrp_sink.set_max_output_buffer(4096)
+        uhd_sink_buffer_size = 2048 * 2
+        # uhd_sink_buffer_size = 3072 * 2
+        self.uhd_usrp_sink.set_min_output_buffer(uhd_sink_buffer_size)
+        self.uhd_usrp_sink.set_max_output_buffer(uhd_sink_buffer_size)
 
         self.logger.info("Configuring USRP sink RF ...")
         for i in range(len(usrp_tx_channels)):
