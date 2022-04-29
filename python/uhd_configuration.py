@@ -138,7 +138,7 @@ def load_device_config(config, devicename):
     devs = [load_single_device_config(config, d) for d in devicename]
     equal_keys = ["product", "type", "claimed", "fpga"]
     for ek in equal_keys:
-        val = set([d[ek] for d in devs])
+        val = set([d.get(ek, "N/A") for d in devs])
         assert len(val) == 1
 
     device = {k: [d[k] for d in devs] for k in devs[0].keys()}

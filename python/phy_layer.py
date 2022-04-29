@@ -351,8 +351,10 @@ class phy_layer(gr.hier_block2):
             ),
         )
         self.logger.info("Configuring USRP source clocks ...")
-        # self.uhd_usrp_source.set_clock_source("gpsdo", 0)
-        # self.uhd_usrp_source.set_time_source("gpsdo", 0)
+        if "B2" in uhd_usrp_source.get_usrp_info()["mboard_id"]:
+            self.logger.debug("Detected USRP B210, using GPSDO clock source ...")
+            uhd_usrp_source.set_clock_source("gpsdo", 0)
+            uhd_usrp_source.set_time_source("gpsdo", 0)
         uhd_usrp_source.set_samp_rate(samp_rate)
 
         self.logger.info("Configuring USRP source RF ...")
@@ -384,8 +386,10 @@ class phy_layer(gr.hier_block2):
             tx_packet_length_key,
         )
         self.logger.info("Configuring USRP sink clocks ...")
-        # self.uhd_usrp_sink.set_clock_source("gpsdo", 0)
-        # self.uhd_usrp_sink.set_time_source("gpsdo", 0)
+        if "B2" in uhd_usrp_sink.get_usrp_info()["mboard_id"]:
+            self.logger.debug("Detected USRP B210, using GPSDO clock source ...")
+            uhd_usrp_sink.set_clock_source("gpsdo", 0)
+            uhd_usrp_sink.set_time_source("gpsdo", 0)
         uhd_usrp_sink.set_samp_rate(samp_rate)
 
         uhd_sink_buffer_size = 2048 * 2

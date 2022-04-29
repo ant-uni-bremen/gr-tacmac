@@ -21,8 +21,8 @@ def main():
     options = Namespace()
     d = vars(options)
     d.update(config)
-    if isinstance(d['addr'], list):
-        d['rx_addr'] = ','.join([f'addr{i}={v}' for i, v in enumerate(d['addr'])])
+    if "addr" in d and isinstance(d["addr"], list):
+        d["rx_addr"] = ",".join([f"addr{i}={v}" for i, v in enumerate(d["addr"])])
     else:
         d["rx_addr"] = f"serial={d['serial']}"
     d["tx_addr"] = d["rx_addr"]
