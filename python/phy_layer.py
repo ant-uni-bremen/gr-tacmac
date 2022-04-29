@@ -146,77 +146,18 @@ class phy_layer(gr.hier_block2):
         ##################################################
         # USRP
         ##################################################
-        if len(usrp_tx_addr) == 0:
-            device = tacmac.uhd_configuration.get_device()
-            usrp_tx_addr = parse_usrp_address(device["addr"])
-        tx_device_addr = parse_usrp_address(usrp_tx_addr)
-        rx_device_addr = tx_device_addr
-        if usrp_rx_addr:
-            rx_device_addr = parse_usrp_address(usrp_rx_addr)
-
-        # if "addr" not in rx_device_addr:
-        #     master_clock_rate = samp_rate
-
-        master_clock_rate = str(master_clock_rate)
-        usrp_clock_source = "internal"
-        usrp_time_source = "internal"
-        usrp_device_args = get_usrp_device_args_string(
-            master_clock_rate, usrp_clock_source, usrp_time_source
+        self.uhd_usrp_source, self.uhd_usrp_sink = self.initialize_usrps(
+            usrp_tx_addr,
+            usrp_rx_addr,
+            usrp_tx_channels,
+            usrp_rx_channels,
+            master_clock_rate,
+            samp_rate,
+            carrier_freq,
+            tx_gain,
+            rx_gain,
+            tx_packet_length_key,
         )
-
-        self.logger.debug(f"{usrp_device_args=}")
-
-        self.logger.info("Creating USRP source ...")
-        self.uhd_usrp_source = uhd.usrp_source(
-            ",".join((rx_device_addr, usrp_device_args)),
-            uhd.stream_args(
-                cpu_format="fc32",
-                args="",
-                channels=usrp_rx_channels,
-            ),
-        )
-        self.logger.info("Configuring USRP source clocks ...")
-        self.uhd_usrp_source.set_clock_source("gpsdo", 0)
-        self.uhd_usrp_source.set_time_source("gpsdo", 0)
-        self.uhd_usrp_source.set_samp_rate(samp_rate)
-
-        # see: https://files.ettus.com/manual/page_gpsdo_x3x0.html
-        # https://kb.ettus.com/Synchronizing_USRP_Events_Using_Timed_Commands_in_UHD
-        gps_locked = self.uhd_usrp_source.get_mboard_sensor("gps_locked", 0).to_bool()
-        if gps_locked:
-            self.logger.info("Configuring USRP with GPSDO ...")
-            usrp_clock_source = "gpsdo"
-            usrp_time_source = "gpsdo"
-            self.uhd_usrp_source.set_clock_source(usrp_clock_source)
-            self.uhd_usrp_source.set_time_source(usrp_time_source)
-            usrp_device_args = get_usrp_device_args_string(
-                master_clock_rate, usrp_clock_source, usrp_time_source
-            )
-            self.logger.debug("Trying to align USRP time with host time...")
-            last = self.uhd_usrp_source.get_time_last_pps()
-            next = self.uhd_usrp_source.get_time_last_pps()
-            while last == next:
-                time.sleep(50e-3)
-                last = next
-                next = self.uhd_usrp_source.get_time_last_pps()
-            time.sleep(200e-3)
-            self.uhd_usrp_source.set_time_next_pps(
-                uhd.time_spec(
-                    self.uhd_usrp_source.get_mboard_sensor("gps_time").to_int() + 1
-                )
-            )
-            # maybe a check would be in order?
-        else:
-            self.logger.debug("USRP.GPS not available: using system time...")
-            self.uhd_usrp_source.set_time_now(
-                uhd.time_spec(time.time()), uhd.ALL_MBOARDS
-            )
-
-        self.logger.info("Configuring USRP source RF ...")
-        for i in range(len(usrp_rx_channels)):
-            self.uhd_usrp_source.set_center_freq(carrier_freq, i)
-            self.uhd_usrp_source.set_antenna("RX2", i)
-            self.uhd_usrp_source.set_gain(rx_gain, i)
 
         if save_rx_samples_to_file:
             self.logger.info("Save RX samples to files ...")
@@ -242,53 +183,7 @@ class phy_layer(gr.hier_block2):
                     (self.uhd_usrp_source, i), (self.rx_samples_file_sinks[i], 0)
                 )
 
-        self.logger.info("Creating USRP sink ...")
-        self.uhd_usrp_sink = uhd.usrp_sink(
-            ",".join((rx_device_addr, usrp_device_args)),
-            uhd.stream_args(
-                cpu_format="fc32",
-                args="",
-                channels=usrp_tx_channels,
-            ),
-            tx_packet_length_key,
-        )
-        self.logger.info("Configuring USRP sink clocks ...")
-        self.uhd_usrp_sink.set_clock_source("gpsdo", 0)
-        self.uhd_usrp_sink.set_time_source("gpsdo", 0)
-        self.uhd_usrp_sink.set_samp_rate(samp_rate)
-
-        uhd_sink_buffer_size = 2048 * 2
-        # uhd_sink_buffer_size = 3072 * 2
-        self.uhd_usrp_sink.set_min_output_buffer(uhd_sink_buffer_size)
-        self.uhd_usrp_sink.set_max_output_buffer(uhd_sink_buffer_size)
-
-        self.logger.info("Configuring USRP sink RF ...")
-        for i in range(len(usrp_tx_channels)):
-            self.uhd_usrp_sink.set_center_freq(carrier_freq, i)
-            self.uhd_usrp_sink.set_antenna("TX/RX", i)
-            self.uhd_usrp_sink.set_gain(tx_gain, i)
-            self.uhd_usrp_sink.set_bandwidth(samp_rate, i)
-
-        # a bit of device info digging
         tx_info = self.uhd_usrp_sink.get_usrp_info()
-        rx_info = self.uhd_usrp_source.get_usrp_info()
-        common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
-        tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
-        rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
-        self.logger.debug(
-            f"USRP channels: TX={usrp_tx_channels}\tRX={usrp_rx_channels}"
-        )
-        self.logger.debug(f"UHD version: {uhd.get_version_string()}")
-        usrp_common = "\n".join(
-            [f"{k:16}{tx_info[k]:20}{rx_info[k]}" for k in common_keys]
-        )
-        self.logger.debug(f"USRP common config\n{usrp_common}")
-        usrp_tx_info = "\n".join([f"{k:16}{tx_info[k]}" for k in tx_keys])
-        self.logger.debug(f"USRP TX config\n{usrp_tx_info}")
-
-        usrp_rx_info = "\n".join([f"{k:16}{rx_info[k]}" for k in rx_keys])
-        self.logger.debug(f"USRP RX config\n{usrp_rx_info}")
-
         usrp_type = "n3xx"
         if "B2" in tx_info["mboard_id"]:
             usrp_type = "b200"
@@ -436,6 +331,199 @@ class phy_layer(gr.hier_block2):
         #     (self.uhd_usrp_sink, "async_msgs"),
         #     (self.tacmac_status_collector, "in"),
         # )
+
+    def initialize_usrp_source(
+        self,
+        rx_device_addr,
+        usrp_device_args,
+        usrp_rx_channels,
+        rx_gain,
+        carrier_freq,
+        samp_rate,
+    ):
+        self.logger.info("Creating USRP source ...")
+        uhd_usrp_source = uhd.usrp_source(
+            ",".join((rx_device_addr, usrp_device_args)),
+            uhd.stream_args(
+                cpu_format="fc32",
+                args="",
+                channels=usrp_rx_channels,
+            ),
+        )
+        self.logger.info("Configuring USRP source clocks ...")
+        # self.uhd_usrp_source.set_clock_source("gpsdo", 0)
+        # self.uhd_usrp_source.set_time_source("gpsdo", 0)
+        uhd_usrp_source.set_samp_rate(samp_rate)
+
+        self.logger.info("Configuring USRP source RF ...")
+        for i in range(len(usrp_rx_channels)):
+            uhd_usrp_source.set_center_freq(carrier_freq, i)
+            uhd_usrp_source.set_antenna("RX2", i)
+            uhd_usrp_source.set_gain(rx_gain, i)
+
+        return uhd_usrp_source
+
+    def initialize_usrp_sink(
+        self,
+        tx_device_addr,
+        usrp_device_args,
+        usrp_tx_channels,
+        tx_gain,
+        carrier_freq,
+        samp_rate,
+        tx_packet_length_key,
+    ):
+        self.logger.info("Creating USRP sink ...")
+        uhd_usrp_sink = uhd.usrp_sink(
+            ",".join((tx_device_addr, usrp_device_args)),
+            uhd.stream_args(
+                cpu_format="fc32",
+                args="",
+                channels=usrp_tx_channels,
+            ),
+            tx_packet_length_key,
+        )
+        self.logger.info("Configuring USRP sink clocks ...")
+        # self.uhd_usrp_sink.set_clock_source("gpsdo", 0)
+        # self.uhd_usrp_sink.set_time_source("gpsdo", 0)
+        uhd_usrp_sink.set_samp_rate(samp_rate)
+
+        uhd_sink_buffer_size = 2048 * 2
+        # uhd_sink_buffer_size = 3072 * 2
+        uhd_usrp_sink.set_min_output_buffer(uhd_sink_buffer_size)
+        uhd_usrp_sink.set_max_output_buffer(uhd_sink_buffer_size)
+
+        self.logger.info("Configuring USRP sink RF ...")
+        for i in range(len(usrp_tx_channels)):
+            uhd_usrp_sink.set_center_freq(carrier_freq, i)
+            uhd_usrp_sink.set_antenna("TX/RX", i)
+            uhd_usrp_sink.set_gain(tx_gain, i)
+            uhd_usrp_sink.set_bandwidth(samp_rate, i)
+        return uhd_usrp_sink
+
+    def initialize_usrps(
+        self,
+        usrp_tx_addr,
+        usrp_rx_addr,
+        usrp_tx_channels,
+        usrp_rx_channels,
+        master_clock_rate,
+        samp_rate,
+        carrier_freq,
+        tx_gain,
+        rx_gain,
+        tx_packet_length_key,
+    ):
+        ##################################################
+        # USRP
+        ##################################################
+        if len(usrp_tx_addr) == 0:
+            device = tacmac.uhd_configuration.get_device()
+            usrp_tx_addr = parse_usrp_address(device["addr"])
+        tx_device_addr = parse_usrp_address(usrp_tx_addr)
+        rx_device_addr = tx_device_addr
+        if usrp_rx_addr:
+            rx_device_addr = parse_usrp_address(usrp_rx_addr)
+
+        # if "addr" not in rx_device_addr:
+        #     master_clock_rate = samp_rate
+        is_multi_usrp_config = "addr0" in rx_device_addr and "addr1" in rx_device_addr
+        self.logger.info(f"Detected multiple USRP config: {is_multi_usrp_config}")
+        self.logger.debug(f"USRP TX address: {tx_device_addr}")
+        self.logger.debug(f"USRP RX address: {rx_device_addr}")
+
+        master_clock_rate = str(master_clock_rate)
+        usrp_clock_source = "internal"
+        usrp_time_source = "internal"
+        if is_multi_usrp_config:
+            usrp_clock_source = "external"
+            usrp_time_source = "external"
+
+        usrp_device_args = get_usrp_device_args_string(
+            master_clock_rate, usrp_clock_source, usrp_time_source
+        )
+
+        self.logger.debug(f"{usrp_device_args=}")
+
+        uhd_usrp_source = self.initialize_usrp_source(
+            rx_device_addr,
+            usrp_device_args,
+            usrp_rx_channels,
+            rx_gain,
+            carrier_freq,
+            samp_rate,
+        )
+
+        # see: https://files.ettus.com/manual/page_gpsdo_x3x0.html
+        # https://kb.ettus.com/Synchronizing_USRP_Events_Using_Timed_Commands_in_UHD
+        gps_locked = uhd_usrp_source.get_mboard_sensor("gps_locked", 0).to_bool()
+        if gps_locked:
+            self.logger.info("Configuring USRP with GPSDO ...")
+            usrp_clock_source = "gpsdo"
+            usrp_time_source = "gpsdo"
+            uhd_usrp_source.set_clock_source(usrp_clock_source)
+            uhd_usrp_source.set_time_source(usrp_time_source)
+            usrp_device_args = get_usrp_device_args_string(
+                master_clock_rate, usrp_clock_source, usrp_time_source
+            )
+            self.logger.debug("Trying to align USRP time with host time...")
+            last = uhd_usrp_source.get_time_last_pps()
+            next = uhd_usrp_source.get_time_last_pps()
+            while last == next:
+                time.sleep(50e-3)
+                last = next
+                next = uhd_usrp_source.get_time_last_pps()
+            time.sleep(200e-3)
+            uhd_usrp_source.set_time_next_pps(
+                uhd.time_spec(
+                    uhd_usrp_source.get_mboard_sensor("gps_time").to_int() + 1
+                )
+            )
+            # maybe a check would be in order?
+        elif is_multi_usrp_config:
+            self.logger.debug(
+                "Multi USRP config with external clock: using system time next PPS ..."
+            )
+            uhd_usrp_source.set_time_next_pps(uhd.time_spec(np.ceil(time.time())))
+
+        else:
+            self.logger.debug("USRP.GPS not available: using system time...")
+            uhd_usrp_source.set_time_now(uhd.time_spec(time.time()), uhd.ALL_MBOARDS)
+
+        uhd_usrp_sink = self.initialize_usrp_sink(
+            tx_device_addr,
+            usrp_device_args,
+            usrp_tx_channels,
+            tx_gain,
+            carrier_freq,
+            samp_rate,
+            tx_packet_length_key,
+        )
+
+        tx_info = uhd_usrp_sink.get_usrp_info()
+        rx_info = uhd_usrp_source.get_usrp_info()
+        self.log_usrp_info(tx_info, rx_info, usrp_tx_channels, usrp_rx_channels)
+
+        return uhd_usrp_source, uhd_usrp_sink
+
+    def log_usrp_info(self, tx_info, rx_info, usrp_tx_channels, usrp_rx_channels):
+        # a bit of device info digging
+        common_keys = sorted(list(set(rx_info.keys()) & set(tx_info.keys())))
+        tx_keys = sorted(list(set(tx_info.keys()) - set(rx_info.keys())))
+        rx_keys = sorted(list(set(rx_info.keys()) - set(tx_info.keys())))
+        self.logger.debug(
+            f"USRP channels: TX={usrp_tx_channels}\tRX={usrp_rx_channels}"
+        )
+        self.logger.debug(f"UHD version: {uhd.get_version_string()}")
+        usrp_common = "\n".join(
+            [f"{k:16}{tx_info[k]:20}{rx_info[k]}" for k in common_keys]
+        )
+        self.logger.debug(f"USRP common config\n{usrp_common}")
+        usrp_tx_info = "\n".join([f"{k:16}{tx_info[k]}" for k in tx_keys])
+        self.logger.debug(f"USRP TX config\n{usrp_tx_info}")
+
+        usrp_rx_info = "\n".join([f"{k:16}{rx_info[k]}" for k in rx_keys])
+        self.logger.debug(f"USRP RX config\n{usrp_rx_info}")
 
     def get_activate_cfo_compensation(self):
         return self.tacmac_phy_receiver.get_activate_cfo_compensation()

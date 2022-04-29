@@ -1,0 +1,34 @@
+From 037a06faae7e1dc249a2b10c22b9c75c1a8ee4b1 Mon Sep 17 00:00:00 2001
+From: Johannes Demel <demel@ant.uni-bremen.de>
+Date: Fri, 14 Jan 2022 15:56:38 +0100
+Subject: [PATCH] device: Fix correct multi USRP hashing
+
+UHD uses a slightly different naming scheme in case n device address
+object describes a collection of USRPs. e.g. GNU Radio fails to
+initializes in cases where TX and RX is required across the same set of
+devices. This patch takes the naming scheme into account and fixes
+things.
+
+Signed-off-by: Johannes Demel <demel@ant.uni-bremen.de>
+---
+ host/lib/device.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/host/lib/device.cpp b/host/lib/device.cpp
+index 80ac9ce5b1..fd1e47f059 100644
+--- a/host/lib/device.cpp
++++ b/host/lib/device.cpp
+@@ -47,7 +47,9 @@ static size_t hash_device_addr(const device_addr_t& dev_addr)
+         boost::hash_combine(hash, dev_addr["resource"]);
+     } else {
+         for (const std::string& key : uhd::sorted(dev_addr.keys())) {
+-            if (std::find(hash_key_blacklist.begin(), hash_key_blacklist.end(), key)
++            if (std::find_if(hash_key_blacklist.begin(),
++                    hash_key_blacklist.end(),
++                    [key](std::string i) { return key.find(i) != std::string::npos; })
+                 == hash_key_blacklist.end()) {
+                 boost::hash_combine(hash, key);
+                 boost::hash_combine(hash, dev_addr[key]);
+-- 
+2.25.1
+

@@ -121,22 +121,7 @@ def remove_empty_kwargs(kwargs):
     return kwargs
 
 
-def load_default_configuration(**kwargs):
-    kwargs = remove_empty_kwargs(kwargs)
-    fg_config = {}
-    for k, v in kwargs.items():
-        print(k, v)
-    filename = kwargs.get("configuration_filename", None)
-    filename = find_configuration_file(filename)
-    config = load_config_file(filename)
-    fg_config["hostname"] = hostname = kwargs.get("hostname", get_hostname())
-    hostconfig = config["hosts"].get(hostname, {})
-    fg_config.update(hostconfig)
-
-    fg_config["role"] = role = hostconfig.get("role", kwargs.get("role", "device"))
-    fg_config.update(config["roles"][role])
-
-    devicename = hostconfig.get("usrp", "N/A")
+def load_single_device_config(config, devicename):
     device = config["usrps"].get(devicename, {"type": "b200"})
     device.update(config["usrp_defaults"][device["type"]])
     device_hint = f"type={device['type']}"
@@ -146,15 +131,54 @@ def load_default_configuration(**kwargs):
     if found_devices:
         device.update(found_devices[0])
     device["usrp"] = device.get("name", devicename)
+    return device
+
+
+def load_device_config(config, devicename):
+    devs = [load_single_device_config(config, d) for d in devicename]
+    equal_keys = ["product", "type", "claimed", "fpga"]
+    for ek in equal_keys:
+        val = set([d[ek] for d in devs])
+        assert len(val) == 1
+
+    device = {k: [d[k] for d in devs] for k in devs[0].keys()}
+    result = {}
+    for k, v in device.items():
+        if len(set(v)) == 1:
+            result[k] = list(set(v))[0]
+        else:
+            result[k] = v
+    result.pop("primary_host", None)
+    return result
+
+
+def load_default_configuration(**kwargs):
+    kwargs = remove_empty_kwargs(kwargs)
+    fg_config = {}
+    for k, v in kwargs.items():
+        print(k, v)
+    filename = kwargs.get("configuration_filename", None)
+    filename = find_configuration_file(filename)
+    config = load_config_file(filename)
+    fg_config["hostname"] = hostname = kwargs.get("hostname", get_hostname())
+    fg_config.update(config["flowgraph_defaults"])
+    fg_config.update(config["database_defaults"])
+    hostconfig = config["hosts"].get(hostname, {})
+
+    fg_config["role"] = role = hostconfig.get("role", kwargs.get("role", "device"))
+    fg_config.update(config["roles"][role])
+
+    devicename = hostconfig.get("usrp", "N/A")
+
+    device = load_device_config(config, devicename)
     fg_config.update(device)
-    fg_config.update(config['flowgraph_defaults'])
-    fg_config.update(config['database_defaults'])
+    fg_config.update(hostconfig)
     fg_config.update(kwargs)
     return fg_config
 
 
 def main():
-    config = load_default_configuration(foo="bar", bla=None, fu='')
+    config = load_default_configuration(foo="bar", bla=None, fu="")
     pprint(config)
     return
     # config_file = find_configuration_file()
