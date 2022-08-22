@@ -15,7 +15,7 @@ options:
     max_nouts: '2048'
     output_language: python
     placement: (0,0)
-    qt_qss_theme: ''
+    qt_qss_theme: /home/johannes/prefix/gnuradio/src/gr-tacmac/demo.qss
     realtime_scheduling: '1'
     run: 'True'
     run_command: '{python} -u {filename}'
@@ -320,7 +320,7 @@ blocks:
     gui_hint: 5,4,1,1
     label: UHD Version
     type: string
-    value: uhd.get_version_string()
+    value: gruhd.get_version_string()
   states:
     bus_sink: false
     bus_source: false
@@ -593,7 +593,7 @@ blocks:
     bus_structure: null
     coordinate: [1056, 1340.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_nlog10_ff_0_0
   id: blocks_nlog10_ff
   parameters:
@@ -611,7 +611,7 @@ blocks:
     bus_structure: null
     coordinate: [1056, 1372.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_sink_0
   id: blocks_null_sink
   parameters:
@@ -835,6 +835,19 @@ blocks:
     coordinate: [2024, 292.0]
     rotation: 0
     state: true
+- name: import_gr_uhd
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: from gnuradio import uhd as gruhd
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 260.0]
+    rotation: 0
+    state: true
 - name: import_numpy_0
   id: import
   parameters:
@@ -993,10 +1006,10 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    xmax: '2'
-    xmin: '-2'
-    ymax: '2'
-    ymin: '-2'
+    xmax: '1.7'
+    xmin: '-1.7'
+    ymax: '1.7'
+    ymin: '-1.7'
   states:
     bus_sink: false
     bus_source: false
@@ -1122,7 +1135,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'True'
-    gui_hint: 'demod_tab@0: 0, 2, 1, 2'
+    gui_hint: 'demod_tab@0: 0, 2, 2, 2'
     label1: magnitude
     label10: ''
     label2: phase
@@ -1144,7 +1157,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"Channel Estimate magnitude"'
+    name: '"Channel estimate magnitude"'
     nconnections: '2'
     size: conf.block_len
     srate: samp_rate * 0 + 1
@@ -1203,7 +1216,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -1241,7 +1254,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"synchronization"'
+    name: '"Synchronization"'
     nconnections: '3'
     size: int(samp_rate / 500) * 2
     srate: samp_rate
@@ -1275,8 +1288,8 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '.1'
-    ymin: -.1
+    ymax: '1.1'
+    ymin: -.3
     yunit: '""'
   states:
     bus_sink: false
@@ -1670,9 +1683,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 1332.0]
+    coordinate: [1296, 1364.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: rx_addr
   id: parameter
   parameters:
@@ -1851,7 +1864,7 @@ blocks:
     alias: ''
     buffer_size: '5000'
     comment: ''
-    data_type: 5gdata
+    data_type: basestation.communication.metadata
     device_id: full_device_id
     hostname: db_hostname
     index_prefix: measurements-
@@ -1862,7 +1875,7 @@ blocks:
     bus_structure: null
     coordinate: [1093, 836]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_phy_layer_2x2
   id: tacmac_phy_layer
   parameters:
@@ -1892,6 +1905,7 @@ blocks:
     timing_advance: timing_advance_gui
     tx_digital_gain: tx_digital_gain_range
     tx_gain: tgain
+    use_timed_commands: 'True'
     usrp_rx_addr: rx_addr
     usrp_rx_channels: '[int(i) for i in rx_channels.split()]'
     usrp_tx_addr: tx_addr
@@ -1963,7 +1977,7 @@ blocks:
     bus_structure: null
     coordinate: [880, 1324.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_tag_to_stream_value_0_0_0_0
   id: tacmac_tag_to_stream_value
   parameters:
@@ -1983,7 +1997,7 @@ blocks:
     bus_structure: null
     coordinate: [880, 1356.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_tag_to_stream_value_5
   id: tacmac_tag_to_stream_value
   parameters:
@@ -2201,3 +2215,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.9.7.0-rc1
