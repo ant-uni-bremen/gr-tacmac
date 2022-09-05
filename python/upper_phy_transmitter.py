@@ -35,7 +35,7 @@ class upper_phy_transmitter(gr.hier_block2):
         self.message_port_register_hier_in("pdus")
         # Define blocks and connect them
         self.pdu_to_tagged_stream = blocks.pdu_to_tagged_stream(
-            gr.types.byte_t, packet_length_key
+            grtypes.byte_t, packet_length_key
         )
         self.msg_connect((self, "pdus"), (self.pdu_to_tagged_stream, "pdus"))
 
