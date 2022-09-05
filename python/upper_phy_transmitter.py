@@ -13,7 +13,6 @@ import symbolmapping
 import grtypes
 
 
-
 class upper_phy_transmitter(gr.hier_block2):
     """
     docstring for block upper_phy_transmitter

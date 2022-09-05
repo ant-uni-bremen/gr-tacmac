@@ -22,4 +22,4 @@ if api_version == 9:
 elif api_version >= 10:
     from gnuradio.gr.gr_python.types import byte_t, complex_t, float_t
 else:
-    raise ValueError('unsupported GNU Radio API version', api_version)
+    raise ValueError("unsupported GNU Radio API version", api_version)
