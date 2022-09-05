@@ -7,12 +7,17 @@
 #
 
 import pathlib
-import uhd
-
 import yaml
 from pathlib import Path
 from pprint import pprint
 import platform
+
+try:
+    # This should work in GR 3.10 at some point
+    from gnuradio.uhd import find as uhd_find_devices
+except ImportError:
+    # This is for older GR versions. But causes issues with GR 3.10 (current main)
+    from uhd import find as uhd_find_devices
 
 
 def find_configuration_file(filename=None, search_path_root="."):
@@ -49,7 +54,7 @@ def get_hostname():
 
 
 def find_devices(hint=""):
-    devices = uhd.find(hint)
+    devices = uhd_find_devices(hint)
     return [d.to_dict() for d in devices]
 
 

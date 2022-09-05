@@ -12,6 +12,7 @@ from gnuradio import fec
 import polarwrap
 import symbolmapping
 import gfdm
+import grtypes
 
 
 class phy_transmitter(gr.hier_block2):
@@ -79,7 +80,7 @@ class phy_transmitter(gr.hier_block2):
         # Blocks
         ##################################################
         self.blocks_pdu_to_tagged_stream = blocks.pdu_to_tagged_stream(
-            blocks.byte_t, packet_length_key
+            grtypes.byte_t, packet_length_key
         )
 
         self.fec_generic_encoder = fec.encoder(
