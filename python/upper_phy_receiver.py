@@ -10,7 +10,11 @@
 from gnuradio import gr, blocks, fec
 import symbolmapping
 import polarwrap
-import grtypes
+
+try:
+    from .grtypes import byte_t
+except ImportError:
+    from grtypes import byte_t
 
 
 class upper_phy_receiver(gr.hier_block2):
@@ -96,7 +100,7 @@ class upper_phy_receiver(gr.hier_block2):
         )
 
         self.blocks_tagged_stream_to_pdu = blocks.tagged_stream_to_pdu(
-            grtypes.byte_t, rx_packet_length_key
+            byte_t, rx_packet_length_key
         )
 
         if num_rx_streams < 2:

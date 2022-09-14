@@ -53,9 +53,26 @@ def get_hostname():
     return platform.uname().node
 
 
+def convert_uhd_device_to_dict(devices):
+    try:
+        return [d.to_dict() for d in devices]
+    except AttributeError:
+        result = []
+        for d in devices:
+            s = d.to_string().split(",")
+            res = {}
+            for p in s:
+                k, v = p.split("=")
+                res[k] = v
+            result.append(res)
+        return result
+
+
 def find_devices(hint=""):
     devices = uhd_find_devices(hint)
-    return [d.to_dict() for d in devices]
+    result = convert_uhd_device_to_dict(devices)
+    # print(result)
+    return result
 
 
 def filter_devices(devices):
