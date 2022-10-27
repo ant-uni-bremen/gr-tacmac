@@ -412,7 +412,7 @@ blocks:
     bus_structure: null
     coordinate: [529, 406]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tacmac_phy_layer_0
   id: tacmac_phy_layer
   parameters:
@@ -615,3 +615,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.9.7.0-rc1
