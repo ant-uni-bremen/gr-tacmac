@@ -22,6 +22,7 @@ add_subdirectory(bindings)
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
+    grtypes.py
     udp_interface.py
     elasticsearch_connector.py
     phy_transmitter.py

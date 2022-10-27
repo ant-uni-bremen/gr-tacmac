@@ -11,6 +11,11 @@ from gnuradio import gr, blocks, fec
 import polarwrap
 import symbolmapping
 
+try:
+    from .grtypes import byte_t
+except ImportError:
+    from grtypes import byte_t
+
 
 class upper_phy_transmitter(gr.hier_block2):
     """
@@ -34,7 +39,7 @@ class upper_phy_transmitter(gr.hier_block2):
         self.message_port_register_hier_in("pdus")
         # Define blocks and connect them
         self.pdu_to_tagged_stream = blocks.pdu_to_tagged_stream(
-            blocks.byte_t, packet_length_key
+            byte_t, packet_length_key
         )
         self.msg_connect((self, "pdus"), (self.pdu_to_tagged_stream, "pdus"))
 

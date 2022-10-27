@@ -13,6 +13,11 @@ import polarwrap
 import symbolmapping
 import gfdm
 
+try:
+    from .grtypes import byte_t
+except ImportError:
+    from grtypes import byte_t
+
 
 class phy_transmitter(gr.hier_block2):
     """
@@ -79,7 +84,7 @@ class phy_transmitter(gr.hier_block2):
         # Blocks
         ##################################################
         self.blocks_pdu_to_tagged_stream = blocks.pdu_to_tagged_stream(
-            blocks.byte_t, packet_length_key
+            byte_t, packet_length_key
         )
 
         self.fec_generic_encoder = fec.encoder(

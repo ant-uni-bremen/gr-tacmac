@@ -124,7 +124,7 @@ class elasticsearch_connector(gr.sync_block):
         if not self._database_available:
             # If the database is unavailable, we just drop the data.
             return
-        
+
         meta = pmt.symbol_to_string(pmt.car(msg))
         direction = "unknown"
         if "rx" in meta:

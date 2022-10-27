@@ -13,6 +13,7 @@ import symbolmapping
 import pypolar
 import numpy as np
 import pmt
+import grtypes
 
 
 def encode_frame(bits, block_len, punctured_len, crc_len, frozen_bit_positions):
@@ -69,7 +70,7 @@ class qa_upper_phy_transmitter(gr_unittest.TestCase):
         tagger = blocks.stream_to_tagged_stream(
             gr.sizeof_char, 1, packed_bits.size, "foo"
         )
-        topdu = blocks.tagged_stream_to_pdu(blocks.byte_t, "foo")
+        topdu = blocks.tagged_stream_to_pdu(grtypes.byte_t, "foo")
         self.tb.connect(src, tagger, topdu)
 
         instance = upper_phy_transmitter(
