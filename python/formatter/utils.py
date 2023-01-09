@@ -23,7 +23,7 @@ import pmt
 import numpy as np
 
 
-def generate_tacnet_header(
+def generate_tacmac_header(
     target_idx, request_or_sender_idx, frame_idx, downlink_direction=False
 ):
     f = np.unpackbits(
@@ -60,7 +60,7 @@ def generate_tacnet_header(
     return np.packbits(bits)[::-1]
 
 
-def parse_tacnet_header(header):
+def parse_tacmac_header(header):
     bits = np.unpackbits(header[::-1])
     frame_idx = int(
         np.packbits(np.concatenate((np.zeros(3, dtype=bits.dtype), bits[-5:])))[0]
@@ -75,11 +75,11 @@ def parse_tacnet_header(header):
     return target_idx, sender_idx, frame_idx, direction
 
 
-def scramble_tacnet_frame(frame):
+def scramble_tacmac_frame(frame):
     return frame + np.arange(frame.size, dtype=frame.dtype)
 
 
-def descramble_tacnet_frame(frame):
+def descramble_tacmac_frame(frame):
     return frame - np.arange(frame.size, dtype=frame.dtype)
 
 

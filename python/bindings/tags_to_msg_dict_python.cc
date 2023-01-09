@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Free Software Foundation, Inc.
+ * Copyright 2023 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(tags_to_msg_dict.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(bcc14990ef0b1f8f7bbf15f4306e8c6f)                     */
+/* BINDTOOL_HEADER_FILE_HASH(37ebb82059299c4c1720d4578694978b)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_tags_to_msg_dict(py::module& m)
 {
 
-    using tags_to_msg_dict = gr::tacmac::tags_to_msg_dict;
+    using tags_to_msg_dict = ::gr::tacmac::tags_to_msg_dict;
 
 
     py::class_<tags_to_msg_dict,
@@ -40,7 +40,9 @@ void bind_tags_to_msg_dict(py::module& m)
                std::shared_ptr<tags_to_msg_dict>>(
         m, "tags_to_msg_dict", D(tags_to_msg_dict))
 
-        .def(py::init(&tags_to_msg_dict::make), D(tags_to_msg_dict, make))
+        .def(py::init(&tags_to_msg_dict::make),
+             py::arg("sizeof_stream_item"),
+             D(tags_to_msg_dict, make))
 
 
         ;

@@ -15,7 +15,7 @@ namespace gr {
 namespace tacmac {
 
 /*!
- * \brief <+description of block+>
+ * \brief Collect stream tags and output them as PMT message dicts.
  * \ingroup tacmac
  *
  */

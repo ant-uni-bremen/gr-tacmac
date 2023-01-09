@@ -14,7 +14,10 @@ import tacmac
 
 class udp_interface(gr.hier_block2):
     """
-    docstring for block udp_interface
+    The UDP interface is a hierarchical block to encapsulate the UDP connection and MAC.
+    
+    Internally, a number of UDP interfaces for TX and RX as well as MAC blocks are instantiated.
+    However, all that complexity is encapsulated and only a fixed number of I/O ports are required.
     """
 
     def __init__(self, src_id, dst_id, nports, mtu_size):

@@ -194,7 +194,7 @@ class AppServerThread(ApplicationThread):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='TACNET Application mockup')
+    parser = argparse.ArgumentParser(description='TACMAC Application mockup')
     parser.add_argument('-r', '--role', type=str, nargs='?',
                         default='server',
                         choices=['server', 'client'],

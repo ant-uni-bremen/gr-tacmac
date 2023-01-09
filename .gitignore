@@ -4,5 +4,3 @@ build*/
 #.vscode/
 Testing/
 __pycache__/
-id_rsa
-id_ed25519

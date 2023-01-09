@@ -43,7 +43,6 @@ file(GLOB py_qa_test_files "qa_*.py")
 
 # We can toggle these on and off. We should mostly toggle them off.
 list(REMOVE_ITEM py_qa_test_files
-      ${CMAKE_CURRENT_SOURCE_DIR}/qa_compatibility.py
       ${CMAKE_CURRENT_SOURCE_DIR}/qa_phy_layer.py
 )
 
