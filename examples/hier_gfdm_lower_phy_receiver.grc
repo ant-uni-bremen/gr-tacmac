@@ -23,6 +23,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: GFDM lower PHY receiver
+    window_size: (1000,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -155,8 +156,9 @@ blocks:
     burst_len: frame_len
     burst_start_tag: tag_key
     comment: ''
+    forward_burst_start_tag: ''
     maxoutbuf: '0'
-    minoutbuf: ''
+    minoutbuf: '0'
     tag_backoff: cp_len
     use_cfo_compensation: activate_cfo_compensation
   states:
@@ -577,3 +579,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.9.7.0-rc1

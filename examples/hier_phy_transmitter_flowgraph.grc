@@ -23,6 +23,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: GFDM PHY transmitter
+    window_size: (1000,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -264,6 +265,7 @@ blocks:
     alias: ''
     comment: ''
     cycle_interval: cycle_interval
+    enable_dsp_latency_reporting: 'False'
     length_tag_name: tag_key
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -307,25 +309,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [896, 452.0]
-    rotation: 0
-    state: enabled
-- name: hier_polar_encoder_0
-  id: hier_polar_encoder
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    frame_size: frame_size
-    frozen_bit_positions: frozen_bit_positions
-    interleaver_indices: interleaver_indices
-    length_tag_key: tag_key
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [496, 812.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -692,3 +675,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.9.7.0-rc1

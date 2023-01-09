@@ -1,0 +1,286 @@
+options:
+  parameters:
+    author: Johannes Demel
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: zmq_test
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: ZeroMQ loop test
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: zmq_pull_port
+  id: variable
+  parameters:
+    comment: ''
+    value: '''55'' + str(dst_id)'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [235, 170]
+    rotation: 0
+    state: enabled
+- name: zmq_push_port
+  id: variable
+  parameters:
+    comment: ''
+    value: '''55'' + str(src_id)'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1076, 175]
+    rotation: 0
+    state: enabled
+- name: zmq_receive_address
+  id: variable
+  parameters:
+    comment: ''
+    value: '''tcp://'' + remote + '':5555'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 300.0]
+    rotation: 0
+    state: disabled
+- name: zmq_receive_address
+  id: variable
+  parameters:
+    comment: ''
+    value: '''tcp://'' + remote + '':'' + zmq_pull_port'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [233, 234]
+    rotation: 0
+    state: enabled
+- name: zmq_target_address
+  id: variable
+  parameters:
+    comment: ''
+    value: '''tcp://'' + ''*'' + '':6666'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1056, 316.0]
+    rotation: 0
+    state: disabled
+- name: zmq_target_address
+  id: variable
+  parameters:
+    comment: ''
+    value: '''tcp://'' + ''*'' + '':'' + zmq_push_port'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1067, 240]
+    rotation: 0
+    state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [648, 512.0]
+    rotation: 0
+    state: enabled
+- name: blocks_pdu_set_0
+  id: blocks_pdu_set
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: pmt.intern("ZMQ-loop")
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    v: pmt.intern("REMOTE")
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [632, 212.0]
+    rotation: 180
+    state: true
+- name: dst_id
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: destination ID aka PHY ID of remote
+    short_id: ''
+    type: intx
+    value: '21'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [810, 154]
+    rotation: 0
+    state: true
+- name: mtu_size
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: MTU size
+    short_id: ''
+    type: intx
+    value: '68'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [218, 12]
+    rotation: 0
+    state: true
+- name: remote
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: 0MQ remote IP
+    short_id: ''
+    type: str
+    value: 127.0.0.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 44.0]
+    rotation: 0
+    state: true
+- name: src_id
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: source ID aka PHY ID of host
+    short_id: ''
+    type: intx
+    value: '42'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [589, 92]
+    rotation: 0
+    state: true
+- name: tacmac_mac_controller_loopback
+  id: tacmac_mac_controller
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    destination_id: dst_id
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu_size: mtu_size
+    source_id: src_id
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [608, 356.0]
+    rotation: 0
+    state: enabled
+- name: zeromq_pull_msg_source_0
+  id: zeromq_pull_msg_source
+  parameters:
+    address: zmq_receive_address
+    affinity: ''
+    alias: ''
+    bind: 'False'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 380.0]
+    rotation: 0
+    state: true
+- name: zeromq_push_msg_sink_0
+  id: zeromq_push_msg_sink
+  parameters:
+    address: zmq_target_address
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: ''
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 380.0]
+    rotation: 0
+    state: true
+- name: zmq_remote
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: 0MQ remote IP
+    short_id: ''
+    type: str
+    value: 127.0.0.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [460, 159]
+    rotation: 0
+    state: disabled
+
+connections:
+- [blocks_pdu_set_0, pdus, tacmac_mac_controller_loopback, LLCin]
+- [tacmac_mac_controller_loopback, LLCout, blocks_pdu_set_0, pdus]
+- [tacmac_mac_controller_loopback, PHYout, zeromq_push_msg_sink_0, in]
+- [zeromq_pull_msg_source_0, out, blocks_message_debug_0, print_pdu]
+- [zeromq_pull_msg_source_0, out, tacmac_mac_controller_loopback, PHYin]
+
+metadata:
+  file_format: 1
+  grc_version: 3.9.7.0-rc1
