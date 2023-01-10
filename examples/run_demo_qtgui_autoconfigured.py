@@ -7,7 +7,6 @@
 # Author: Johannes Demel
 # GNU Radio version: 3.9.5.0
 
-from pprint import pprint
 from tacmac import load_default_configuration
 from argparse import Namespace
 from gfdm_ota_demo_qtgui import argument_parser

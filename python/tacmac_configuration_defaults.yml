@@ -1,0 +1,89 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2020 Johannes Demel.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# This file represents the default configuration for the gr-tacmac.
+# Other config files may overwrite parameters.
+
+
+roles:
+  basestation:
+    nports: 4
+    src_id: 0
+    dst_id: 40
+
+  device:
+    nports: 1
+    dst_id: 0
+    src_id: 40
+
+# These are just example hosts. Use your own in `tacmac_hosts.yml`
+hosts:
+  thestation:
+    usrp: ['theusrp', ]
+    role: basestation
+
+  thedevice:
+    usrp: ['MyB210', ]
+    role: device
+    src_id: 42
+
+flowgraph_defaults:
+  xcorr_threshold: 30.0
+  scorr_threshold_low: 0.93
+  scorr_threshold_high: 0.98
+  ic_iterations: 2
+  timeslots: 15
+  subcarriers: 64
+  active_subcarriers: 60
+  mtu_size: 84
+  tx_digital_gain: 2.7
+  tfreq: 3.75e+9
+  cycle_interval: 320.0e-6
+  samp_rate: 30.72e+6
+  save_rx_samples: False
+  use_timed_commands: True
+
+database_defaults:
+  db_hostname: '192.168.42.42'
+  db_device_id: 0
+
+usrp_defaults:
+  b200:
+    tx_channels: "0 1"
+    tx_gain: 87
+    rx_channels: "0 1"
+    rx_gain: 58
+    activate_cfo_compensation: False
+    activate_phase_compensation: False
+    timing_advance: 520.0e-6
+    master_clock_rate: 30.72e+6
+
+  n3xx:
+    tx_channels: "2 3"
+    tx_gain: 58
+    rx_channels: "0 1"
+    rx_gain: 58
+    activate_cfo_compensation: False
+    activate_phase_compensation: True
+    timing_advance: 320.0e-6
+    master_clock_rate: 122.88e+6
+
+# This is just an example inventory. Use your own in `tacmac_usrp_inventory.yml`
+# A separate inventory will overwrite this.
+usrps:
+  thestation:
+    serial: XXXXXXX
+    addr: 192.168.2.3
+    addr1: 192.168.3.3
+    product: n310
+    type: n3xx
+
+  MyB210:
+    serial: XXXXXXX
+    product: B210
+    type: b200
+    

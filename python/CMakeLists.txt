@@ -34,6 +34,9 @@ GR_PYTHON_INSTALL(
     upper_phy_transmitter.py DESTINATION ${GR_PYTHON_DIR}/tacmac
 )
 
+# Make sure the defaults file is found next to `uhd_configuration.py` at all times.
+install(FILES tacmac_configuration_defaults.yml DESTINATION ${GR_PYTHON_DIR}/tacmac)
+
 ########################################################################
 # Handle the unit tests
 ########################################################################

@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import collections.abc
 import pathlib
 import yaml
 from pathlib import Path
@@ -20,10 +21,12 @@ except ImportError:
     from uhd import find as uhd_find_devices
 
 
-def find_configuration_file(filename=None, search_path_root="."):
+def find_configuration_file(
+    filename=None, search_path_root=".", hint="tacmac_configuration.yml"
+):
     if filename is not None:
         return filename
-    files = list(pathlib.Path(search_path_root).glob("**/tacmac_configuration.yml"))
+    files = list(pathlib.Path(search_path_root).glob(f"**/{hint}"))
     if len(files) != 1:
         print(f"Warning: expected ONE configuration file, found: {len(files)}")
     if len(files) == 0:
@@ -42,7 +45,7 @@ def validate_config_file(filename):
 
 
 def load_config_file(filename):
-    print(f'Loading UHD configuration from "{filename}" ..."')
+    print(f'Loading UHD configuration from "{filename}" ...')
     filename = validate_config_file(filename)
     with open(filename) as file:
         fileconfig = yaml.safe_load(file)
@@ -174,33 +177,79 @@ def load_device_config(config, devicename):
     return result
 
 
-def load_default_configuration(**kwargs):
-    kwargs = remove_empty_kwargs(kwargs)
+def load_defaults(hint="tacmac_configuration_defaults.yml"):
+    search_path_root = pathlib.Path(__file__).parent
+    filename = find_configuration_file(search_path_root=search_path_root, hint=hint)
+    return load_config_file(filename)
+
+
+def load_hosts(search_path_root=".", hint="tacmac_hosts.yml"):
+    filename = find_configuration_file(search_path_root=search_path_root, hint=hint)
+    if not filename:
+        return {}
+    return load_config_file(filename)
+
+
+def load_usrp_inventory(search_path_root=".", hint="tacmac_usrp_inventory.yml"):
+    filename = find_configuration_file(search_path_root=search_path_root, hint=hint)
+    if not filename:
+        return {}
+    return load_config_file(filename)
+
+
+def load_specific_configuration(search_path_root=".", hint="tacmac_configuration.yml"):
+    filename = find_configuration_file(search_path_root=search_path_root, hint=hint)
+    if not filename:
+        return {}
+    return load_config_file(filename)
+
+
+def update_nested_dict(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update_nested_dict(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
+
+def load_default_configuration(search_path_root="."):
     fg_config = {}
-    for k, v in kwargs.items():
-        print(k, v)
-    filename = kwargs.get("configuration_filename", None)
-    filename = find_configuration_file(filename)
-    config = load_config_file(filename)
-    fg_config["hostname"] = hostname = kwargs.get("hostname", get_hostname())
+    fg_config["hostname"] = hostname = get_hostname()
+
+    config = load_defaults()
+    inventory = load_usrp_inventory(search_path_root=search_path_root)
+    hosts = load_hosts(search_path_root=search_path_root)
+    specifics = load_specific_configuration(search_path_root=search_path_root)
+
+    config.update(inventory)
+    config.update(hosts)
+    config = update_nested_dict(config, specifics)
+
     fg_config.update(config["flowgraph_defaults"])
     fg_config.update(config["database_defaults"])
+
     hostconfig = config["hosts"].get(hostname, {})
 
-    fg_config["role"] = role = hostconfig.get("role", kwargs.get("role", "device"))
+    fg_config["role"] = role = hostconfig.get("role", "device")
     fg_config.update(config["roles"][role])
 
-    devicename = hostconfig.get("usrp", "N/A")
+    devicename = hostconfig.get(
+        "usrp",
+        [
+            "N/A",
+        ],
+    )
 
+    # inventory["usrp_defaults"] = defaults["usrp_defaults"]
     device = load_device_config(config, devicename)
     fg_config.update(device)
     fg_config.update(hostconfig)
-    fg_config.update(kwargs)
     return fg_config
 
 
 def main():
-    config = load_default_configuration(foo="bar", bla=None, fu="")
+    config = load_default_configuration()
     pprint(config)
     return
     # config_file = find_configuration_file()

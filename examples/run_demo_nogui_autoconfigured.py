@@ -11,7 +11,6 @@ from tacmac import load_default_configuration
 from argparse import Namespace
 from gfdm_ota_demo_nogui import argument_parser
 from gfdm_ota_demo_nogui import main as fg_main
-from pprint import pprint
 
 
 def main():
