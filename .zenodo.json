@@ -1,0 +1,66 @@
+{
+    "title": "gr-tacmac",
+    "license": {
+        "id": "GPL-3.0-or-later"
+    },
+    "keywords": [
+        "communication",
+        "software radio",
+        "SDR",
+        "C++",
+        "Python",
+        "GNU Radio",
+        "MAC",
+        "demonstrator"
+    ],
+    "related_identifiers": [
+        {
+            "identifier": "https://github.com/ant-uni-bremen/gr-tacmac",
+            "relation": "isSupplementTo",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.2704343",
+            "relation": "references",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.6532410",
+            "relation": "references",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.6514722",
+            "relation": "references",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.5997647",
+            "relation": "references",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.6325747",
+            "relation": "references",
+            "resource_type": "software"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.6325778",
+            "relation": "references",
+            "resource_type": "software"
+        }
+    ],
+    "creators": [
+        {
+            "affiliation": "Department of Communications Engineering, University of Bremen, Germany",
+            "name": "Demel, Johannes",
+            "orcid": "0000-0002-5434-7232"
+        }
+    ]
+}
