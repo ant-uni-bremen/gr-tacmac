@@ -7,10 +7,8 @@
 #
 
 from gnuradio import gr, gr_unittest
-
-# from gnuradio import blocks
-from elasticsearch_connector import elasticsearch_connector
 import pmt
+from elasticsearch_connector import elasticsearch_connector
 
 
 class qa_elasticsearch_connector(gr_unittest.TestCase):

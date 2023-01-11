@@ -7,10 +7,8 @@
 #
 
 import sys
-from gnuradio import gr, gr_unittest
 import unittest
-
-# from gnuradio import blocks
+from gnuradio import gr, gr_unittest
 try:
     from lower_phy_receiver import lower_phy_receiver
 except ImportError as e:

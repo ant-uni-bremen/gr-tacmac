@@ -21,7 +21,7 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-import tacmac_python as tacmac
+import tacmac
 import pmt
 
 

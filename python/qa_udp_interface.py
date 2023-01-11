@@ -7,8 +7,6 @@
 #
 
 from gnuradio import gr, gr_unittest
-
-# from gnuradio import blocks
 from udp_interface import udp_interface
 
 

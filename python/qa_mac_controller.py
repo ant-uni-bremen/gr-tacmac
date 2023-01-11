@@ -19,18 +19,12 @@
 # Boston, MA 02110-1301, USA.
 #
 
-from gnuradio import gr, gr_unittest
-from gnuradio import blocks
+from gnuradio import gr, gr_unittest, blocks
 import pmt
 import numpy as np
-
-try:
-    import tacmac_python as tacmac
-except ModuleNotFoundError:
-    import tacmac
 import time
-
 from PyCRC.CRCCCITT import CRCCCITT
+import tacmac
 
 
 def get_pdu_payload(payload):

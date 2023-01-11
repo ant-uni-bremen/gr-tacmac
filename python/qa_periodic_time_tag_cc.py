@@ -7,8 +7,7 @@
 #
 
 from gnuradio import gr, gr_unittest
-from gnuradio import blocks
-import tacmac_python as tacmac
+import tacmac
 
 
 class qa_periodic_time_tag_cc(gr_unittest.TestCase):

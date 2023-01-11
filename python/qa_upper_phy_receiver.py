@@ -6,15 +6,20 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-from gnuradio import gr, gr_unittest, blocks
-from upper_phy_receiver import upper_phy_receiver
-from upper_phy_transmitter import upper_phy_transmitter
+import sys
+import unittest
 import numpy as np
-import pypolar
-import symbolmapping
-from polarwrap import get_polar_configuration
+from gnuradio import gr, gr_unittest, blocks
 import pmt
 import grtypes
+try:
+    from upper_phy_receiver import upper_phy_receiver
+    from upper_phy_transmitter import upper_phy_transmitter
+    import pypolar
+    import symbolmapping
+    from polarwrap import get_polar_configuration
+except ImportError as e:
+    print(f"Skipping with: {e}")
 
 
 def encode_frame(bits, block_len, punctured_len, crc_len, frozen_bit_positions):
@@ -29,7 +34,7 @@ def encode_frame(bits, block_len, punctured_len, crc_len, frozen_bit_positions):
     frame = puncturer.puncturePacked(frame)
     return frame
 
-
+@unittest.skipIf("symbolmapping" not in sys.modules, reason="requires the gr-symbolmapping module")
 class qa_upper_phy_receiver(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()

@@ -10,16 +10,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import pmt
 import numpy as np
-
-try:
-    from tacmac import tags_to_msg_dict
-except ImportError:
-    import os
-    import sys
-
-    dirname, filename = os.path.split(os.path.abspath(__file__))
-    sys.path.append(os.path.join(dirname, "bindings"))
-    from tacmac import tags_to_msg_dict
+from tacmac import tags_to_msg_dict
 
 
 class qa_tags_to_msg_dict(gr_unittest.TestCase):
