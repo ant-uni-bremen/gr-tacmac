@@ -6,12 +6,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import sys
 from gnuradio import gr, gr_unittest
+import unittest
 
 # from gnuradio import blocks
-from phy_receiver import phy_receiver
+try:
+    from phy_receiver import phy_receiver
+except ImportError as e:
+    print(f"Skipping with: {e}")
 
 
+@unittest.skipIf("gfdm" not in sys.modules, reason="requires the gr-gfdm module")
 class qa_phy_receiver(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()

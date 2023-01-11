@@ -6,12 +6,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import sys
 from gnuradio import gr, gr_unittest
+import unittest
 
 # from gnuradio import blocks
-from phy_layer import phy_layer
+try:
+    from phy_layer import phy_layer
+except ImportError as e:
+    print(f"Skipping with: {e}")
 
 
+@unittest.skipIf("xfdm_sync" not in sys.modules, reason="requires the XFDMSync module")
 class qa_phy_layer(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()

@@ -6,12 +6,20 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import sys
 from gnuradio import gr, gr_unittest
+import unittest
 
 # from gnuradio import blocks
-from phy_transmitter import phy_transmitter
+try:
+    from phy_transmitter import phy_transmitter
+except ImportError as e:
+    print(f"Skipping with: {e}")
 
 
+@unittest.skipIf(
+    "polarwrap" not in sys.modules, reason="requires the gr-polarwrap module"
+)
 class qa_phy_transmitter(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
