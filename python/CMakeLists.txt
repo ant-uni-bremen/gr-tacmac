@@ -42,6 +42,17 @@ install(FILES tacmac_configuration_defaults.yml DESTINATION ${GR_PYTHON_DIR}/tac
 ########################################################################
 include(GrTest)
 
+add_custom_target(
+  copy_module_for_tests ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}
+          ${CMAKE_BINARY_DIR}/test_modules/tacmac/
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/formatter/
+          ${CMAKE_BINARY_DIR}/test_modules/tacmac/formatter/
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/bindings/
+    ${CMAKE_BINARY_DIR}/test_modules/tacmac/
+  DEPENDS tacmac_python)
+
 file(GLOB py_qa_test_files "qa_*.py")
 
 # We can toggle these on and off. We should mostly toggle them off.
