@@ -34,6 +34,7 @@ def encode_frame(bits, block_len, punctured_len, crc_len, frozen_bit_positions):
     frame = puncturer.puncturePacked(frame)
     return frame
 
+
 @unittest.skipIf("symbolmapping" not in sys.modules, reason="requires the gr-symbolmapping module")
 class qa_upper_phy_receiver(gr_unittest.TestCase):
     def setUp(self):
