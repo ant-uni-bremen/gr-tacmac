@@ -340,10 +340,10 @@ class phy_layer(gr.hier_block2):
         rx_gain,
         carrier_freq,
         samp_rate,
-        devices = None,
+        devices=None,
     ):
         self.logger.info("Creating USRP source ...")
-     
+
         usrp_extra_stream_config = {}
         if devices is not None:
             # Serial USRPs might be a B210, which needs some extra config
@@ -356,7 +356,7 @@ class phy_layer(gr.hier_block2):
                             # B210 need to set otw_format="sc12" for our data rate
                             self.logger.info(f"Devices {rx_device_addr} are B210s, enabling otw_format=sc12")
                             usrp_extra_stream_config["otw_format"] = "sc12"
-        
+
         uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
             uhd.stream_args(
@@ -366,7 +366,7 @@ class phy_layer(gr.hier_block2):
                 **usrp_extra_stream_config,
             ),
         )
-        
+
         self.logger.info("Configuring USRP source clocks ...")
         if "B2" in uhd_usrp_source.get_usrp_info()["mboard_id"]:
             self.logger.debug("Detected USRP B210, using GPSDO clock source ...")
@@ -391,7 +391,7 @@ class phy_layer(gr.hier_block2):
         carrier_freq,
         samp_rate,
         tx_packet_length_key,
-        devices = None,
+        devices=None,
     ):
         self.logger.info("Creating USRP sink ...")
 
