@@ -340,16 +340,33 @@ class phy_layer(gr.hier_block2):
         rx_gain,
         carrier_freq,
         samp_rate,
+        devices = None,
     ):
         self.logger.info("Creating USRP source ...")
+     
+        usrp_extra_stream_config = {}
+        if devices is not None:
+            # Serial USRPs might be a B210, which needs some extra config
+            # devices = tacmac.uhd_configuration.find_devices(hint=rx_device_addr)
+            self.logger.debug(f"Checking types for {rx_device_addr}")
+            for address_string in rx_device_addr.split(","):
+                for device in devices:
+                    if "serial" in device and device["serial"] == address_string.split("=")[1]:
+                        if device["product"] == "B210":
+                            # B210 need to set otw_format="sc12" for our data rate
+                            self.logger.info(f"Devices {rx_device_addr} are B210s, enabling otw_format=sc12")
+                            usrp_extra_stream_config["otw_format"] = "sc12"
+        
         uhd_usrp_source = uhd.usrp_source(
             ",".join((rx_device_addr, usrp_device_args)),
             uhd.stream_args(
                 cpu_format="fc32",
                 args="",
                 channels=usrp_rx_channels,
+                **usrp_extra_stream_config,
             ),
         )
+        
         self.logger.info("Configuring USRP source clocks ...")
         if "B2" in uhd_usrp_source.get_usrp_info()["mboard_id"]:
             self.logger.debug("Detected USRP B210, using GPSDO clock source ...")
@@ -374,17 +391,34 @@ class phy_layer(gr.hier_block2):
         carrier_freq,
         samp_rate,
         tx_packet_length_key,
+        devices = None,
     ):
         self.logger.info("Creating USRP sink ...")
+
+        usrp_extra_stream_config = {}
+        if devices is not None:
+            # Serial USRPs might be a B210, which needs some extra config
+            # devices = tacmac.uhd_configuration.find_devices(hint=rx_device_addr)
+            self.logger.debug(f"Checking types for {tx_device_addr}")
+            for address_string in tx_device_addr.split(","):
+                for device in devices:
+                    if "serial" in device and device["serial"] == address_string.split("=")[1]:
+                        if device["product"] == "B210":
+                            # B210 need to set otw_format="sc12" for our data rate
+                            self.logger.info(f"Devices {tx_device_addr} are B210s, enabling otw_format=sc12")
+                            usrp_extra_stream_config["otw_format"] = "sc12"
+
         uhd_usrp_sink = uhd.usrp_sink(
             ",".join((tx_device_addr, usrp_device_args)),
             uhd.stream_args(
                 cpu_format="fc32",
                 args="",
                 channels=usrp_tx_channels,
+                **usrp_extra_stream_config,
             ),
             tx_packet_length_key,
         )
+
         self.logger.info("Configuring USRP sink clocks ...")
         if "B2" in uhd_usrp_sink.get_usrp_info()["mboard_id"]:
             self.logger.debug("Detected USRP B210, using GPSDO clock source ...")
@@ -449,6 +483,11 @@ class phy_layer(gr.hier_block2):
 
         self.logger.debug(f"{usrp_device_args=}")
 
+        devices = None
+        if "serial" in rx_device_addr or "serial" in tx_device_addr:
+            self.logger.info("Searching device infos to check the types.")
+            devices = tacmac.uhd_configuration.find_devices()
+
         uhd_usrp_source = self.initialize_usrp_source(
             rx_device_addr,
             usrp_device_args,
@@ -456,6 +495,7 @@ class phy_layer(gr.hier_block2):
             rx_gain,
             carrier_freq,
             samp_rate,
+            devices,
         )
 
         # see: https://files.ettus.com/manual/page_gpsdo_x3x0.html
@@ -502,6 +542,7 @@ class phy_layer(gr.hier_block2):
             carrier_freq,
             samp_rate,
             tx_packet_length_key,
+            devices,
         )
 
         tx_info = uhd_usrp_sink.get_usrp_info()
