@@ -28,6 +28,12 @@ A list of public repos
 * [gr-polarwrap](https://github.com/jdemel/gr-polarwrap)
 * [network-tools](https://github.com/nick-schwarzenberg/network-tools)
 
+### Dependencies
+1. elasticsearch <= 7
+2. ElasticBatch
+3. CommPy (scikit-commpy)
+4. [pythoncrc (PyCRC)](https://pypi.org/project/pythoncrc/)
+
 ## Network tools usage
 Generally, we assume one basestation with `id=0` and several clients with `id=40, 41, 42, ...` We'll probably stop here. These `id`s are set such that the PHY works. The assumption that the basestation assumes `id=0` is integrated into the system.
 
@@ -103,6 +109,17 @@ Or just for one device
 ## Elasticsearch + Kibana hints
 An elasticsearch + Kibana Docker container composition helps to visualize and gather data.
 
+### Dependencies
+
+The elasticsearch connector relies on [ElasticBatch](https://github.com/dkaslovsky/ElasticBatch) for an efficient database connection.
+Since it is PITA to find the correct thing through search engines, [this is the ElasticBatch PyPI package](https://pypi.org/project/elasticbatch/).
+
+Obviously, it relies on [elasticsearch](https://elasticsearch-py.readthedocs.io). [elasticsearch PyPI](https://pypi.org/project/elasticsearch/), [elasticsearch conda-forge](https://anaconda.org/conda-forge/elasticsearch)
+Unfortunately, only the elasticsearch connector is available in conda but ElasticBatch isn't.
+
+It is important to install elasticsearch v7!
+There's a breaking change in v8 that modernized errors. Though, ElasticBatch did not get that memo yet.
+
 ### Visualization
 Use "Kibana -> Visualize -> Timelion"
 
@@ -149,3 +166,9 @@ It is possible to install GNU Radio via Anaconda with conda etc. thanks to Ryan 
 
 [GNU Radio Conda Installation](https://wiki.gnuradio.org/index.php/CondaInstall)
 For OOTs, it might be wise to skip the `conda install gnuradio-build-deps` step. So far, it tends to break things only. Needs further investigation. Instead, `conda install -c conda-forge fmt pybind11` is sufficient. Without the correct `pybind11` installation, funny messages about "missing base type gr::sync_block" arise because there seems to be version mismatches.
+
+### Dependency installation
+
+1. Install `mamba install elasticsearch=7`. cf. ElasticBatch
+2. Install `pip install ElasticBatch`. Requires elasticsearch <=7
+3. Install `pip install scikit-commpy`. The conda version is seriously outdated.
