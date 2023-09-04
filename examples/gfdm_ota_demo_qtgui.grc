@@ -575,7 +575,7 @@ blocks:
     bus_structure: null
     coordinate: [1544, 844.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_nlog10_ff_0
   id: blocks_nlog10_ff
   parameters:
@@ -662,7 +662,7 @@ blocks:
     bus_structure: null
     coordinate: [1094, 782]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: ctrl_tab
   id: qtgui_tab_widget
   parameters:
@@ -1103,7 +1103,7 @@ blocks:
     bus_structure: null
     coordinate: [1688, 892.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_channel_estimate_0
   id: qtgui_time_sink_x
   parameters:
@@ -1957,7 +1957,7 @@ blocks:
     bus_structure: null
     coordinate: [1336, 836.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: tacmac_tag_to_stream_value_0_0_0
   id: tacmac_tag_to_stream_value
   parameters:
@@ -2215,4 +2215,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.9.7.0-rc1
+  grc_version: 3.10.2.0
