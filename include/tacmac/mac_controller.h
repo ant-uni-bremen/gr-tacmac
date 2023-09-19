@@ -46,6 +46,9 @@ public:
      * creating new instances.
      */
     static sptr make(unsigned destination_id, unsigned source_id, unsigned mtu_size);
+
+    virtual void activate_replay_mode(bool activate) = 0;
+    virtual bool replay_mode() = 0;
 };
 
 } // namespace tacmac

@@ -13,8 +13,8 @@
 /* If manual edits are made, the following tags should be modified accordingly.    */
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
-/* BINDTOOL_HEADER_FILE(mac_controller.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(a43d09271ae74415d25bad7e23d34d01)                     */
+/* BINDTOOL_HEADER_FILE(mac_controller.h)                                          */
+/* BINDTOOL_HEADER_FILE_HASH(a96a21a3d165e6bd627f48e6857ffa67)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -45,6 +45,12 @@ void bind_mac_controller(py::module& m)
              py::arg("mtu_size"),
              D(mac_controller, make))
 
+        .def("replay_mode", &mac_controller::replay_mode)
+        .def("activate_replay_mode",
+             &mac_controller::activate_replay_mode //,
+                                                   //    py::arg("activate") //,
+             //    D(mac_controller, activate_replay_mode)
+        )
 
         ;
 }

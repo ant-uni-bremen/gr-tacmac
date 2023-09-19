@@ -413,6 +413,23 @@ blocks:
     coordinate: [2040, 412.0]
     rotation: 0
     state: true
+- name: activate_replay_mode
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Activate replay mdoe
+    short_id: ''
+    type: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 648.0]
+    rotation: 0
+    state: true
 - name: active_subcarriers
   id: parameter
   parameters:
@@ -1881,6 +1898,7 @@ blocks:
   parameters:
     activate_cfo_compensation: activate_cfo_compensation_gui
     activate_phase_compensation: phase_compensate_gui
+    activate_replay_mode: activate_replay_mode
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''

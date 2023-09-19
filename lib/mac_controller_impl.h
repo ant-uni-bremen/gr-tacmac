@@ -111,6 +111,8 @@ struct ipv4_header {
 class mac_controller_impl : public mac_controller
 {
 private:
+    bool d_replay_mode_active = false;
+
     const unsigned d_dst_id;
     const unsigned d_src_id;
     const unsigned d_mtu_size;
@@ -207,6 +209,18 @@ public:
     int work(int noutput_items,
              gr_vector_const_void_star& input_items,
              gr_vector_void_star& output_items);
+
+    void activate_replay_mode(bool activate)
+    {
+        GR_LOG_INFO(this->d_logger, fmt::format("activate_replay_mode({})", activate));
+        d_replay_mode_active = activate;
+    }
+
+    bool replay_mode()
+    {
+        GR_LOG_INFO(this->d_logger, fmt::format("replay_mode({})", d_replay_mode_active));
+        return d_replay_mode_active;
+    }
 };
 
 } // namespace tacmac

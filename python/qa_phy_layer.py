@@ -64,6 +64,12 @@ class qa_phy_layer(gr_unittest.TestCase):
         instance.set_tx_gain(16.0)
         self.assertAlmostEqual(instance.get_tx_gain(), 16.0)
 
+        self.assertFalse(instance.replay_mode())
+        instance.activate_replay_mode(True)
+        self.assertTrue(instance.replay_mode())
+        instance.activate_replay_mode(False)
+        self.assertFalse(instance.replay_mode())
+
     def test_001_descriptive_test_name(self):
         # set up fg
         self.tb.run()

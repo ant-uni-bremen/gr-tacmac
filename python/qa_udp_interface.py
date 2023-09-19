@@ -26,6 +26,12 @@ class qa_udp_interface(gr_unittest.TestCase):
         self.assertEqual(len(instance._input_udp_blocks), nports)
         self.assertEqual(len(instance._output_udp_blocks), nports)
         self.assertEqual(len(instance._mac_controllers), nports)
+
+        self.assertFalse(instance.replay_mode())
+        instance.activate_replay_mode(True)
+        self.assertTrue(instance.replay_mode())
+        instance.activate_replay_mode(False)
+        self.assertFalse(instance.replay_mode())
         # set up fg
         self.tb.run()
         # check data

@@ -89,3 +89,16 @@ class udp_interface(gr.hier_block2):
                 (self._mac_controllers[port], "LLCout"),
                 (self, "status"),
             )
+
+    def activate_replay_mode(self, activate: bool):
+        assert type(activate) == bool
+        assert activate in (True, False)
+        for ctrl in self._mac_controllers:
+            ctrl.activate_replay_mode(activate)
+
+    def replay_mode(self):
+        m = [ctrl.replay_mode() for ctrl in self._mac_controllers]
+        result = m[0]
+        for res in m:
+            assert result == res
+        return result

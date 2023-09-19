@@ -31,6 +31,7 @@
 #include <chrono>
 #include <exception>
 #include <limits>
+#include <random>
 #include <string>
 // C++20 feature: #include <format>
 #include <fmt/core.h>
@@ -146,6 +147,23 @@ void mac_controller_impl::print_llc_message_status(const uint64_t ticks)
     }
 }
 
+namespace {
+std::vector<uint8_t> initialize_random_bit_vector(const unsigned size,
+                                                  const unsigned seed = 4711)
+{
+    // std::random_device rnd_device;
+    // std::mt19937 mersenne_engine{ rnd_device() };
+    std::mt19937 mersenne_engine;
+    mersenne_engine.seed(seed);
+    std::uniform_int_distribution<uint8_t> dist{ 0, 255 };
+    auto gen = [&dist, &mersenne_engine]() { return dist(mersenne_engine); };
+
+    std::vector<uint8_t> vec(size);
+    std::generate(begin(vec), end(vec), gen);
+    return vec;
+}
+} // namespace
+
 void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
 {
     d_llc_message_counter++;
@@ -198,8 +216,11 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     //            ip_header.flag_df,
     //            ip_header.flag_mf,
     //            ip_header.fragment_offset);
-
     auto header = create_header(frame_counter, ticks, payload.size());
+    if (d_replay_mode_active) {
+        header = create_header(4711, 0xC0FFEE42, d_mtu_size);
+        payload = initialize_random_bit_vector(d_mtu_size);
+    }
 
     auto meta = flatten_dict(pmt::car(pdu));
     meta = pmt::dict_add(meta, PMT_DST_ID, pmt::from_long(d_dst_id));
@@ -341,8 +362,8 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
     d_latency_interval_counter += latency_ticks;
     d_lost_packet_interval_counter += lost_packets;
 
-    // The RX packet metadata keys are suffixed with a number at this point. It goes from
-    // 0 ... N-1 RX streams.
+    // The RX packet metadata keys are suffixed with a number at this point. It goes
+    // from 0 ... N-1 RX streams.
     const uint64_t rx_dsp_latency =
         pmt::to_uint64(pmt::dict_ref(meta, pmt::mp("time0"), pmt::from_uint64(0)));
     meta = pmt::dict_add(meta, PMT_DSP_LATENCY, pmt::from_long(rx_dsp_latency));

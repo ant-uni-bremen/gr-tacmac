@@ -104,6 +104,23 @@ blocks:
     coordinate: [1344, 244.0]
     rotation: 0
     state: true
+- name: activate_replay_mode
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Activate replay mdoe
+    short_id: ''
+    type: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [464, 808.0]
+    rotation: 0
+    state: true
 - name: active_subcarriers
   id: parameter
   parameters:
@@ -325,6 +342,23 @@ blocks:
     coordinate: [1032, 508.0]
     rotation: 0
     state: true
+- name: save_rx_to_file
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Save RX samples to file (Yes > 0)
+    short_id: ''
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 208.0]
+    rotation: 0
+    state: true
 - name: scorr_threshold_high
   id: parameter
   parameters:
@@ -418,6 +452,7 @@ blocks:
   parameters:
     activate_cfo_compensation: activate_cfo_compensation
     activate_phase_compensation: activate_phase_compensation
+    activate_replay_mode: activate_replay_mode
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''
@@ -433,7 +468,7 @@ blocks:
     num_network_interfaces: nports
     rx_gain: rx_gain
     samp_rate: samp_rate
-    save_rx_samples_to_file: 'False'
+    save_rx_samples_to_file: save_rx_to_file > 0
     scorr_threshold_high: scorr_threshold_high
     scorr_threshold_low: scorr_threshold_low
     src_id: src_id
@@ -615,4 +650,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.9.7.0-rc1
+  grc_version: 3.10.2.0

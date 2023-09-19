@@ -17,6 +17,7 @@ templates:
       ${tx_gain}, ${tx_digital_gain},
       ${rx_gain}, ${master_clock_rate}, ${save_rx_samples_to_file}, ${use_timed_commands}
     )
+    self.${id}.activate_replay_mode(${activate_replay_mode})
   callbacks:
     - set_activate_cfo_compensation(${activate_cfo_compensation})
     - set_ic_iterations(${ic_iterations})
@@ -144,7 +145,10 @@ parameters:
     label: Use timed commands
     dtype: bool
     default: True
-
+  - id: activate_replay_mode
+    label: Activate replay mode
+    dtype: bool
+    default: False
     #- id: ...
 #  label: ...
 #  dtype: ...

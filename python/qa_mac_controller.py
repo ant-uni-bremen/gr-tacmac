@@ -231,6 +231,74 @@ class qa_mac_controller(gr_unittest.TestCase):
             self.assertEqual(mtime, timestamps[i])
             self.assertGreater(get_int_from_pmt_meta(meta, "latency"), 0)
 
+    def test_004_replay(self):
+        num_pdus = 4
+        dst_id = 42
+        src_id = 21
+        msg = u"Sample message for frame formatter Yihhaaa"
+        message = string_to_int_list(msg)
+        payload = get_pdu_payload(message)
+
+        ref = pmt_u8vector_to_ndarray(payload)
+
+        meta = pmt.make_dict()
+        pdu = pmt.cons(meta, payload)
+
+        print("This is the original PDU\n----------------")
+        print(pdu)
+        print("----------------")
+        ctrl = tacmac.mac_controller(dst_id, src_id, len(message))
+        self.assertFalse(ctrl.replay_mode())
+        ctrl.activate_replay_mode(True)
+        self.assertTrue(ctrl.replay_mode())
+        dbg = blocks.message_debug()
+
+        self.tb.msg_connect(ctrl, "PHYout", dbg, "store")
+        # self.tb.msg_connect(ctrl, "PHYout", dbg, "print_pdu")
+
+        self.tb.start()
+
+        for i in range(num_pdus):
+            # eww, what's that smell?
+            ctrl.to_basic_block()._post(pmt.intern("LLCin"), pdu)
+
+        while dbg.num_messages() < num_pdus:
+            pass
+        self.tb.stop()
+        self.tb.wait()
+
+        first_msg = dbg.get_message(0)
+        bits = pmt.cdr(first_msg)
+        print(bits)
+        ref = pmt_u8vector_to_ndarray(bits)
+
+        for i in range(num_pdus):
+            result_msg = dbg.get_message(i)
+            meta = pmt.car(result_msg)
+            # print(meta)
+            bits = pmt.cdr(result_msg)
+            # print(bits)
+            pl = pmt_u8vector_to_ndarray(bits)
+
+            header = pl[0:14]
+            self.assertEqual(header[0], dst_id)
+            self.assertEqual(header[1], src_id)
+            self.assertEqual(get_int_from_pmt_meta(meta, "dst_id"), dst_id)
+            self.assertEqual(get_int_from_pmt_meta(meta, "src_id"), src_id)
+            parsed_sequence = int(header.view(">u2")[1])
+            self.assertEqual(4711, parsed_sequence)
+            tbytes = header[5:13]
+            htime = int(tbytes.view(">u8")[0])
+            mtime = 0xC0FFEE42
+            self.assertEqual(mtime, htime)
+            checksum = pl[-2:]
+            # print(checksum)
+            checksum = int(checksum.view(">u2"))
+            # print(checksum)
+            r = CRCCCITT(version="FFFF").calculate(pl[:-2].tobytes())
+            # print(r)
+            self.assertEqual(r, checksum)
+            self.assertSequenceEqual(tuple(pl), tuple(ref))
 
 if __name__ == "__main__":
     gr_unittest.run(qa_mac_controller)

@@ -609,3 +609,11 @@ class phy_layer(gr.hier_block2):
 
     def set_timing_advance(self, timing_advance):
         self.tacmac_phy_transmitter.set_timing_advance(timing_advance)
+
+    def activate_replay_mode(self, activate: bool):
+        assert type(activate) == bool
+        assert activate in (True, False)
+        self.tacmac_udp_interface.activate_replay_mode(activate)
+
+    def replay_mode(self):
+        return self.tacmac_udp_interface.replay_mode()
