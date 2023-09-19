@@ -46,6 +46,7 @@ flowgraph_defaults:
   samp_rate: 30.72e+6
   save_rx_samples: False
   use_timed_commands: True
+  activate_replay_mode: False
 
 database_defaults:
   db_hostname: '192.168.42.42'

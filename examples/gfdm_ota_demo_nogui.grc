@@ -112,7 +112,7 @@ blocks:
     hide: none
     label: Activate replay mdoe
     short_id: ''
-    type: ''
+    type: intx
     value: 'False'
   states:
     bus_sink: false
@@ -452,7 +452,7 @@ blocks:
   parameters:
     activate_cfo_compensation: activate_cfo_compensation
     activate_phase_compensation: activate_phase_compensation
-    activate_replay_mode: activate_replay_mode
+    activate_replay_mode: activate_replay_mode > 0
     active_subcarriers: active_subcarriers
     affinity: ''
     alias: ''
