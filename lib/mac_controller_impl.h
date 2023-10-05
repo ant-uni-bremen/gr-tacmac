@@ -40,6 +40,12 @@ uint64_t parse_timestamp(const std::vector<uint8_t>& bytes)
     return timestamp;
 }
 
+// uint16_t calculate_checksum(const std::vector<uint8_t>& payload,
+//                             unsigned num_ignored_tail_bytes = 0);
+
+// std::tuple<unsigned, unsigned, unsigned, unsigned, uint16_t>
+// parse_payload(const std::vector<uint8_t>& payload);
+
 struct ipv4_header {
     /*
      * https://en.wikipedia.org/wiki/IPv4#Packet_structure

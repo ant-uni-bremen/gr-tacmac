@@ -291,6 +291,23 @@ blocks:
     coordinate: [768, 84.0]
     rotation: 0
     state: true
+- name: num_pilots
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Number of pilot symbols
+    short_id: ''
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 432.0]
+    rotation: 0
+    state: true
 - name: rx_addr
   id: parameter
   parameters:
@@ -466,6 +483,7 @@ blocks:
     minoutbuf: '0'
     mtu_size: mtu_size
     num_network_interfaces: nports
+    num_pilots: num_pilots
     rx_gain: rx_gain
     samp_rate: samp_rate
     save_rx_samples_to_file: save_rx_to_file > 0

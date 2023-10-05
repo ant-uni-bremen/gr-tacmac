@@ -45,6 +45,7 @@ class phy_receiver(gr.hier_block2):
         scorr_threshold_high,
         scorr_treshold_low,
         xcorr_threshold,
+        num_pilots=0
     ):
         gr.hier_block2.__init__(
             self,
@@ -86,7 +87,11 @@ class phy_receiver(gr.hier_block2):
             filtertype="rrc",
             filteralpha=0.2,
             cyclic_shifts=list(range(num_antenna_ports)),
+            num_pilots=num_pilots,
         )
+        num_data_symbols = timeslots * active_subcarriers - len(gfdm_config.pilots)
+        self.logger.debug(f"{num_data_symbols=}")
+        self.logger.debug(f"{gfdm_config.pilots=}")
 
         xcorr_compensate_freq_offset = True
         self.synchronizer = multi_port_sync_cc(
@@ -142,6 +147,7 @@ class phy_receiver(gr.hier_block2):
             activate_cfo_compensation,
             rx_packet_start_key,
         )
+        self.demodulator.set_pilots(gfdm_config.pilots)
 
         for port in range(num_antenna_ports):
             self.connect((self.synchronizer, port), (self.demodulator, port))
@@ -164,8 +170,7 @@ class phy_receiver(gr.hier_block2):
         interleaver_type = "convolutional"
         code_config = get_polar_configuration(
             constellation_order
-            * gfdm_config.timeslots
-            * gfdm_config.active_subcarriers,
+            * num_data_symbols,
             bit_info_length,
             interleaver_type=interleaver_type,
         )
@@ -229,3 +234,12 @@ class phy_receiver(gr.hier_block2):
 
     def set_xcorr_threshold(self, xcorr_threshold):
         self.synchronizer.set_xcorr_threshold(xcorr_threshold)
+
+    def set_pilots(self, pilots):
+        old_pilots = self.demodulator.pilots()
+        self.logger.warn(f"set_pilots(#pilots={len(pilots)}) called. was #pilots={len(old_pilots)}. Configuration potentially borked!")
+        self.logger.debug(f"set_pilots: {pilots}")
+        self.demodulator.set_pilots(pilots)
+
+    def pilots(self):
+        return self.demodulator.pilots()

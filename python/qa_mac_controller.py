@@ -300,5 +300,29 @@ class qa_mac_controller(gr_unittest.TestCase):
             self.assertEqual(r, checksum)
             self.assertSequenceEqual(tuple(pl), tuple(ref))
 
+    def test_005_functions(self):
+        dst_id = 42
+        src_id = 21
+        msg = u"Sample message for frame formatter Yihhaaa"
+        message = string_to_int_list(msg)
+        payload = get_pdu_payload(message)
+        ndpayload = pmt_u8vector_to_ndarray(payload)
+
+        timestamp = 556677
+        phypayload = generate_phy_frame(ndpayload, dst_id, src_id, 42, timestamp)
+
+        checksum = phypayload[-2:]
+        checksum = int(checksum.view(">u2"))
+        calced = tacmac.calculate_checksum(phypayload, 2)
+        print(f"{calced:#04x}\t{checksum:#04x}")
+        self.assertEqual(checksum, calced)
+
+        dst, src, sequence, payload_size, checksum = tacmac.parse_payload(phypayload)
+        print(f"{dst=}, {src=}, {sequence=}, {payload_size=}, {checksum=:#04x}")
+        self.assertEqual(dst, dst_id)
+        self.assertEqual(src, src_id)
+        self.assertEqual(payload_size, 42)
+
+
 if __name__ == "__main__":
     gr_unittest.run(qa_mac_controller)

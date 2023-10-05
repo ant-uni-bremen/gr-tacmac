@@ -151,8 +151,6 @@ namespace {
 std::vector<uint8_t> initialize_random_bit_vector(const unsigned size,
                                                   const unsigned seed = 4711)
 {
-    // std::random_device rnd_device;
-    // std::mt19937 mersenne_engine{ rnd_device() };
     std::mt19937 mersenne_engine;
     mersenne_engine.seed(seed);
     std::uniform_int_distribution<uint8_t> dist{ 0, 255 };
@@ -163,6 +161,28 @@ std::vector<uint8_t> initialize_random_bit_vector(const unsigned size,
     return vec;
 }
 } // namespace
+
+std::tuple<unsigned, unsigned, unsigned, unsigned, uint16_t>
+parse_payload(const std::vector<uint8_t>& payload)
+{
+    const uint16_t checksum = (uint16_t(payload[payload.size() - 2] << 8) |
+                               uint16_t(payload[payload.size() - 1]));
+
+    const unsigned dst = payload[0];
+    const unsigned src = payload[1];
+    const unsigned sequence = (uint16_t(payload[2] << 8) | uint16_t(payload[3]));
+    const unsigned payload_size = payload[4];
+    return { dst, src, sequence, payload_size, checksum };
+}
+
+
+uint16_t calculate_checksum(const std::vector<uint8_t>& payload,
+                            unsigned num_ignored_tail_bytes)
+{
+    return CRC::Calculate(payload.data(),
+                          payload.size() - num_ignored_tail_bytes,
+                          CRC::CRC_16_CCITTFALSE());
+}
 
 void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
 {
@@ -233,8 +253,7 @@ void mac_controller_impl::handle_llc_msg(pmt::pmt_t pdu)
     payload.insert(payload.begin(), header.begin(), header.end());
     payload.resize(d_mtu_size + header.size(), 0);
 
-    uint16_t checksum =
-        CRC::Calculate(payload.data(), payload.size(), CRC::CRC_16_CCITTFALSE());
+    const uint16_t checksum = calculate_checksum(payload);
     payload.push_back((checksum >> 8) & 0xFF);
     payload.push_back(checksum & 0xFF);
 
@@ -300,16 +319,9 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
 {
     const std::vector<uint8_t> payload = pmt::u8vector_elements(pmt::cdr(pdu));
 
-    const uint16_t rx_checksum = (uint16_t(payload[payload.size() - 2] << 8) |
-                                  uint16_t(payload[payload.size() - 1]));
+    auto [dst, src, sequence, payload_size, rx_checksum] = parse_payload(payload);
 
-    const uint16_t checksum =
-        CRC::Calculate(payload.data(), payload.size() - 2, CRC::CRC_16_CCITTFALSE());
-
-    const unsigned dst = payload[0];
-    const unsigned src = payload[1];
-    const unsigned sequence = (uint16_t(payload[2] << 8) | uint16_t(payload[3]));
-    const unsigned payload_size = payload[4];
+    const auto checksum = calculate_checksum(payload, 2);
 
     const auto status_code = check_phy_packet(dst, src, checksum, rx_checksum);
 
@@ -327,8 +339,9 @@ void mac_controller_impl::handle_phy_msg(pmt::pmt_t pdu)
                         d_dst_id,
                         rx_checksum,
                         checksum);
-        GR_LOG_DEBUG(this->d_debug_logger,
+        GR_LOG_DEBUG(this->d_logger,
                      fmt::format("{} {} {}", host_info, packet_header, status));
+        // if (status_code != phy_status_t::OK) {
         return;
     }
 

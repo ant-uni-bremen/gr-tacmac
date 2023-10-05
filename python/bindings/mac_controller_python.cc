@@ -14,10 +14,11 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(mac_controller.h)                                          */
-/* BINDTOOL_HEADER_FILE_HASH(a96a21a3d165e6bd627f48e6857ffa67)                     */
+/* BINDTOOL_HEADER_FILE_HASH(be7f4f76cfdfa6ea0fcbeba06e9a0795)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -27,11 +28,39 @@ namespace py = pybind11;
 // pydoc.h is automatically generated in the build directory
 #include <mac_controller_pydoc.h>
 
+// template <typename Sequence>
+// inline py::array_t<typename Sequence::value_type> as_pyarray(Sequence&& seq)
+// {
+//     auto size = seq.size();
+//     auto data = seq.data();
+//     std::unique_ptr<Sequence> seq_ptr = std::make_unique<Sequence>(std::move(seq));
+//     auto capsule = py::capsule(seq_ptr.get(), [](void* p) {
+//         std::unique_ptr<Sequence>(reinterpret_cast<Sequence*>(p));
+//     });
+//     seq_ptr.release();
+//     return py::array(size, data, capsule);
+// }
+
+// // Adapted from: https://github.com/pybind/pybind11/issues/1042#issuecomment-663154709
+// template <class T>
+// inline std::vector<T> as_cppvector(const py::array_t<T>& passthrough)
+// {
+//     py::buffer_info passthroughBuf = passthrough.request();
+//     if (passthroughBuf.ndim != 1) {
+//         throw std::runtime_error("Error. Number of dimensions must be one");
+//     }
+//     size_t length = passthroughBuf.shape[0];
+//     T* passthroughPtr = static_cast<T*>(passthroughBuf.ptr);
+//     std::vector<T> passthroughSpan(passthroughPtr, passthroughPtr + length);
+//     return passthroughSpan;
+// }
+
 void bind_mac_controller(py::module& m)
 {
+    m.def("calculate_checksum", &gr::tacmac::calculate_checksum);
+    m.def("parse_payload", &gr::tacmac::parse_payload);
 
     using mac_controller = ::gr::tacmac::mac_controller;
-
 
     py::class_<mac_controller,
                gr::sync_block,

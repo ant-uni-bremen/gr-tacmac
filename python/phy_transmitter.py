@@ -59,6 +59,7 @@ class phy_transmitter(gr.hier_block2):
         packet_length_key="packet_len",
         use_timed_commands=True,
         enable_tx_latency_reporting=False,
+        pilots=[],
     ):
         gr.hier_block2.__init__(
             self,
@@ -71,6 +72,9 @@ class phy_transmitter(gr.hier_block2):
 
         assert len(cyclic_shift) == len(full_preambles)
 
+        ##################################################
+        # Expose message ports
+        ##################################################
         self.message_port_register_hier_in("pdus")
         self.message_port_register_hier_in("time_tag")
         self.message_port_register_hier_out("command")
@@ -78,6 +82,11 @@ class phy_transmitter(gr.hier_block2):
         ##################################################
         # Variables
         ##################################################
+        num_data_symbols = timeslots * active_subcarriers - len(pilots)
+        self.logger.debug(f"{frame_size=}")
+        self.logger.debug(f"{num_data_symbols=}")
+        self.logger.debug(f"{pilots=}")
+        # assert constellation_order * num_data_symbols == frame_size
         var_encoder = polarwrap.encoderwrap.make(frame_size, frozen_bit_positions, 0)
 
         ##################################################
@@ -115,6 +124,7 @@ class phy_transmitter(gr.hier_block2):
             full_preambles,
             packet_length_key,
         )
+        self.gfdm_transmitter_cc.set_pilots(pilots)
         self.gfdm_short_burst_shaper = gfdm.short_burst_shaper(
             pre_padding,
             post_padding,
@@ -166,3 +176,12 @@ class phy_transmitter(gr.hier_block2):
 
     def set_tx_digital_gain(self, tx_digital_gain):
         self.gfdm_short_burst_shaper.set_scale(tx_digital_gain)
+
+    def set_pilots(self, pilots):
+        old_pilots = self.gfdm_transmitter_cc.pilots()
+        self.logger.warn(f"set_pilots(#pilots={len(pilots)}) called. was #pilots={len(old_pilots)}. Configuration potentially borked!")
+        self.logger.debug(f"set_pilots: {pilots}")
+        self.gfdm_transmitter_cc.set_pilots(pilots)
+
+    def pilots(self):
+        return self.gfdm_transmitter_cc.pilots()

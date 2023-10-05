@@ -71,6 +71,7 @@ class phy_layer(gr.hier_block2):
         master_clock_rate=122.88e6,
         save_rx_samples_to_file=False,
         use_timed_commands=True,
+        num_pilots=0,
     ):
         noutputs = len(usrp_tx_channels) + len(usrp_rx_channels) * 4
         gr.hier_block2.__init__(
@@ -123,7 +124,10 @@ class phy_layer(gr.hier_block2):
             filtertype="rrc",
             filteralpha=0.2,
             cyclic_shifts=cyclic_shifts,
+            num_pilots=num_pilots,
         )
+        num_data_symbols = timeslots * active_subcarriers - len(conf.pilots)
+        self.logger.debug(f"{num_pilots=}, {num_data_symbols=}, {conf.pilots=}")
 
         print_dict = {}
         for k, v in conf._asdict().items():
@@ -132,7 +136,7 @@ class phy_layer(gr.hier_block2):
         self.logger.debug("GFDM configuration\n" + pformat(print_dict))
 
         code_conf = polarwrap.get_polar_configuration(
-            constellation_order * timeslots * active_subcarriers,
+            constellation_order * num_data_symbols,
             bit_info_length,
             interleaver_type="convolutional",
         )
@@ -231,6 +235,7 @@ class phy_layer(gr.hier_block2):
             tx_packet_length_key,
             use_timed_commands,
             enable_tx_latency_reporting,
+            pilots=conf.pilots,
         )
         self.tacmac_tags_to_msg_dict = tacmac.tags_to_msg_dict(gr.sizeof_gr_complex * 1)
 
@@ -249,6 +254,7 @@ class phy_layer(gr.hier_block2):
             scorr_threshold_high,
             scorr_threshold_low,
             xcorr_threshold,
+            num_pilots=num_pilots,
         )
 
         self.tacmac_periodic_time_tag_cc = tacmac.periodic_time_tag_cc(

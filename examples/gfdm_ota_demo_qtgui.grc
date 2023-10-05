@@ -427,7 +427,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 648.0]
+    coordinate: [32, 624.0]
     rotation: 0
     state: true
 - name: active_subcarriers
@@ -591,6 +591,20 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1544, 844.0]
+    rotation: 0
+    state: disabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 768.0]
     rotation: 0
     state: disabled
 - name: blocks_nlog10_ff_0
@@ -940,6 +954,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [891, 340]
+    rotation: 0
+    state: true
+- name: num_pilots
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Number of pilot symbols
+    short_id: ''
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 728.0]
     rotation: 0
     state: true
 - name: qtgui_const_sink_rx_symbols
@@ -1912,6 +1943,7 @@ blocks:
     minoutbuf: '0'
     mtu_size: mtu_size
     num_network_interfaces: nports
+    num_pilots: num_pilots
     rx_gain: rgain
     samp_rate: samp_rate
     save_rx_samples_to_file: save_rx_to_file > 0
@@ -2222,6 +2254,7 @@ connections:
 - [tacmac_phy_layer_2x2, '9', qtgui_const_sink_rx_symbols, '1']
 - [tacmac_phy_layer_2x2, '9', tacmac_tag_to_stream_value_0_0_0_0, '0']
 - [tacmac_phy_layer_2x2, '9', tacmac_tag_to_stream_value_6, '0']
+- [tacmac_phy_layer_2x2, LLCout, blocks_message_debug_0, print_pdu]
 - [tacmac_phy_layer_2x2, LLCout, blocks_pdu_to_tagged_stream_0_0, pdus]
 - [tacmac_phy_layer_2x2, status, tacmac_elasticsearch_connector_0, in]
 - [tacmac_tag_to_stream_value_0, '0', blocks_int_to_float_0, '0']

@@ -51,6 +51,25 @@ public:
     virtual bool replay_mode() = 0;
 };
 
+/*!
+ * \brief Calculate CRC checksum
+ * \ingroup tacmac
+ *
+ * This function calculates the 16bit CRC checksum according to the algorithm that is used
+ * in this implementation.
+ */
+uint16_t TACMAC_API calculate_checksum(const std::vector<uint8_t>& payload,
+                                       unsigned num_ignored_tail_bytes = 0);
+
+/*!
+ * \brief Parse payload with header
+ * \ingroup tacmac
+ *
+ * Parses the header that is defined in this MAC controller.
+ */
+std::tuple<unsigned, unsigned, unsigned, unsigned, uint16_t>
+    TACMAC_API parse_payload(const std::vector<uint8_t>& payload);
+
 } // namespace tacmac
 } // namespace gr
 
