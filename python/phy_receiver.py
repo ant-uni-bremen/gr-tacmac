@@ -148,6 +148,7 @@ class phy_receiver(gr.hier_block2):
             rx_packet_start_key,
         )
         self.demodulator.set_pilots(gfdm_config.pilots)
+        self.demodulator.activate_pilot_estimation(len(gfdm_config.pilots) > 0)
 
         for port in range(num_antenna_ports):
             self.connect((self.synchronizer, port), (self.demodulator, port))

@@ -164,7 +164,7 @@ def load_device_config(config, devicename):
     equal_keys = ["product", "type", "claimed", "fpga"]
     for ek in equal_keys:
         val = set([d.get(ek, "N/A") for d in devs])
-        assert len(val) == 1
+        assert len(val) == 1, f"expected 1 value for key={ek}, but got: {len(val)=}"
 
     device = {k: [d[k] for d in devs] for k in devs[0].keys()}
     result = {}
