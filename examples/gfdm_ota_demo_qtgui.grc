@@ -771,7 +771,7 @@ blocks:
     label: DB hostname
     short_id: ''
     type: str
-    value: '"172.24.142.204"'
+    value: '"10.0.1.87"'
   states:
     bus_sink: false
     bus_source: false
